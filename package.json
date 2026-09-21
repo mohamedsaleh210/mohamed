@@ -11,6 +11,7 @@
     "security": "node security.js",
     "test:all": "node test.js && node integration.js && node edge.js && node security.js",
     "edge": "node edge.js",
+    "demo": "node demo.js",
     "demo:clear": "node demo-clear.js",
     "integration": "node integration.js",
     "test:payroll": "node payroll-excel-test.js",

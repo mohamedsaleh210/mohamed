@@ -1,8 +1,8 @@
-<% pageTitle = 'الدخول إلى سند' %><%-include('../partials/head')%><%-include('../partials/header')%>
+<% pageTitle = 'الدخول إلى سند' %><%-include('../partials/head')%><%-include('../partials/header')%><main>
 <section class="section"><div class="wrap" style="max-width:560px"><div class="section-head"><div class="eyebrow">بوابة واحدة للجميع</div><h2>الدخول إلى سند</h2><p>عميل، موظف، محاسب أو مدير — أدخل بياناتك وسيأخذك سند إلى مساحتك الصحيحة.</p></div>
 <form class="form-card" method="post" action="/login"><%-csrfField%>
 <%if(error){%><div class="form-alert"><%=error%></div><%}%>
 <div class="field"><label>اسم المستخدم أو البريد أو رقم الموبايل</label><input type="text" name="identifier" autocomplete="username" required autofocus></div>
 <div class="field"><label>كلمة المرور</label><input type="password" name="password" autocomplete="current-password" required></div>
 <button class="btn brass wide">دخول</button><p style="text-align:center"><a href="/portal/register">إنشاء حساب عميل جديد</a></p>
-</form></div></section><%-include('../partials/footer')%>
+</form></div></section></main><%-include('../partials/footer')%>

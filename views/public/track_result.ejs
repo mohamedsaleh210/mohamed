@@ -1,6 +1,6 @@
 <% pageTitle = r.ref %>
 <%- include('../partials/head') %>
-<%- include('../partials/header') %>
+<%- include('../partials/header') %><main>
 
 <%
   const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
@@ -113,4 +113,4 @@
   </div>
 </section>
 
-<%- include('../partials/footer') %>
+</main><%- include('../partials/footer') %>

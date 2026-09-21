@@ -1,4 +1,4 @@
-<% pageTitle='الأسئلة الشائعة' %><%-include('../partials/head')%><%-include('../partials/header')%>
+<% pageTitle='الأسئلة الشائعة' %><%-include('../partials/head')%><%-include('../partials/header')%><main>
 <section class="system-hero compact"><div class="wrap"><div class="eyebrow">مركز المساعدة</div><h1>الأسئلة الشائعة</h1><p>إجابات واضحة عن التسجيل وطلب الخدمات واستخدام منصة سند.</p></div></section>
 <section class="section"><div class="wrap narrow"><%[
 ['كيف أسجل حسابًا جديدًا؟','افتح صفحة الدخول واختر إنشاء حساب، ثم أدخل بياناتك وفعّل البريد الإلكتروني. ويمكنك تقديم طلب أولًا ثم إنشاء الحساب لمتابعته.'],
@@ -9,4 +9,4 @@
 ['متى أستطيع إرسال تقييم؟','بعد إغلاق الطلب بنجاح يظهر نموذج التقييم الإلكتروني تلقائيًا.'],
 ['كيف أفتح تذكرة دعم فني؟','من تبويب الدعم الفني داخل حسابك، ويمكن ربط التذكرة بالطلب المعني لتسريع المعالجة.']
 ].forEach((x,i)=>{%><details class="faq-item" <%=i===0?'open':''%>><summary><%=x[0]%></summary><p><%=x[1]%></p></details><%})%></div></section>
-<%-include('../partials/footer')%>
+</main><%-include('../partials/footer')%>

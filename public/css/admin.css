@@ -9,7 +9,12 @@
   --ink-2: #0b2029;
   --ink-3: #1c4351;
   --brass: #c9a24b;
-  --brass-deep: #a9853a;
+  /* Darkened from #a9853a (WCAG contrast audit, Phase 0B) — see the same
+     token in style.css for the full rationale; #856527 stays in the same
+     brass hue, keeps decorative/background uses (hover states, gradients,
+     avatars) recognizably brass, and reaches 4.5:1+ everywhere it's used
+     as small/normal text (links, labels, table refs, chips). */
+  --brass-deep: #856527;
   --brass-soft: #f4eedd;
 
   --bg: #eef1f0;
@@ -17,8 +22,18 @@
   --line: #e3e8e6;
   --line-soft: #f0f3f1;
   --text: #1e2a30;
-  --muted: #66757e;
-  --muted-2: #8b9aa1;
+  /* Darkened from #66757e (WCAG contrast audit, Phase 0B): an automated
+     axe scan of the live dashboard found real instances — the welcome
+     subtitle on --bg, and notification/deadline meta text on --danger-bg —
+     computing to 4.16-4.21:1, just under the 4.5:1 AA threshold. #5c6b73
+     reaches 4.83:1+ in both those contexts and 5.4:1+ on white/card,
+     where the original value already passed. */
+  --muted: #5c6b73;
+  /* Darkened from #8b9aa1 (WCAG contrast audit, Phase 0B): 2.90:1 on white
+     and 2.51:1 on the .chip.off background — both well below the 4.5:1 AA
+     threshold for normal text. #5d6b73 reaches 5.50:1 on white and 4.76:1
+     on the chip background while staying the same muted blue-gray. */
+  --muted-2: #5d6b73;
 
   --ok: #3a9d6b;
   --ok-bg: #e7f6ee;

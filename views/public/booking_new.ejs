@@ -1,4 +1,4 @@
-<%pageTitle='حجز الاستشارات والمواعيد'%><%-include('../partials/head')%><%-include('../partials/header')%>
+<%pageTitle='حجز الاستشارات والمواعيد'%><%-include('../partials/head')%><%-include('../partials/header')%><main>
 <section class="section booking-page"><div class="wrap narrow">
   <div class="section-head booking-title"><div class="eyebrow">الحجز المباشر</div><h1>احجز استشارة أو موعدًا</h1><p>أدخل بياناتك واختر الموعد المناسب دون إنشاء حساب. يراجع المكتب الحجز ثم يعيّن الموظف المختص.</p></div>
   <%if(clientUser){%><a class="btn ghost" href="/appointments/mine">مواعيدي</a><%}%>
@@ -16,4 +16,4 @@
     <button class="btn brass booking-submit" <%=slots.length?'':'disabled'%>>تأكيد الحجز</button>
   </form>
   <%if(!slots.length){%><div class="booking-empty"><b>لا توجد مواعيد متاحة الآن</b><p>سيضيف المكتب مواعيد جديدة قريبًا. يمكنك العودة لاحقًا أو التواصل معه مباشرة.</p></div><%}%>
-</div></section><%-include('../partials/footer')%>
+</div></section></main><%-include('../partials/footer')%>

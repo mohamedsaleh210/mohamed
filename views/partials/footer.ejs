@@ -41,6 +41,14 @@
 
 <script>
   (function () {
+    // Server-rendered .form-alert banners had no ARIA role, so screen
+    // readers never announced them. Only sets an attribute on markup the
+    // server already rendered — no change to error text or form behavior.
+    document.querySelectorAll('.form-alert').forEach(function (el) {
+      if (!el.hasAttribute('role')) el.setAttribute('role', 'alert');
+    });
+  })();
+  (function () {
     var nav = document.getElementById('nav');
     var btn = document.getElementById('menuBtn');
     var close = document.getElementById('mobileNavClose');

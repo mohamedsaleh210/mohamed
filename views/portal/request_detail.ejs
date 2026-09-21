@@ -1,6 +1,6 @@
 <% pageTitle = r.ref %>
 <%- include('../partials/head') %>
-<%- include('../partials/header') %>
+<%- include('../partials/header') %><main>
 
 <% const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
    const remaining = (r.total_amount || 0) - (r.paid_amount || 0); %>
@@ -108,4 +108,4 @@
   </div>
 </section>
 
-<%- include('../partials/footer') %>
+</main><%- include('../partials/footer') %>

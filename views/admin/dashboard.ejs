@@ -15,15 +15,15 @@
 </form>
 
 <% if (showMoney) { %><div class="stat-grid">
-  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass">◈</i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><%=financial.treasury.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok">↓</i><div><div class="k">إجمالي الإيرادات</div><div class="v"><%=financial.revenue.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger">↑</i><div><div class="k">إجمالي المصروفات</div><div class="v"><%=financial.expenses.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet">◫</i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><%=financial.custody.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass" aria-hidden="true">◈</i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><%=financial.treasury.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok" aria-hidden="true">↓</i><div><div class="k">إجمالي الإيرادات</div><div class="v"><%=financial.revenue.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger" aria-hidden="true">↑</i><div><div class="k">إجمالي المصروفات</div><div class="v"><%=financial.expenses.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet" aria-hidden="true">◫</i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><%=financial.custody.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
 </div><% } %>
 
 <div class="stat-grid">
   <a class="stat icon-stat" href="<%= adminPath %>/requests">
-    <i class="stat-ico ic-brass">▤</i>
+    <i class="stat-ico ic-brass" aria-hidden="true">▤</i>
     <div><div class="k"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></div>
     <div class="v"><%= total %></div></div>
   </a>
@@ -31,7 +31,7 @@
     <%# Collected belongs on the revenue page, where it can be read by period.
         What matters at a glance here is only what is still owed. %>
     <a class="stat icon-stat" href="<%= adminPath %>/revenue">
-      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>">%</i>
+      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true">%</i>
       <div><div class="k">المتبقي على العملاء</div>
       <div class="v" style="color:<%= remaining > 0 ? 'var(--danger)' : 'var(--ok)' %>">
         <%= remaining.toLocaleString('en-US') %> <small><%= site.currency %></small>
@@ -39,13 +39,13 @@
     </a>
   <% } %>
   <a class="stat icon-stat" href="<%= adminPath %>/notifications">
-    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>">🔔</i>
+    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true">🔔</i>
     <div><div class="k">إشعارات جديدة</div>
     <div class="v" style="color:<%= notifications.length ? 'var(--danger)' : 'var(--ok)' %>"><%= notifications.length %></div></div>
   </a>
 </div>
 
-<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger">🔔</i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn">⟳</i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger">⏱</i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info">▦</i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
+<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger" aria-hidden="true">🔔</i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn" aria-hidden="true">⟳</i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger" aria-hidden="true">⏱</i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info" aria-hidden="true">▦</i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
 
 <div class="stat-grid">
   <%# Finished work is not something anyone acts on from a dashboard, so the

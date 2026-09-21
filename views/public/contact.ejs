@@ -1,6 +1,6 @@
 <% pageTitle = lang === 'ar' ? 'اتصل بنا' : 'Contact us' %>
 <%- include('../partials/head') %>
-<%- include('../partials/header') %>
+<%- include('../partials/header') %><main>
 
 <% const ar = lang === 'ar'; %>
 
@@ -37,7 +37,7 @@
           <% } else { %>
             <div class="contact-card">
           <% } %>
-              <span class="cc-icon"><%= icons[c.kind] || '•' %></span>
+              <span class="cc-icon" aria-hidden="true"><%= icons[c.kind] || '•' %></span>
               <span class="cc-body">
                 <span class="cc-label"><%= c.label %></span>
                 <span class="cc-value num"><%= c.value %></span>
@@ -83,4 +83,4 @@
   </div>
 </section>
 
-<%- include('../partials/footer') %>
+</main><%- include('../partials/footer') %>

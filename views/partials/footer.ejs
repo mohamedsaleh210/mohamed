@@ -8,11 +8,11 @@
         <small style="color:#9fb0b5"><%= lang==='ar' ? site.tagline_ar : site.tagline_en %></small>
       </span>
       </div>
-      <p>منصة مصرية للخدمات القانونية والإدارية، تربط العميل بمقدم الخدمة وتوثق رحلة العمل حتى الإنجاز.</p>
+      <p><%= lang==='ar' ? 'منصة مصرية للخدمات القانونية والإدارية، تربط العميل بمقدم الخدمة وتوثق رحلة العمل حتى الإنجاز.' : 'An Egyptian platform for legal and administrative services, connecting the client with the service provider and documenting the work journey through to completion.' %></p>
     </div>
-    <div class="foot-column"><b>الخدمات</b><a href="/services">جميع الخدمات</a><%menuPages.slice(0,4).forEach(p=>{%><a href="/p/<%=p.slug%>"><%=p.name_ar%></a><%})%></div>
-    <div class="foot-column"><b>المنصة</b><a href="/track">تتبّع طلب</a><a href="/guides">دليل الاستخدام</a><a href="/faq">الأسئلة الشائعة</a><a href="/support">الدعم الفني</a></div>
-    <div class="foot-column"><b>تواصل معنا</b><%if(site.whatsapp){%><a dir="ltr" href="<%=waLink(site.whatsapp,'مرحباً')%>"><%=site.whatsapp%></a><%}%><%if(site.email){%><a dir="ltr" href="mailto:<%=site.email%>"><%=site.email%></a><%}%><a href="/contact">مواعيد وطرق التواصل</a>
+    <div class="foot-column"><b><%= lang==='ar' ? 'الخدمات' : 'Services' %></b><a href="/services"><%= lang==='ar' ? 'جميع الخدمات' : 'All services' %></a><%menuPages.slice(0,4).forEach(p=>{%><a href="/p/<%=p.slug%>"><%= lang==='ar' ? p.name_ar : (p.name_en||p.name_ar) %></a><%})%></div>
+    <div class="foot-column"><b><%= lang==='ar' ? 'المنصة' : 'Platform' %></b><a href="/track"><%= lang==='ar' ? 'تتبّع طلب' : 'Track a request' %></a><a href="/guides"><%= lang==='ar' ? 'دليل الاستخدام' : 'User guide' %></a><a href="/faq"><%= lang==='ar' ? 'الأسئلة الشائعة' : 'FAQ' %></a><a href="/support"><%= lang==='ar' ? 'الدعم الفني' : 'Technical support' %></a></div>
+    <div class="foot-column"><b><%= lang==='ar' ? 'تواصل معنا' : 'Contact us' %></b><%if(site.whatsapp){%><a dir="ltr" href="<%=waLink(site.whatsapp, lang==='ar' ? 'مرحباً' : 'Hello')%>"><%=site.whatsapp%></a><%}%><%if(site.email){%><a dir="ltr" href="mailto:<%=site.email%>"><%=site.email%></a><%}%><a href="/contact"><%= lang==='ar' ? 'مواعيد وطرق التواصل' : 'Hours & contact methods' %></a>
     <% if (socialLinks.length) { %>
         <div class="foot-social-title"><%= t.follow_us %></div>
         <div class="foot-social">

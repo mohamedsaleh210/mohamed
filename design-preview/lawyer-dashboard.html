@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحتي — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-5)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — لوحة المحامي (دور lawyer الحقيقي في سند)" data-en="Design preview — lawyer dashboard (Sanad's real lawyer role)">معاينة تصميم — لوحة المحامي (دور lawyer الحقيقي في سند)</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="who-text" data-ar="خالد سمير · محامي" data-en="Khaled Samir · Lawyer">خالد سمير · محامي</span><span class="avatar">خ</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link active" href="lawyer-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحتي" data-en="My dashboard">لوحتي</span></a></div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="أعمالي" data-en="My work">أعمالي</div>
+    <a class="side-link" href="requests.html"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="طلباتي" data-en="My requests">طلباتي</span></a>
+    <a class="side-link" href="cases.html"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="قضاياي" data-en="My cases">قضاياي</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg> <span data-ar="أجندة أعمالي" data-en="My agenda">أجندة أعمالي</span></a>
+  </div>
+  <div class="side-group"><a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="عهدتي ومصروفاتي" data-en="My custody & expenses">عهدتي ومصروفاتي</span></a></div>
+</aside>
+<main class="main">
+  <div class="page-head"><h1 data-ar="أهلًا خالد" data-en="Welcome, Khaled">أهلًا خالد</h1><p style="color:var(--color-text-muted)" data-ar="إليك أولوياتك اليوم." data-en="Here's what's on your plate today.">إليك أولوياتك اليوم.</p></div>
+
+  <div class="stat-grid" style="margin-bottom:var(--space-5)">
+    <div class="stat-card featured"><div><div class="label" data-ar="طلباتي المفتوحة" data-en="My open requests">طلباتي المفتوحة</div><div class="value">9</div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="قضاياي النشطة" data-en="My active cases">قضاياي النشطة</div><div class="value">5</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="مهام اليوم" data-en="Today's tasks">مهام اليوم</div><div class="value">4</div></div><span class="stat-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="مواعيد نهائية عاجلة" data-en="Urgent deadlines">مواعيد نهائية عاجلة</div><div class="value">2</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg></span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="طلباتي المعيَّنة" data-en="My assigned requests">طلباتي المعيَّنة</h3><a href="requests.html" class="btn btn-subtle btn-sm" data-ar="عرض الكل" data-en="View all">عرض الكل</a></div>
+        <div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="الطلب" data-en="Request">الطلب</th><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="الحالة" data-en="Status">الحالة</th><th data-ar="الموعد" data-en="Due">الموعد</th></tr></thead>
+          <tbody>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1048</span></td><td data-label="العميل">أحمد سعيد</td><td data-label="الحالة"><span class="badge badge-warning">بانتظار مستندات</span></td><td data-label="الموعد" class="num" style="color:var(--color-danger)">غدًا</td></tr>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1039</span></td><td data-label="العميل">شركة ألفا</td><td data-label="الحالة"><span class="badge badge-info">قيد المراجعة</span></td><td data-label="الموعد" class="num">3 أيام</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="مهام اليوم" data-en="Today's tasks">مهام اليوم</h3></div>
+        <div class="panel-body stack">
+          <label class="checkbox"><input type="checkbox" checked> <span style="text-decoration:line-through;color:var(--color-text-muted)" data-ar="مراجعة عقد شركة ألفا" data-en="Review Alpha Co. contract">مراجعة عقد شركة ألفا</span></label>
+          <label class="checkbox"><input type="checkbox"> <span data-ar="إعداد مذكرة الدفاع — قضية 2026/145" data-en="Prepare defense memo — case 2026/145">إعداد مذكرة الدفاع — قضية 2026/145</span></label>
+          <label class="checkbox"><input type="checkbox"> <span data-ar="الاتصال بالعميل أحمد سعيد" data-en="Call client Ahmed Saeed">الاتصال بالعميل أحمد سعيد</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="مواعيدي" data-en="My appointments">مواعيدي</h3></div>
+        <div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-danger"><svg class="icon-sm"><use href="assets/icons.svg#i-scale"/></svg></span><div><div class="notif-text"><b data-ar="جلسة — قضية 2026/145" data-en="Hearing — case 2026/145">جلسة — قضية 2026/145</b></div><div class="notif-time" data-ar="غدًا، 10:00 ص" data-en="Tomorrow, 10:00 AM">غدًا، 10:00 ص</div></div></div>
+          <div class="notif"><span class="notif-icon ic-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg></span><div><div class="notif-text" data-ar="اجتماع عميل — أحمد سعيد" data-en="Client meeting — Ahmed Saeed">اجتماع عميل — أحمد سعيد</div><div class="notif-time">2:30 م</div></div></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="إشعاراتي" data-en="My notifications">إشعاراتي</h3></div>
+        <div class="panel-body flush">
+          <div class="notif unread"><span class="notif-icon ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div><div class="notif-text" data-ar="مستند مطلوب من العميل" data-en="Document required from client">مستند مطلوب من العميل</div><div class="notif-time" data-ar="قبل 20 دقيقة" data-en="20 minutes ago">قبل 20 دقيقة</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

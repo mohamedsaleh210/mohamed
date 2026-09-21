@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-5)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — لوحة تحكم الأدمن" data-en="Design preview — admin dashboard">معاينة تصميم — لوحة تحكم الأدمن</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button>
+  <span class="brand"><span class="seal">س</span> <span data-ar="سند" data-en="Sanad">سند</span></span>
+  <span class="topbar-spacer"></span>
+  <div class="topbar-actions">
+    <button class="icon-btn" aria-label="بحث"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg></button>
+    <button class="icon-btn" aria-label="إشعارات"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button>
+    <span class="who"><span class="who-text" data-ar="آدم · أدمن" data-en="Adam · Admin">آدم · أدمن</span><span class="avatar">A</span></span>
+  </div>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group">
+    <a class="side-link active" href="#"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg> <span data-ar="المواعيد والاستشارات" data-en="Appointments">المواعيد والاستشارات</span></a>
+  </div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="إدارة الأعمال" data-en="Business">إدارة الأعمال</div>
+    <a class="side-link" href="requests.html"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات" data-en="Requests">الطلبات</span></a>
+    <a class="side-link" href="cases.html"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="القضايا" data-en="Cases">القضايا</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg> <span data-ar="الانتهاء والتجديد" data-en="Renewals">الانتهاء والتجديد<span class="badge badge-danger">24</span></span></a>
+  </div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="العملاء والموظفون" data-en="Clients & staff">العملاء والموظفون</div>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="الموظفون" data-en="Employees">الموظفون</span></a>
+  </div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div>
+    <a class="side-link" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات" data-en="Revenue">الإيرادات</span></a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-head">
+    <div class="title-row">
+      <div><h1 data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</h1><p data-ar="أهلًا آدم، إليك ملخص اليوم." data-en="Welcome, Adam — here's today's summary.">أهلًا آدم، إليك ملخص اليوم.</p></div>
+      <div class="flex">
+        <select class="select" style="min-width:140px"><option data-ar="هذا الشهر" data-en="This month">هذا الشهر</option></select>
+        <button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="طلب جديد" data-en="New request">طلب جديد</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-grid" style="margin-bottom:var(--space-5)">
+    <div class="stat-card featured"><div><div class="label" data-ar="رصيد الخزنة الحالي" data-en="Current treasury balance">رصيد الخزنة الحالي</div><div class="value num">262,200 <small style="font-size:13px">EGP</small></div><div class="delta up" data-ar="↑ 4.2٪" data-en="↑ 4.2%">↑ 4.2٪</div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="إجمالي الإيرادات" data-en="Total revenue">إجمالي الإيرادات</div><div class="value num">217,885</div></div><span class="stat-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="كل الطلبات" data-en="All requests">كل الطلبات</div><div class="value num">57</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span></div>
+    <div class="stat-card"><div><div class="label" data-ar="إشعارات جديدة" data-en="New alerts">إشعارات جديدة</div><div class="value num">8</div><div class="delta down" data-ar="يتطلب انتباه" data-en="Needs attention">يتطلب انتباه</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg></span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="طلبات تحتاج انتباهًا" data-en="Requests needing attention">طلبات تحتاج انتباهًا</h3><a href="requests.html" class="btn btn-subtle btn-sm" data-ar="عرض الكل" data-en="View all">عرض الكل</a></div>
+        <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
+          <thead><tr><th data-ar="الطلب" data-en="Request">الطلب</th><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="الحالة" data-en="Status">الحالة</th><th data-ar="المسؤول" data-en="Assignee">المسؤول</th></tr></thead>
+          <tbody>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1048</span> <span class="flag-urgent" data-ar="عاجل" data-en="Urgent">عاجل</span></td><td data-label="العميل">أحمد سعيد</td><td data-label="الحالة"><span class="badge badge-warning">بانتظار مستندات</span></td><td data-label="المسؤول">سارة زكي</td></tr>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1047</span></td><td data-label="العميل">شركة الفا</td><td data-label="الحالة"><span class="badge badge-info">قيد المراجعة</span></td><td data-label="المسؤول">عمرو عوض</td></tr>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1044</span></td><td data-label="العميل">منى فتحي</td><td data-label="الحالة"><span class="badge badge-neutral">جديد</span></td><td data-label="المسؤول"><span style="color:var(--color-text-muted)" data-ar="غير معيَّن" data-en="Unassigned">غير معيَّن</span></td></tr>
+          </tbody>
+        </table></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="القضايا والمواعيد القريبة" data-en="Cases & upcoming deadlines">القضايا والمواعيد القريبة</h3></div>
+        <div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-danger"><svg class="icon-sm"><use href="assets/icons.svg#i-scale"/></svg></span><div><div class="notif-text"><b data-ar="قضية رقم 2026/145" data-en="Case #2026/145">قضية رقم 2026/145</b> — <span data-ar="جلسة نظر الدعوى" data-en="Court hearing">جلسة نظر الدعوى</span></div><div class="notif-time" data-ar="غدًا الساعة 10:00 ص" data-en="Tomorrow at 10:00 AM">غدًا الساعة 10:00 ص</div></div></div>
+          <div class="notif"><span class="notif-icon ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-clock"/></svg></span><div><div class="notif-text"><b data-ar="ترخيص تجاري" data-en="Commercial license">ترخيص تجاري</b> — <span data-ar="شركة بيتا" data-en="Beta Co.">شركة بيتا</span></div><div class="notif-time" data-ar="ينتهي خلال 5 أيام" data-en="Expires in 5 days">ينتهي خلال 5 أيام</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="مواعيد اليوم" data-en="Today's appointments">مواعيد اليوم</h3></div>
+        <div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg></span><div><div class="notif-text" data-ar="استشارة — خالد سمير" data-en="Consultation — Khaled Samir">استشارة — خالد سمير</div><div class="notif-time">11:30 ص</div></div></div>
+          <div class="notif"><span class="notif-icon ic-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg></span><div><div class="notif-text" data-ar="اجتماع عميل — شركة ألفا" data-en="Client meeting — Alpha Co.">اجتماع عميل — شركة ألفا</div><div class="notif-time">2:00 م</div></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="فريق العمل اليوم" data-en="Team overview today">فريق العمل اليوم</h3></div>
+        <div class="panel-body stack">
+          <div class="flex-between"><span style="font-size:13px" data-ar="سارة زكي — 6 مهام" data-en="Sara Zaki — 6 tasks">سارة زكي — 6 مهام</span><div class="progress" style="width:90px"><span style="width:70%"></span></div></div>
+          <div class="flex-between"><span style="font-size:13px" data-ar="عمرو عوض — 4 مهام" data-en="Amr Awad — 4 tasks">عمرو عوض — 4 مهام</span><div class="progress" style="width:90px"><span style="width:45%"></span></div></div>
+          <div class="flex-between"><span style="font-size:13px" data-ar="خالد سمير — 9 مهام" data-en="Khaled Samir — 9 tasks">خالد سمير — 9 مهام</span><div class="progress" style="width:90px"><span style="width:88%"></span></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="النشاط الأخير" data-en="Recent activity">النشاط الأخير</h3></div>
+        <div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-success"><svg class="icon-sm"><use href="assets/icons.svg#i-check-circle"/></svg></span><div><div class="notif-text" data-ar="سارة أغلقت الطلب SND-1042" data-en="Sara closed request SND-1042">سارة أغلقت الطلب SND-1042</div><div class="notif-time" data-ar="قبل 12 دقيقة" data-en="12 minutes ago">قبل 12 دقيقة</div></div></div>
+          <div class="notif"><span class="notif-icon ic-info"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg></span><div><div class="notif-text" data-ar="مستند جديد على SND-1048" data-en="New document on SND-1048">مستند جديد على SND-1048</div><div class="notif-time" data-ar="قبل ساعة" data-en="1 hour ago">قبل ساعة</div></div></div>
+        </div>
+      </div>
+
+      <div class="panel"><div class="panel-body">
+        <h3 style="margin-bottom:10px" data-ar="إجراءات سريعة" data-en="Quick actions">إجراءات سريعة</h3>
+        <div class="stack">
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="طلب جديد" data-en="New request">طلب جديد</span></button>
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg> <span data-ar="حجز موعد" data-en="Book appointment">حجز موعد</span></button>
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="إضافة عميل" data-en="Add client">إضافة عميل</span></button>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

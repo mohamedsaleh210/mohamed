@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سند — خدماتك القانونية والإدارية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:10px;font-size:13px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:6px 16px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.wa-float{position:fixed;bottom:22px;inset-inline-end:22px;width:52px;height:52px;border-radius:50%;background:#25d366;color:#fff;display:grid;place-items:center;box-shadow:var(--shadow-lg)}</style>
+</head>
+<body class="marketing">
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — الصفحة الرئيسية العامة" data-en="Design preview — public homepage">معاينة تصميم — الصفحة الرئيسية العامة</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+
+<header class="site-header"><div class="wrap">
+  <span style="display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--navy-800)"><span class="topbar .seal" style="width:38px;height:38px;border-radius:50%;border:2px solid var(--brass-500);display:grid;place-items:center;color:var(--brass-700)">س</span> سند</span>
+  <nav class="site-nav" id="siteNav">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn btn-icon btn-subtle" id="mobileNavClose" aria-label="إغلاق القائمة"><svg class="icon"><use href="assets/icons.svg#i-x"/></svg></button></div>
+    <a href="#" class="active" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+    <a href="#services" data-ar="خدماتنا" data-en="Services">خدماتنا</a>
+    <a href="#" data-ar="من نحن" data-en="About">من نحن</a>
+    <a href="#" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a>
+    <a href="#" style="margin-top:10px" data-ar="دخول" data-en="Login">دخول</a>
+  </nav>
+  <div class="mobile-nav-scrim" id="mobileNavScrim"></div>
+  <div class="nav-cta">
+    <span class="lang-switch js-lang-toggle" role="button" tabindex="0"><svg class="icon-sm"><use href="assets/icons.svg#i-globe"/></svg> <span data-lang-label>English</span></span>
+    <a class="btn btn-ghost btn-sm" data-ar="دخول" data-en="Login">دخول</a>
+    <a class="btn btn-accent btn-sm" data-ar="اطلب خدمة" data-en="Request service">اطلب خدمة</a>
+    <button class="public-menu-btn" id="publicMenuBtn" aria-label="فتح القائمة"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button>
+  </div>
+</div></header>
+
+<section class="hero"><div class="wrap grid grid-2">
+  <div>
+    <span class="eyebrow" data-ar="منصة موحّدة للخدمات القانونية والإدارية" data-en="A unified legal & administrative services platform">منصة موحّدة للخدمات القانونية والإدارية</span>
+    <h1 data-ar="تراخيصك وعقودك… ونحن نتكفّل بالإجراءات" data-en="Your licenses and contracts — we handle the paperwork">تراخيصك وعقودك… ونحن نتكفّل بالإجراءات</h1>
+    <p class="lead" data-ar="خدمات قانونية وإدارية موثوقة للأفراد والشركات، من طلب واحد حتى الإنجاز، بمتابعة واضحة في كل خطوة." data-en="Trusted legal and administrative services for individuals and companies, from a single request through to completion, with clear tracking at every step.">خدمات قانونية وإدارية موثوقة للأفراد والشركات، من طلب واحد حتى الإنجاز، بمتابعة واضحة في كل خطوة.</p>
+    <div class="hero-actions">
+      <a class="btn btn-accent btn-lg" data-ar="ابدأ طلبك الآن" data-en="Start your request">ابدأ طلبك الآن<svg class="icon"><use href="assets/icons.svg#i-arrow-end"/></svg></a>
+      <a class="btn btn-ghost btn-lg" data-ar="استكشف الخدمات" data-en="Explore services">استكشف الخدمات</a>
+    </div>
+    <div class="hero-trust">
+      <span class="item"><svg class="icon"><use href="assets/icons.svg#i-shield"/></svg> <span data-ar="مكاتب معتمدة" data-en="Verified offices">مكاتب معتمدة</span></span>
+      <span class="item"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="دعم متخصص" data-en="Specialist support">دعم متخصص</span></span>
+      <span class="item"><svg class="icon"><use href="assets/icons.svg#i-lock"/></svg> <span data-ar="بيانات آمنة" data-en="Secure data">بيانات آمنة</span></span>
+    </div>
+  </div>
+  <div class="hero-art">
+    <div class="flex-between" style="margin-bottom:14px"><strong data-ar="متابعة الطلب" data-en="Track your request">متابعة الطلب</strong><span class="badge badge-info" data-ar="قيد التنفيذ" data-en="In progress">قيد التنفيذ</span></div>
+    <div class="num" style="font-weight:800;font-size:20px;color:var(--navy-800)">SND-26-1048</div>
+    <p style="font-size:13px;color:var(--color-text-muted)" data-ar="تأسيس شركة ذات مسؤولية محدودة" data-en="LLC company formation">تأسيس شركة ذات مسؤولية محدودة</p>
+    <div class="progress" style="margin:14px 0"><span style="width:75%"></span></div>
+    <div class="steps"><div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="استلام" data-en="Received">استلام</span></div><div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="مراجعة" data-en="Review">مراجعة</span></div><div class="step current"><div class="dot">3</div><span data-ar="تنفيذ" data-en="Executing">تنفيذ</span></div><div class="step"><div class="dot">4</div><span data-ar="إنجاز" data-en="Done">إنجاز</span></div></div>
+  </div>
+</div></section>
+
+<div class="wrap"><div class="search-panel">
+  <div class="search-input"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg><input class="input" data-ar-ph="ما الخدمة التي تبحث عنها؟" data-en-ph="What service are you looking for?" placeholder="ما الخدمة التي تبحث عنها؟"></div>
+  <select class="select"><option data-ar="اختر القطاع" data-en="Choose a sector">اختر القطاع</option></select>
+  <button class="btn btn-primary" data-ar="بحث" data-en="Search">بحث</button>
+</div></div>
+
+<section class="section" id="services"><div class="wrap">
+  <div class="section-head">
+    <span class="eyebrow" data-ar="الفئات" data-en="Categories">الفئات</span>
+    <h2 data-ar="اختر ما يخصك" data-en="Choose what fits you">اختر ما يخصك</h2>
+    <p data-ar="حلول مصممة للأفراد والمكاتب والشركات والقطاعات." data-en="Solutions designed for individuals, offices, companies and sectors.">حلول مصممة للأفراد والمكاتب والشركات والقطاعات.</p>
+  </div>
+  <div class="grid grid-3">
+    <a class="category-card"><span class="stat-icon ic-accent" style="width:48px;height:48px"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><h4 data-ar="الأفراد" data-en="Individuals">الأفراد</h4><p style="color:var(--color-text-muted);font-size:14px" data-ar="توثيق، تأشيرات، إقامات" data-en="Notarization, visas, residency">توثيق، تأشيرات، إقامات</p><span class="count" data-ar="24 خدمة" data-en="24 services">24 خدمة</span></a>
+    <a class="category-card"><span class="stat-icon ic-info" style="width:48px;height:48px"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><h4 data-ar="الشركات" data-en="Companies">الشركات</h4><p style="color:var(--color-text-muted);font-size:14px" data-ar="تأسيس، تراخيص، عقود" data-en="Formation, licensing, contracts">تأسيس، تراخيص، عقود</p><span class="count" data-ar="31 خدمة" data-en="31 services">31 خدمة</span></a>
+    <a class="category-card"><span class="stat-icon ic-success" style="width:48px;height:48px"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span><h4 data-ar="الاستشارات القانونية" data-en="Legal consultations">الاستشارات القانونية</h4><p style="color:var(--color-text-muted);font-size:14px" data-ar="جلسات مع محامين معتمدين" data-en="Sessions with licensed lawyers">جلسات مع محامين معتمدين</p><span class="count" data-ar="12 خدمة" data-en="12 services">12 خدمة</span></a>
+  </div>
+</div></section>
+
+<section class="section" style="background:#fff"><div class="wrap">
+  <div class="section-head"><span class="eyebrow" data-ar="الأكثر طلبًا" data-en="Most requested">الأكثر طلبًا</span><h2 data-ar="خدماتنا الأكثر طلبًا" data-en="Our most requested services">خدماتنا الأكثر طلبًا</h2></div>
+  <div class="grid grid-3">
+    <div class="service-card"><span class="cat" data-ar="شركات" data-en="Companies">شركات</span><h4 data-ar="تأسيس شركة ذات مسؤولية محدودة" data-en="LLC formation">تأسيس شركة ذات مسؤولية محدودة</h4><p data-ar="تنفيذ ومتابعة حتى الإنجاز." data-en="End-to-end execution and follow-up.">تنفيذ ومتابعة حتى الإنجاز.</p><a class="go" data-ar="اطلب الآن" data-en="Request now">اطلب الآن <svg class="icon-sm"><use href="assets/icons.svg#i-arrow-end"/></svg></a></div>
+    <div class="service-card"><span class="cat" data-ar="عقود" data-en="Contracts">عقود</span><h4 data-ar="توثيق عقد إيجار" data-en="Lease notarization">توثيق عقد إيجار</h4><p data-ar="توثيق رسمي معتمد." data-en="Officially certified notarization.">توثيق رسمي معتمد.</p><a class="go" data-ar="اطلب الآن" data-en="Request now">اطلب الآن <svg class="icon-sm"><use href="assets/icons.svg#i-arrow-end"/></svg></a></div>
+    <div class="service-card"><span class="cat" data-ar="تراخيص" data-en="Licensing">تراخيص</span><h4 data-ar="تجديد سجل تجاري" data-en="Commercial registry renewal">تجديد سجل تجاري</h4><p data-ar="متابعة كاملة للمستندات." data-en="Full document follow-up.">متابعة كاملة للمستندات.</p><a class="go" data-ar="اطلب الآن" data-en="Request now">اطلب الآن <svg class="icon-sm"><use href="assets/icons.svg#i-arrow-end"/></svg></a></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><span class="eyebrow" data-ar="شركاء موثوقون" data-en="Trusted partners">شركاء موثوقون</span><h2 data-ar="مكاتب وشركات مميزة" data-en="Featured offices & companies">مكاتب وشركات مميزة</h2></div>
+  <div class="grid grid-3">
+    <div class="company-card"><span class="company-logo">ج</span><div><h4 style="margin:0" data-ar="مكتب الجرواني للمحاماة" data-en="Gerwani Law Office">مكتب الجرواني للمحاماة</h4><span style="font-size:13px;color:var(--color-text-muted)" data-ar="قانون الشركات" data-en="Corporate law">قانون الشركات</span></div></div>
+    <div class="company-card"><span class="company-logo">ن</span><div><h4 style="margin:0" data-ar="نور للاستشارات" data-en="Nour Consulting">نور للاستشارات</h4><span style="font-size:13px;color:var(--color-text-muted)" data-ar="استشارات إدارية" data-en="Admin consulting">استشارات إدارية</span></div></div>
+    <div class="company-card"><span class="company-logo">ط</span><div><h4 style="margin:0" data-ar="مكتب طارق الديب" data-en="Tarek Eldeeb Office">مكتب طارق الديب</h4><span style="font-size:13px;color:var(--color-text-muted)" data-ar="توثيق وتراخيص" data-en="Notarization & licensing">توثيق وتراخيص</span></div></div>
+  </div>
+</div></section>
+
+<div class="stats-band"><div class="wrap grid grid-4">
+  <div><strong>4,800+</strong><span data-ar="طلب مُنجز" data-en="Requests completed">طلب مُنجز</span></div>
+  <div><strong>120+</strong><span data-ar="مكتب شريك" data-en="Partner offices">مكتب شريك</span></div>
+  <div><strong>98٪</strong><span data-ar="رضا العملاء" data-en="Client satisfaction">رضا العملاء</span></div>
+  <div><strong>&lt;24س</strong><span data-ar="متوسط زمن الرد" data-en="Avg. response time">متوسط زمن الرد</span></div>
+</div></div>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><span class="eyebrow" data-ar="آلية العمل" data-en="How it works">آلية العمل</span><h2 data-ar="كيف تعمل سند؟" data-en="How does Sanad work?">كيف تعمل سند؟</h2></div>
+  <div class="journey">
+    <div class="jstep"><span class="num">1</span><h4 data-ar="اختر الخدمة" data-en="Choose a service">اختر الخدمة</h4><p style="color:var(--color-text-muted);font-size:14px;margin:0" data-ar="اقرأ التفاصيل والمتطلبات." data-en="Read the details and requirements.">اقرأ التفاصيل والمتطلبات.</p></div>
+    <div class="jstep"><span class="num">2</span><h4 data-ar="أرسل البيانات" data-en="Submit your info">أرسل البيانات</h4><p style="color:var(--color-text-muted);font-size:14px;margin:0" data-ar="ارفع المستندات المطلوبة." data-en="Upload the required documents.">ارفع المستندات المطلوبة.</p></div>
+    <div class="jstep"><span class="num">3</span><h4 data-ar="تابع الإجراءات" data-en="Track progress">تابع الإجراءات</h4><p style="color:var(--color-text-muted);font-size:14px;margin:0" data-ar="إشعارات ومواعيد واضحة." data-en="Clear notifications and timelines.">إشعارات ومواعيد واضحة.</p></div>
+    <div class="jstep"><span class="num">4</span><h4 data-ar="استلم النتيجة" data-en="Get your result">استلم النتيجة</h4><p style="color:var(--color-text-muted);font-size:14px;margin:0" data-ar="نتيجة موثقة وتقييم." data-en="Documented result and rating.">نتيجة موثقة وتقييم.</p></div>
+  </div>
+</div></section>
+
+<section class="section" style="background:#fff"><div class="wrap">
+  <div class="section-head"><span class="eyebrow" data-ar="آراء العملاء" data-en="Testimonials">آراء العملاء</span><h2 data-ar="ماذا يقول عملاؤنا" data-en="What our clients say">ماذا يقول عملاؤنا</h2></div>
+  <div class="grid grid-3">
+    <div class="testimonial"><p data-ar="&quot;تابعت طلبي أول بأول، وكل خطوة كانت واضحة من البداية للنهاية.&quot;" data-en="&quot;I tracked my request step by step — every stage was clear from start to finish.&quot;">"تابعت طلبي أول بأول، وكل خطوة كانت واضحة من البداية للنهاية."</p><footer>أحمد سعيد<span data-ar="صاحب شركة" data-en="Business owner">صاحب شركة</span></footer></div>
+    <div class="testimonial"><p data-ar="&quot;فريق محترف ورد سريع على كل استفسار.&quot;" data-en="&quot;A professional team with a fast response to every query.&quot;">"فريق محترف ورد سريع على كل استفسار."</p><footer>سارة زكي<span data-ar="مديرة مكتب" data-en="Office manager">مديرة مكتب</span></footer></div>
+    <div class="testimonial"><p data-ar="&quot;وضوح في المستندات المطلوبة من أول مرة، وفّر عليّ وقت كتير.&quot;" data-en="&quot;Clarity on required documents from the first try saved me a lot of time.&quot;">"وضوح في المستندات المطلوبة من أول مرة، وفّر عليّ وقت كتير."</p><footer>منى فتحي<span data-ar="عميلة فردية" data-en="Individual client">عميلة فردية</span></footer></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="wrap">
+  <div class="section-head"><span class="eyebrow" data-ar="الباقات" data-en="Packages">الباقات</span><h2 data-ar="باقات تناسب مكتبك" data-en="Packages that fit your office">باقات تناسب مكتبك</h2></div>
+  <div class="grid grid-3">
+    <div class="plan-card"><h4 data-ar="أساسية" data-en="Basic">أساسية</h4><div class="price">499<span> ج.م/شهر</span></div><ul>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="حتى 50 طلبًا شهريًا" data-en="Up to 50 requests/mo">حتى 50 طلبًا شهريًا</span></li>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="موظفان" data-en="2 staff seats">موظفان</span></li>
+    </ul><button class="btn btn-ghost btn-block" data-ar="ابدأ الآن" data-en="Get started">ابدأ الآن</button></div>
+    <div class="plan-card featured"><span class="badge badge-accent" style="position:absolute;top:-12px" data-ar="الأكثر شيوعًا" data-en="Most popular">الأكثر شيوعًا</span><h4 data-ar="احترافية" data-en="Professional">احترافية</h4><div class="price">1,299<span> ج.م/شهر</span></div><ul>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="طلبات غير محدودة" data-en="Unlimited requests">طلبات غير محدودة</span></li>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="10 موظفين" data-en="10 staff seats">10 موظفين</span></li>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="بوابة عملاء" data-en="Customer portal">بوابة عملاء</span></li>
+    </ul><button class="btn btn-accent btn-block" data-ar="ابدأ الآن" data-en="Get started">ابدأ الآن</button></div>
+    <div class="plan-card"><h4 data-ar="مؤسسية" data-en="Enterprise">مؤسسية</h4><div class="price" data-ar="حسب الطلب" data-en="Custom">حسب الطلب</div><ul>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="فروع متعددة" data-en="Multi-branch">فروع متعددة</span></li>
+      <li><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="دعم مخصص" data-en="Dedicated support">دعم مخصص</span></li>
+    </ul><button class="btn btn-ghost btn-block" data-ar="تواصل معنا" data-en="Contact us">تواصل معنا</button></div>
+  </div>
+</div></section>
+
+<section class="section" style="background:#fff"><div class="wrap" style="max-width:760px">
+  <div class="section-head"><span class="eyebrow" data-ar="الأسئلة الشائعة" data-en="FAQ">الأسئلة الشائعة</span><h2 data-ar="أسئلة متكررة" data-en="Frequently asked questions">أسئلة متكررة</h2></div>
+  <details class="faq-item" open><summary><span data-ar="كيف أتابع حالة طلبي؟" data-en="How do I track my request?">كيف أتابع حالة طلبي؟</span><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-down"/></svg></summary><p data-ar="من صفحة تتبع الطلب باستخدام رقم المرجع ورقم الهاتف." data-en="From the tracking page, using your reference number and phone.">من صفحة تتبع الطلب باستخدام رقم المرجع ورقم الهاتف.</p></details>
+  <details class="faq-item"><summary><span data-ar="هل يمكنني الدفع إلكترونيًا؟" data-en="Can I pay online?">هل يمكنني الدفع إلكترونيًا؟</span><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-down"/></svg></summary><p data-ar="نعم، عبر بوابات الدفع المعتمدة داخل بوابة العميل." data-en="Yes, via the supported payment gateways inside the customer portal.">نعم، عبر بوابات الدفع المعتمدة داخل بوابة العميل.</p></details>
+</div></section>
+
+<div class="wrap"><div class="final-cta">
+  <h2 style="color:#fff" data-ar="جاهز تبدأ طلبك؟" data-en="Ready to start your request?">جاهز تبدأ طلبك؟</h2>
+  <p data-ar="فريقنا جاهز لمساعدتك خلال دقائق." data-en="Our team is ready to help within minutes.">فريقنا جاهز لمساعدتك خلال دقائق.</p>
+  <a class="btn btn-accent btn-lg" data-ar="اطلب خدمة الآن" data-en="Request a service now">اطلب خدمة الآن</a>
+</div></div>
+
+<footer class="site-footer"><div class="wrap grid grid-4">
+  <div><span style="display:flex;align-items:center;gap:8px;color:#fff;font-weight:800;font-size:17px;margin-bottom:10px"><span style="width:30px;height:30px;border-radius:50%;border:2px solid var(--brass-500);display:grid;place-items:center;color:var(--brass-500);font-size:13px">س</span>سند</span><p style="font-size:13px" data-ar="منصة موحّدة للخدمات القانونية والإدارية." data-en="A unified legal and administrative services platform.">منصة موحّدة للخدمات القانونية والإدارية.</p></div>
+  <div><h5 data-ar="الخدمات" data-en="Services">الخدمات</h5><a href="#" data-ar="جميع الخدمات" data-en="All services">جميع الخدمات</a><a href="#" data-ar="الشركات" data-en="Companies">الشركات</a></div>
+  <div><h5 data-ar="المنصة" data-en="Platform">المنصة</h5><a href="#" data-ar="تتبّع طلب" data-en="Track a request">تتبّع طلب</a><a href="#" data-ar="الأسئلة الشائعة" data-en="FAQ">الأسئلة الشائعة</a></div>
+  <div><h5 data-ar="تواصل معنا" data-en="Contact us">تواصل معنا</h5><a href="#" dir="ltr" style="text-align:right">+20 100 000 0000</a><a href="#">info@sanad.eg</a></div>
+</div>
+<div class="footer-bottom" data-ar="© 2026 سند — جميع الحقوق محفوظة" data-en="© 2026 Sanad — All rights reserved">© 2026 سند — جميع الحقوق محفوظة</div>
+</footer>
+<a class="wa-float" aria-label="WhatsApp"><svg class="icon"><use href="assets/icons.svg#i-message"/></svg></a>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

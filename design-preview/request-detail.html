@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SND-1048 — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.7fr 1fr;gap:var(--space-5)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.timeline{display:grid;gap:0}
+.tl-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--color-border)}
+.tl-item:last-child{border-bottom:0}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none}
+.doc-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--color-border)}
+.doc-row:last-child{border-bottom:0}
+.msg{background:var(--color-bg-app);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:10px;font-size:14px}
+.msg.staff{background:var(--color-accent-soft)}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — تفاصيل الطلب" data-en="Design preview — request detail">معاينة تصميم — تفاصيل الطلب</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="إدارة الأعمال" data-en="Business">إدارة الأعمال</div><a class="side-link active" href="requests.html"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات" data-en="Requests">الطلبات</span></a><a class="side-link" href="cases.html"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="القضايا" data-en="Cases">القضايا</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><a href="requests.html" data-ar="الطلبات" data-en="Requests">الطلبات</a><span class="sep">/</span><span class="current num">SND-1048</span></nav>
+
+  <div class="page-head"><div class="title-row">
+    <div class="flex" style="gap:14px"><h1 class="num" style="margin:0">SND-1048</h1><span class="badge badge-warning" style="font-size:13px">بانتظار مستندات</span><span class="flag-urgent" data-ar="عاجل" data-en="Urgent">عاجل</span></div>
+    <div class="flex">
+      <button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-print"/></svg> <span data-ar="طباعة" data-en="Print">طباعة</span></button>
+      <button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg> <span data-ar="تحديث الحالة" data-en="Update status">تحديث الحالة</span></button>
+    </div>
+  </div></div>
+  <div class="steps" style="max-width:520px;margin-bottom:var(--space-6)">
+    <div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="استلام" data-en="Received">استلام</span></div>
+    <div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="مراجعة" data-en="Review">مراجعة</span></div>
+    <div class="step current"><div class="dot">3</div><span data-ar="تنفيذ" data-en="Executing">تنفيذ</span></div>
+    <div class="step"><div class="dot">4</div><span data-ar="إنجاز" data-en="Done">إنجاز</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="stack">
+      <div class="tabs" data-tabs="rd">
+        <span class="tab active" data-tab="a" data-ar="التفاصيل" data-en="Details">التفاصيل</span>
+        <span class="tab" data-tab="b" data-ar="المستندات" data-en="Documents">المستندات<span class="badge badge-neutral">3</span></span>
+        <span class="tab" data-tab="c" data-ar="الرسائل" data-en="Messages">الرسائل<span class="badge badge-danger">2</span></span>
+        <span class="tab" data-tab="d" data-ar="السجل الزمني" data-en="Timeline">السجل الزمني</span>
+      </div>
+
+      <div data-tab-panel="a" data-tab-group="rd">
+        <div class="panel"><div class="panel-head"><h3 data-ar="بيانات العميل" data-en="Client">بيانات العميل</h3></div>
+          <div class="panel-body grid grid-2">
+            <div><span class="field-label" data-ar="الاسم" data-en="Name">الاسم</span><p style="margin:0">أحمد سعيد محمود</p></div>
+            <div><span class="field-label" data-ar="الهاتف" data-en="Phone">الهاتف</span><p class="num" style="margin:0" dir="ltr">+20 100 123 4567</p></div>
+            <div><span class="field-label" data-ar="الخدمة" data-en="Service">الخدمة</span><p style="margin:0" data-ar="تأسيس شركة ذات مسؤولية محدودة" data-en="LLC company formation">تأسيس شركة ذات مسؤولية محدودة</p></div>
+            <div><span class="field-label" data-ar="تاريخ الطلب" data-en="Request date">تاريخ الطلب</span><p class="num" style="margin:0">15 سبتمبر 2026</p></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:var(--space-5)"><div class="panel-head"><h3 data-ar="الموظفون المعيَّنون والمهام" data-en="Assigned staff & tasks">الموظفون المعيَّنون والمهام</h3></div>
+          <div class="panel-body stack">
+            <div class="flex-between"><span class="flex"><span class="avatar" style="width:30px;height:30px;background:var(--brass-500);color:var(--navy-800);border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800">س</span> سارة زكي — <span data-ar="مراجعة المستندات" data-en="Document review">مراجعة المستندات</span></span><span class="badge badge-success" data-ar="مكتملة" data-en="Done">مكتملة</span></div>
+            <div class="flex-between"><span class="flex"><span class="avatar" style="width:30px;height:30px;background:var(--brass-500);color:var(--navy-800);border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800">ع</span> عمرو عوض — <span data-ar="التقديم للجهة الحكومية" data-en="Government filing">التقديم للجهة الحكومية</span></span><span class="badge badge-warning" data-ar="جارية" data-en="In progress">جارية</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-tab-panel="b" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body flush">
+          <div class="doc-row" style="padding-inline:var(--space-5)"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-file"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="البطاقة الشخصية" data-en="National ID">البطاقة الشخصية</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="PDF · 1.2MB" data-en="PDF · 1.2MB">PDF · 1.2MB</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+          <div class="doc-row" style="padding-inline:var(--space-5)"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-file"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="عقد التأسيس" data-en="Formation contract">عقد التأسيس</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="PDF · 850KB" data-en="PDF · 850KB">PDF · 850KB</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+          <div class="doc-row" style="padding-inline:var(--space-5)"><span class="badge badge-danger" style="padding:8px" data-ar="مطلوب" data-en="Required">مطلوب</span><div style="flex:1"><b style="font-size:14px" data-ar="إيصال سداد الرسوم" data-en="Fee payment receipt">إيصال سداد الرسوم</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="لم يُرفع بعد" data-en="Not uploaded yet">لم يُرفع بعد</div></div><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-upload"/></svg> <span data-ar="طلب من العميل" data-en="Request from client">طلب من العميل</span></button></div>
+        </div></div>
+      </div>
+
+      <div data-tab-panel="c" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body">
+          <div class="msg staff"><b style="font-size:13px" data-ar="سارة زكي (المكتب)" data-en="Sara Zaki (office)">سارة زكي (المكتب)</b><p style="margin:4px 0 0" data-ar="تم استلام المستندات، جارٍ المراجعة." data-en="Documents received, review in progress.">تم استلام المستندات، جارٍ المراجعة.</p></div>
+          <div class="msg"><b style="font-size:13px" data-ar="أحمد سعيد (العميل)" data-en="Ahmed Saeed (client)">أحمد سعيد (العميل)</b><p style="margin:4px 0 0" data-ar="هل يمكنني رفع الإيصال غدًا؟" data-en="Can I upload the receipt tomorrow?">هل يمكنني رفع الإيصال غدًا؟</p></div>
+          <div class="field" style="margin-top:14px"><textarea class="textarea" style="min-height:70px" data-ar-ph="اكتب ردًا…" data-en-ph="Write a reply…" placeholder="اكتب ردًا…"></textarea></div>
+          <button class="btn btn-primary btn-sm" data-ar="إرسال" data-en="Send">إرسال</button>
+        </div></div>
+      </div>
+
+      <div data-tab-panel="d" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body">
+          <div class="timeline">
+            <div class="tl-item"><span class="tl-dot ic-success"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></span><div><b style="font-size:14px" data-ar="تم استلام الطلب" data-en="Request received">تم استلام الطلب</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="15 سبتمبر، 9:02 ص" data-en="Sep 15, 9:02 AM">15 سبتمبر، 9:02 ص</div></div></div>
+            <div class="tl-item"><span class="tl-dot ic-info"><svg class="icon-sm"><use href="assets/icons.svg#i-user"/></svg></span><div><b style="font-size:14px" data-ar="عُيِّن لسارة زكي" data-en="Assigned to Sara Zaki">عُيِّن لسارة زكي</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="15 سبتمبر، 9:40 ص" data-en="Sep 15, 9:40 AM">15 سبتمبر، 9:40 ص</div></div></div>
+            <div class="tl-item"><span class="tl-dot ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div><b style="font-size:14px" data-ar="طُلب مستند إضافي" data-en="Additional document requested">طُلب مستند إضافي</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="18 سبتمبر، 11:15 ص" data-en="Sep 18, 11:15 AM">18 سبتمبر، 11:15 ص</div></div></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="ملخص الرسوم" data-en="Fee summary">ملخص الرسوم</h3></div>
+        <div class="panel-body stack">
+          <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="رسوم الخدمة" data-en="Service fee">رسوم الخدمة</span><span class="num" style="font-weight:700">3,500</span></div>
+          <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="رسوم حكومية" data-en="Government fees">رسوم حكومية</span><span class="num" style="font-weight:700">1,200</span></div>
+          <div class="flex-between" style="border-top:1px solid var(--color-border);padding-top:10px"><span style="font-weight:800" data-ar="الإجمالي" data-en="Total">الإجمالي</span><span class="num" style="font-weight:800;color:var(--navy-800)">4,700 EGP</span></div>
+          <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="المدفوع" data-en="Paid">المدفوع</span><span class="badge badge-success" data-ar="2,000 مدفوعة" data-en="2,000 paid">2,000 مدفوعة</span></div>
+        </div>
+        <div class="panel-foot"><button class="btn btn-ghost btn-sm btn-block" data-ar="تسجيل دفعة" data-en="Record a payment">تسجيل دفعة</button></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="إجراءات" data-en="Actions">إجراءات</h3></div>
+        <div class="panel-body stack">
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="إعادة تعيين" data-en="Reassign">إعادة تعيين</span></button>
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-clock"/></svg> <span data-ar="تمديد الموعد" data-en="Extend deadline">تمديد الموعد</span></button>
+          <button class="btn btn-danger btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-x-circle"/></svg> <span data-ar="إلغاء الطلب" data-en="Cancel request">إلغاء الطلب</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

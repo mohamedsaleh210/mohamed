@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام سند البصري — معاينة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>
+  .ds-section{padding:var(--space-10) 0;border-bottom:1px solid var(--color-border)}
+  .ds-section h2{display:flex;align-items:center;gap:10px}
+  .ds-section h2 .n{width:34px;height:34px;border-radius:50%;background:var(--navy-800);color:#fff;display:grid;place-items:center;font-size:var(--text-sm)}
+  .ds-row{display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;margin:var(--space-4) 0}
+  .ds-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:var(--weight-bold);text-transform:uppercase;letter-spacing:.04em;margin-bottom:var(--space-2);display:block}
+  .swatch{width:100%;border-radius:var(--radius-md);padding:var(--space-4);color:#fff;min-height:84px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:var(--shadow-xs)}
+  .swatch small{opacity:.85;font-weight:var(--weight-regular)}
+  .ds-toc{position:sticky;top:calc(var(--topbar-h) + 12px);background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);font-size:var(--text-sm)}
+  .ds-toc a{display:block;padding:6px 4px;color:var(--color-text-muted);border-radius:6px}
+  .ds-toc a:hover{color:var(--navy-800);background:var(--color-bg-app)}
+  .ds-shell{display:grid;grid-template-columns:220px 1fr;gap:var(--space-8);align-items:start;max-width:var(--container-max);margin:0 auto;padding:var(--space-8) var(--space-6)}
+  @media (max-width:900px){.ds-shell{grid-template-columns:1fr}.ds-toc{position:static}}
+  .type-sample{border-bottom:1px dashed var(--color-border);padding:var(--space-3) 0}
+  .type-sample .meta{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:4px;font-family:var(--font-mono)}
+  .ratio-table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+  .ratio-table th,.ratio-table td{padding:9px 12px;border-bottom:1px solid var(--color-border);text-align:start}
+  .ratio-table td.pass{color:var(--color-success);font-weight:700}
+  .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:var(--space-3)}
+  .icon-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:11px;color:var(--color-text-muted)}
+  .icon-tile .icon{width:24px;height:24px;color:var(--navy-800)}
+  .demo-frame{border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);background:var(--color-bg-app)}
+  .hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:10px;font-size:13px}
+  .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:var(--radius-full);padding:6px 16px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+</style>
+</head>
+<body>
+
+<div class="hero-preview-bar">
+  <span data-ar="معاينة تصميم غير مطبّقة على المنتج — Phase 1" data-en="Design preview, not applied to the product — Phase 1">معاينة تصميم غير مطبّقة على المنتج — Phase 1</span>
+  <button id="langToggle"><span data-lang-label>English</span></button>
+</div>
+
+<header class="topbar">
+  <span class="brand"><span class="seal">س</span> <span data-ar="نظام سند البصري" data-en="Sanad Design System">نظام سند البصري</span></span>
+</header>
+
+<div class="ds-shell">
+  <nav class="ds-toc" aria-label="TOC">
+    <a href="#colors" data-ar="الألوان" data-en="Colors">الألوان</a>
+    <a href="#type" data-ar="الطباعة" data-en="Typography">الطباعة</a>
+    <a href="#spacing" data-ar="المسافات" data-en="Spacing">المسافات</a>
+    <a href="#radius" data-ar="الانحناءات" data-en="Radius">الانحناءات</a>
+    <a href="#shadow" data-ar="الظلال" data-en="Elevation">الظلال</a>
+    <a href="#icons" data-ar="الأيقونات" data-en="Icons">الأيقونات</a>
+    <a href="#buttons" data-ar="الأزرار" data-en="Buttons">الأزرار</a>
+    <a href="#forms" data-ar="النماذج" data-en="Forms">النماذج</a>
+    <a href="#badges" data-ar="الشارات والحالات" data-en="Badges & status">الشارات والحالات</a>
+    <a href="#cards" data-ar="البطاقات" data-en="Cards">البطاقات</a>
+    <a href="#alerts" data-ar="التنبيهات" data-en="Alerts">التنبيهات</a>
+    <a href="#nav" data-ar="التنقل" data-en="Navigation">التنقل</a>
+    <a href="#tables" data-ar="الجداول" data-en="Tables">الجداول</a>
+    <a href="#overlays" data-ar="النوافذ المنبثقة" data-en="Dialogs & dropdowns">النوافذ المنبثقة</a>
+    <a href="#states" data-ar="حالات فارغة/تحميل" data-en="Empty & loading">حالات فارغة/تحميل</a>
+    <a href="#shell" data-ar="القوالب" data-en="Shell patterns">القوالب</a>
+  </nav>
+
+  <main>
+    <h1 data-ar="نظام سند البصري" data-en="The Sanad Design System">نظام سند البصري</h1>
+    <p style="color:var(--color-text-muted);max-width:60ch" data-ar="تطوير لهوية سند الحالية (الأزرق الداكن والذهبي) وليس استبدالًا لها. كل قيمة لونية هنا مُختبرة بمعيار WCAG AA." data-en="An evolution of Sanad's existing identity (deep navy + brass) — not a replacement. Every color value here is WCAG AA verified.">تطوير لهوية سند الحالية (الأزرق الداكن والذهبي) وليس استبدالًا لها. كل قيمة لونية هنا مُختبرة بمعيار WCAG AA.</p>
+
+    <!-- ============================================================ COLORS -->
+    <section class="ds-section" id="colors">
+      <h2><span class="n">1</span> <span data-ar="لوحة الألوان" data-en="Color palette">لوحة الألوان</span></h2>
+      <span class="ds-label" data-ar="الأساسية — أزرق داكن احترافي" data-en="Primary — professional navy">الأساسية</span>
+      <div class="grid grid-4">
+        <div class="swatch" style="background:#0b2029"><small>navy-900</small>#0b2029</div>
+        <div class="swatch" style="background:#12303a"><small>navy-800 · primary</small>#12303a</div>
+        <div class="swatch" style="background:#1c4351"><small>navy-700</small>#1c4351</div>
+        <div class="swatch" style="background:#2c5568"><small>navy-600</small>#2c5568</div>
+      </div>
+      <span class="ds-label" style="margin-top:var(--space-5)" data-ar="الذهبي — لمسة راقية مقيَّدة" data-en="Brass — restrained premium accent">الذهبي</span>
+      <div class="grid grid-4">
+        <div class="swatch" style="background:#856527"><small>brass-700 · text-safe</small>#856527</div>
+        <div class="swatch" style="background:#c9a24b;color:#12303a"><small>brass-500 · accent bg</small>#c9a24b</div>
+        <div class="swatch" style="background:#dfc383;color:#12303a"><small>brass-300</small>#dfc383</div>
+        <div class="swatch" style="background:#f4eedd;color:#12303a;border:1px solid #e3e8e6"><small>brass-100</small>#f4eedd</div>
+      </div>
+      <span class="ds-label" style="margin-top:var(--space-5)" data-ar="الحياد والخلفيات" data-en="Neutrals & surfaces">الحياد والخلفيات</span>
+      <div class="grid grid-4">
+        <div class="swatch" style="background:#f7f4ee;color:#12303a;border:1px solid #e3e8e6"><small>paper-50 · marketing bg</small>#f7f4ee</div>
+        <div class="swatch" style="background:#eef1f0;color:#12303a;border:1px solid #e3e8e6"><small>gray-50 · app bg</small>#eef1f0</div>
+        <div class="swatch" style="background:#ffffff;color:#12303a;border:1px solid #e3e8e6"><small>white · surface</small>#ffffff</div>
+        <div class="swatch" style="background:#5c6b73"><small>slate-600 · muted text</small>#5c6b73</div>
+      </div>
+      <span class="ds-label" style="margin-top:var(--space-5)" data-ar="الدلالية — نجاح / تنبيه / خطأ / معلومة" data-en="Semantic — success / warning / danger / info">الدلالية</span>
+      <div class="grid grid-4">
+        <div class="swatch" style="background:#227a4a"><small>success-700</small>#227a4a</div>
+        <div class="swatch" style="background:#94571a"><small>warning-700</small>#94571a</div>
+        <div class="swatch" style="background:#b3423e"><small>danger-700</small>#b3423e</div>
+        <div class="swatch" style="background:#2568a0"><small>info-700</small>#2568a0</div>
+      </div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="نسب التباين (WCAG AA)" data-en="Contrast ratios (WCAG AA)">نسب التباين (WCAG AA)</h3>
+      <table class="ratio-table">
+        <thead><tr><th data-ar="العنصر" data-en="Pairing">العنصر</th><th data-ar="النسبة" data-en="Ratio">النسبة</th><th data-ar="الحد الأدنى" data-en="Required">الحد الأدنى</th></tr></thead>
+        <tbody>
+          <tr><td>navy-800 / white</td><td class="pass">13.9:1</td><td>4.5:1</td></tr>
+          <tr><td>ink-900 (body) / white</td><td class="pass">14.7:1</td><td>4.5:1</td></tr>
+          <tr><td>slate-600 (muted) / white</td><td class="pass">5.5:1</td><td>4.5:1</td></tr>
+          <tr><td>slate-600 (muted) / app bg</td><td class="pass">4.9:1</td><td>4.5:1</td></tr>
+          <tr><td>brass-700 (accent text) / white</td><td class="pass">5.4:1</td><td>4.5:1</td></tr>
+          <tr><td>navy-800 text / brass-500 bg (accent button)</td><td class="pass">5.8:1</td><td>4.5:1</td></tr>
+          <tr><td>white / success-700 solid</td><td class="pass">5.3:1</td><td>4.5:1</td></tr>
+          <tr><td>white / warning-700 solid</td><td class="pass">5.8:1</td><td>4.5:1</td></tr>
+          <tr><td>white / danger-700 solid</td><td class="pass">5.6:1</td><td>4.5:1</td></tr>
+          <tr><td>white / info-700 solid</td><td class="pass">5.9:1</td><td>4.5:1</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================================ TYPOGRAPHY -->
+    <section class="ds-section" id="type">
+      <h2><span class="n">2</span> <span data-ar="التسلسل الطباعي" data-en="Typographic hierarchy">التسلسل الطباعي</span></h2>
+      <p style="color:var(--color-text-muted)" data-ar="نُبقي على Tajawal — تعمل بالفعل جيدًا لكِلا اللغتين في سند اليوم؛ التغيير هنا هو تدرّج حجمي ونمط رسمي وليس خطًا جديدًا." data-en="Tajawal is kept — it already works well for both languages in production Sanad today; what changes here is a formal size/weight scale, not a new font.">نُبقي على Tajawal — تعمل بالفعل جيدًا لكِلا اللغتين في سند اليوم؛ التغيير هنا هو تدرّج حجمي ونمط رسمي وليس خطًا جديدًا.</p>
+      <div class="type-sample"><div style="font-size:var(--text-4xl);font-weight:800" data-ar="عنوان رئيسي" data-en="Display heading">عنوان رئيسي</div><div class="meta">--text-4xl · 800 · Heading / Hero</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-3xl);font-weight:800" data-ar="عنوان صفحة" data-en="Page title">عنوان صفحة</div><div class="meta">--text-3xl (38px) · 800 · H1</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-2xl);font-weight:800" data-ar="عنوان قسم" data-en="Section heading">عنوان قسم</div><div class="meta">--text-2xl (30px) · 800 · H2</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-xl);font-weight:700" data-ar="عنوان بطاقة" data-en="Card heading">عنوان بطاقة</div><div class="meta">--text-xl (24px) · 700 · H3</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-md);font-weight:700" data-ar="عنوان فرعي" data-en="Subheading">عنوان فرعي</div><div class="meta">--text-md (18px) · 700 · H4</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-base)" data-ar="نص أساسي للفقرات والمحتوى التشغيلي، بارتفاع سطر 1.7 لراحة القراءة العربية." data-en="Base body text for paragraphs and operational content, 1.7 line-height for comfortable Arabic reading.">نص أساسي للفقرات والمحتوى التشغيلي، بارتفاع سطر 1.7 لراحة القراءة العربية.</div><div class="meta">--text-base (16px) · 400 · body</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-sm);font-weight:700;color:var(--color-text-muted)" data-ar="تسمية حقل / واجهة" data-en="Field / UI label">تسمية حقل / واجهة</div><div class="meta">--text-sm (13.5px) · 700 · label</div></div>
+      <div class="type-sample"><div style="font-size:var(--text-xs);color:var(--color-text-muted)" data-ar="نص مساعد أو بيانات وصفية" data-en="Helper text / metadata">نص مساعد أو بيانات وصفية</div><div class="meta">--text-xs (12px) · 400 · caption</div></div>
+      <div class="type-sample"><div class="num" style="font-family:var(--font-mono);font-size:var(--text-lg)" dir="ltr">EGP 174,675.00 · REF SND-26-1048</div><div class="meta" data-ar="أرقام لاتينية دائمًا داخل نص عربي — نمط سند الحالي مُبقى عليه" data-en="Latin digits always inside Arabic text — the existing Sanad pattern, preserved">أرقام لاتينية دائمًا داخل نص عربي — نمط سند الحالي مُبقى عليه</div></div>
+    </section>
+
+    <!-- ============================================================ SPACING / RADIUS / SHADOW -->
+    <section class="ds-section" id="spacing">
+      <h2><span class="n">3</span> <span data-ar="مقياس المسافات (أساس 4px)" data-en="Spacing scale (4px base)">مقياس المسافات</span></h2>
+      <div class="ds-row">
+        <div style="display:flex;flex-direction:column;gap:6px" id="spacingSwatches"></div>
+      </div>
+    </section>
+    <section class="ds-section" id="radius">
+      <h2><span class="n">4</span> <span data-ar="مقياس الانحناءات" data-en="Radius scale">مقياس الانحناءات</span></h2>
+      <div class="ds-row">
+        <div class="swatch" style="background:var(--navy-800);width:110px;border-radius:var(--radius-sm)">8px<br><small>sm</small></div>
+        <div class="swatch" style="background:var(--navy-800);width:110px;border-radius:var(--radius-md)">12px<br><small>md</small></div>
+        <div class="swatch" style="background:var(--navy-800);width:110px;border-radius:var(--radius-lg)">16px<br><small>lg</small></div>
+        <div class="swatch" style="background:var(--navy-800);width:110px;border-radius:var(--radius-xl)">20px<br><small>xl</small></div>
+        <div class="swatch" style="background:var(--navy-800);width:110px;border-radius:var(--radius-full)">full<br><small>pill</small></div>
+      </div>
+    </section>
+    <section class="ds-section" id="shadow">
+      <h2><span class="n">5</span> <span data-ar="نظام الارتفاع (الظلال)" data-en="Elevation (shadows)">نظام الارتفاع</span></h2>
+      <div class="ds-row">
+        <div style="background:#fff;width:140px;height:90px;border-radius:12px;box-shadow:var(--shadow-xs);display:grid;place-items:center;font-size:12px">xs</div>
+        <div style="background:#fff;width:140px;height:90px;border-radius:12px;box-shadow:var(--shadow-sm);display:grid;place-items:center;font-size:12px">sm</div>
+        <div style="background:#fff;width:140px;height:90px;border-radius:12px;box-shadow:var(--shadow-md);display:grid;place-items:center;font-size:12px">md</div>
+        <div style="background:#fff;width:140px;height:90px;border-radius:12px;box-shadow:var(--shadow-lg);display:grid;place-items:center;font-size:12px">lg</div>
+        <div style="background:#fff;width:140px;height:90px;border-radius:12px;box-shadow:var(--shadow-focus);display:grid;place-items:center;font-size:12px" data-ar="حلقة التركيز" data-en="focus ring">حلقة التركيز</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ ICONS -->
+    <section class="ds-section" id="icons">
+      <h2><span class="n">6</span> <span data-ar="نظام الأيقونات — خطوط موحدة، بلا إيموجي" data-en="Icon system — consistent outline, no emoji">نظام الأيقونات</span></h2>
+      <div class="icon-grid" id="iconGrid"></div>
+    </section>
+
+    <!-- ============================================================ BUTTONS -->
+    <section class="ds-section" id="buttons">
+      <h2><span class="n">7</span> <span data-ar="الأزرار وكل حالاتها" data-en="Buttons & all states">الأزرار وكل حالاتها</span></h2>
+      <div class="ds-row">
+        <button class="btn btn-primary"><svg class="icon"><use href="assets/icons.svg#i-check"/></svg><span data-ar="أساسي" data-en="Primary">أساسي</span></button>
+        <button class="btn btn-accent"><span data-ar="ذهبي (إجراء رئيسي)" data-en="Accent (primary CTA)">ذهبي (إجراء رئيسي)</span></button>
+        <button class="btn btn-ghost"><span data-ar="ثانوي" data-en="Ghost">ثانوي</span></button>
+        <button class="btn btn-danger"><span data-ar="خطر" data-en="Danger">خطر</span></button>
+        <button class="btn btn-subtle"><span data-ar="خافت" data-en="Subtle">خافت</span></button>
+        <button class="btn btn-primary" disabled><span data-ar="معطّل" data-en="Disabled">معطّل</span></button>
+        <button class="btn btn-primary btn-loading"><span data-ar="جارٍ الحفظ" data-en="Saving">جارٍ الحفظ</span><svg class="icon spin"><use href="assets/icons.svg#i-spinner"/></svg></button>
+      </div>
+      <div class="ds-row">
+        <button class="btn btn-accent btn-lg" data-ar="كبير" data-en="Large">كبير</button>
+        <button class="btn btn-accent" data-ar="عادي" data-en="Default">عادي</button>
+        <button class="btn btn-accent btn-sm" data-ar="صغير" data-en="Small">صغير</button>
+        <button class="btn btn-ghost btn-icon"><svg class="icon"><use href="assets/icons.svg#i-edit"/></svg></button>
+        <button class="btn btn-ghost btn-icon"><svg class="icon"><use href="assets/icons.svg#i-print"/></svg></button>
+        <button class="btn btn-danger btn-icon"><svg class="icon"><use href="assets/icons.svg#i-trash"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============================================================ FORMS -->
+    <section class="ds-section" id="forms">
+      <h2><span class="n">8</span> <span data-ar="عناصر النماذج" data-en="Form controls">عناصر النماذج</span></h2>
+      <div class="grid grid-2">
+        <div class="field">
+          <label class="field-label field-required" data-ar="اسم العميل" data-en="Client name">اسم العميل</label>
+          <input class="input" data-ar-ph="اكتب الاسم" data-en-ph="Type the name" placeholder="اكتب الاسم">
+          <span class="field-help" data-ar="كما هو مكتوب في البطاقة الشخصية" data-en="As written on the ID">كما هو مكتوب في البطاقة الشخصية</span>
+        </div>
+        <div class="field has-error">
+          <label class="field-label field-required" data-ar="رقم الهاتف" data-en="Phone number">رقم الهاتف</label>
+          <input class="input" dir="ltr" style="text-align:left" value="0100">
+          <span class="field-error" data-ar="رقم الهاتف غير مكتمل" data-en="Phone number is incomplete">رقم الهاتف غير مكتمل</span>
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="نوع الخدمة" data-en="Service type">نوع الخدمة</label>
+          <select class="select"><option data-ar="تأسيس شركة" data-en="Company formation">تأسيس شركة</option><option data-ar="تجديد ترخيص" data-en="License renewal">تجديد ترخيص</option></select>
+        </div>
+        <div class="field">
+          <label class="field-label" data-ar="بحث عن طلب" data-en="Search a request">بحث عن طلب</label>
+          <div class="search-input"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg><input class="input" data-ar-ph="اسم العميل أو رقم الطلب" data-en-ph="Client name or request #" placeholder="اسم العميل أو رقم الطلب"></div>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label class="field-label" data-ar="ملاحظات" data-en="Notes">ملاحظات</label>
+          <textarea class="textarea" data-ar-ph="أي تفاصيل إضافية…" data-en-ph="Any extra detail…" placeholder="أي تفاصيل إضافية…"></textarea>
+        </div>
+      </div>
+
+      <div class="ds-row">
+        <label class="checkbox"><input type="checkbox" checked> <span data-ar="إرسال نسخة بالبريد" data-en="Email a copy">إرسال نسخة بالبريد</span></label>
+        <label class="checkbox"><input type="checkbox"> <span data-ar="طلب عاجل" data-en="Mark urgent">طلب عاجل</span></label>
+        <label class="radio"><input type="radio" name="ds-r" checked> <span data-ar="فرد" data-en="Individual">فرد</span></label>
+        <label class="radio"><input type="radio" name="ds-r"> <span data-ar="شركة" data-en="Company">شركة</span></label>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span></label>
+        <span style="font-size:13px;color:var(--color-text-muted)" data-ar="تفعيل تلقائي" data-en="Auto-enable">تفعيل تلقائي</span>
+      </div>
+
+      <div class="field" style="max-width:420px">
+        <label class="field-label" data-ar="الخدمات (اختيار متعدد)" data-en="Services (multi-select)">الخدمات (اختيار متعدد)</label>
+        <div class="multiselect">
+          <div class="chips">
+            <span class="chip">تأسيس شركة <button>×</button></span>
+            <span class="chip">توثيق عقد <button>×</button></span>
+            <span class="chip">ترخيص تجاري <button>×</button></span>
+          </div>
+          <input class="input ms-search" data-ar-ph="أضف خدمة…" data-en-ph="Add a service…" placeholder="أضف خدمة…">
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ BADGES -->
+    <section class="ds-section" id="badges">
+      <h2><span class="n">9</span> <span data-ar="الشارات وحالات الطلب" data-en="Badges & status chips">الشارات وحالات الطلب</span></h2>
+      <div class="ds-row">
+        <span class="badge badge-neutral"><span class="dot"></span> <span data-ar="جديد" data-en="New">جديد</span></span>
+        <span class="badge badge-info"><span class="dot"></span> <span data-ar="قيد المراجعة" data-en="In review">قيد المراجعة</span></span>
+        <span class="badge badge-accent"><span class="dot"></span> <span data-ar="بانتظار مستندات" data-en="Awaiting docs">بانتظار مستندات</span></span>
+        <span class="badge badge-warning"><span class="dot"></span> <span data-ar="بانتظار الدفع" data-en="Awaiting payment">بانتظار الدفع</span></span>
+        <span class="badge badge-success"><span class="dot"></span> <span data-ar="مكتمل" data-en="Completed">مكتمل</span></span>
+        <span class="badge badge-danger"><span class="dot"></span> <span data-ar="ملغى" data-en="Cancelled">ملغى</span></span>
+      </div>
+      <div class="ds-row">
+        <span class="badge badge-solid badge-success" data-ar="نشطة" data-en="Active">نشطة</span>
+        <span class="badge badge-solid badge-info" data-ar="مُقيّدة" data-en="Filed">مُقيّدة</span>
+        <span class="badge badge-solid badge-warning" data-ar="معلّقة" data-en="Suspended">معلّقة</span>
+        <span class="badge badge-solid badge-danger" data-ar="مغلقة" data-en="Closed">مغلقة</span>
+        <span class="flag-urgent" data-ar="عاجل" data-en="Urgent">عاجل</span>
+        <span class="chip"><svg class="icon-sm"><use href="assets/icons.svg#i-clock"/></svg> <span data-ar="متبقٍ يومان" data-en="2 days left">متبقٍ يومان</span></span>
+      </div>
+    </section>
+
+    <!-- ============================================================ CARDS -->
+    <section class="ds-section" id="cards">
+      <h2><span class="n">10</span> <span data-ar="البطاقات وبطاقات المؤشرات" data-en="Panels & KPI cards">البطاقات وبطاقات المؤشرات</span></h2>
+      <div class="stat-grid" style="margin-bottom:var(--space-6)">
+        <div class="stat-card featured">
+          <div><div class="label" data-ar="رصيد الخزنة" data-en="Treasury balance">رصيد الخزنة</div><div class="value num">262,200</div><div class="delta up" data-ar="↑ 4.2٪ عن الشهر الماضي" data-en="↑ 4.2% vs last month">↑ 4.2٪ عن الشهر الماضي</div></div>
+          <span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span>
+        </div>
+        <div class="stat-card">
+          <div><div class="label" data-ar="إجمالي الطلبات" data-en="Total requests">إجمالي الطلبات</div><div class="value num">57</div></div>
+          <span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span>
+        </div>
+        <div class="stat-card">
+          <div><div class="label" data-ar="إشعارات جديدة" data-en="New alerts">إشعارات جديدة</div><div class="value num">8</div><div class="delta down" data-ar="يتطلب انتباه" data-en="Needs attention">يتطلب انتباه</div></div>
+          <span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg></span>
+        </div>
+        <div class="stat-card">
+          <div><div class="label" data-ar="مواعيد اليوم" data-en="Today's appointments">مواعيد اليوم</div><div class="value num">4</div></div>
+          <span class="stat-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg></span>
+        </div>
+      </div>
+      <div class="panel" style="max-width:420px">
+        <div class="panel-head"><h3 data-ar="لوحة قياسية" data-en="Standard panel">لوحة قياسية</h3><button class="btn btn-subtle btn-sm" data-ar="عرض الكل" data-en="View all">عرض الكل</button></div>
+        <div class="panel-body" data-ar="محتوى اللوحة يظهر هنا بنفس النمط المستخدم في كل شاشات سند التشغيلية." data-en="Panel content sits here, the same pattern used across every operational Sanad screen.">محتوى اللوحة يظهر هنا بنفس النمط المستخدم في كل شاشات سند التشغيلية.</div>
+        <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="إلغاء" data-en="Cancel">إلغاء</button><button class="btn btn-accent btn-sm" data-ar="حفظ" data-en="Save">حفظ</button></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ ALERTS -->
+    <section class="ds-section" id="alerts">
+      <h2><span class="n">11</span> <span data-ar="التنبيهات" data-en="Alerts">التنبيهات</span></h2>
+      <div class="stack">
+        <div class="alert alert-info" role="status"><svg class="icon"><use href="assets/icons.svg#i-info"/></svg><div><strong data-ar="معلومة" data-en="Info">معلومة</strong><p data-ar="سيتم تحديث الأسعار بداية الشهر القادم." data-en="Pricing updates take effect next month.">سيتم تحديث الأسعار بداية الشهر القادم.</p></div></div>
+        <div class="alert alert-success" role="status"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg><div><strong data-ar="تم الحفظ" data-en="Saved">تم الحفظ</strong><p data-ar="تم حفظ بيانات الطلب بنجاح." data-en="The request was saved successfully.">تم حفظ بيانات الطلب بنجاح.</p></div></div>
+        <div class="alert alert-warning" role="status"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg><div><strong data-ar="تنبيه" data-en="Warning">تنبيه</strong><p data-ar="الترخيص على وشك الانتهاء خلال 5 أيام." data-en="The license expires in 5 days.">الترخيص على وشك الانتهاء خلال 5 أيام.</p></div></div>
+        <div class="alert alert-danger" role="alert"><svg class="icon"><use href="assets/icons.svg#i-x-circle"/></svg><div><strong data-ar="تعذّر الحفظ" data-en="Save failed">تعذّر الحفظ</strong><p data-ar="تحقق من الحقول المطلوبة وحاول مرة أخرى." data-en="Check the required fields and try again.">تحقق من الحقول المطلوبة وحاول مرة أخرى.</p></div></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ NAV PATTERNS -->
+    <section class="ds-section" id="nav">
+      <h2><span class="n">12</span> <span data-ar="التنقل: فتات الخبز والتبويبات والفلاتر والترقيم" data-en="Navigation: breadcrumbs, tabs, filters, pagination">التنقل</span></h2>
+      <nav class="breadcrumbs">
+        <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a>
+        <span class="sep">/</span><a href="#" data-ar="الطلبات" data-en="Requests">الطلبات</a>
+        <span class="sep">/</span><span class="current num">SND-26-1048</span>
+      </nav>
+      <div class="tabs" data-tabs="ds-demo">
+        <span class="tab active" data-tab="a" data-ar="التفاصيل" data-en="Details">التفاصيل</span>
+        <span class="tab" data-tab="b" data-ar="المستندات" data-en="Documents">المستندات<span class="badge badge-neutral">4</span></span>
+        <span class="tab" data-tab="c" data-ar="السجل" data-en="Timeline">السجل</span>
+      </div>
+      <div class="filter-pills">
+        <span class="filter-pill active" data-ar="الكل" data-en="All">الكل</span>
+        <span class="filter-pill" data-ar="آخر 7 أيام" data-en="Last 7 days">آخر 7 أيام</span>
+        <span class="filter-pill" data-ar="آخر 30 يومًا" data-en="Last 30 days">آخر 30 يومًا</span>
+        <span class="filter-pill urgent" data-ar="🔴 عاجل" data-en="Urgent">عاجل</span>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-field"><span class="field-label" data-ar="الحالة" data-en="Status">الحالة</span><select class="select"><option data-ar="كل الحالات" data-en="All statuses">كل الحالات</option></select></div>
+        <div class="filter-field"><span class="field-label" data-ar="من تاريخ" data-en="From">من تاريخ</span><input class="input" type="date"></div>
+        <div class="filter-field"><span class="field-label" data-ar="إلى تاريخ" data-en="To">إلى تاريخ</span><input class="input" type="date"></div>
+        <button class="btn btn-ghost"><svg class="icon"><use href="assets/icons.svg#i-filter"/></svg><span data-ar="فلترة" data-en="Filter">فلترة</span></button>
+      </div>
+      <nav class="pg-nav">
+        <button class="pg" disabled><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-start"/></svg></button>
+        <button class="pg active">1</button><button class="pg">2</button><button class="pg">3</button>
+        <span class="pg gap">…</span><button class="pg">12</button>
+        <button class="pg"><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-end"/></svg></button>
+      </nav>
+    </section>
+
+    <!-- ============================================================ TABLES -->
+    <section class="ds-section" id="tables">
+      <h2><span class="n">13</span> <span data-ar="الجداول — وتحويلها لبطاقات على الجوال" data-en="Tables — and their mobile card behavior">الجداول</span></h2>
+      <div class="table-wrap panel">
+        <table class="tbl responsive">
+          <thead><tr><th data-ar="الطلب" data-en="Request">الطلب</th><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="الحالة" data-en="Status">الحالة</th><th data-ar="المسؤول" data-en="Assignee">المسؤول</th><th data-ar="آخر تحديث" data-en="Updated">آخر تحديث</th></tr></thead>
+          <tbody>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1048</span></td><td data-label="العميل">أحمد سعيد</td><td data-label="الحالة"><span class="badge badge-warning">بانتظار مستندات</span></td><td data-label="المسؤول">سارة زكي</td><td data-label="آخر تحديث" class="num">21 سبتمبر</td></tr>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1047</span></td><td data-label="العميل">شركة الفا</td><td data-label="الحالة"><span class="badge badge-info">قيد المراجعة</span></td><td data-label="المسؤول">عمرو عوض</td><td data-label="آخر تحديث" class="num">20 سبتمبر</td></tr>
+            <tr><td data-label="الطلب"><span class="row-link num">SND-1046</span></td><td data-label="العميل">منى فتحي</td><td data-label="الحالة"><span class="badge badge-success">مكتمل</span></td><td data-label="المسؤول">خالد سمير</td><td data-label="آخر تحديث" class="num">19 سبتمبر</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="field-help" style="margin-top:8px" data-ar="أعد الحجم لعرض أقل من 760px لرؤية تحويل الجدول إلى بطاقات — نفس آلية admin.css الحالية بالضبط." data-en="Resize below 760px to see the table collapse into cards — the exact same mechanism already in production admin.css.">أعد الحجم لعرض أقل من 760px لرؤية تحويل الجدول إلى بطاقات — نفس آلية admin.css الحالية بالضبط.</p>
+    </section>
+
+    <!-- ============================================================ OVERLAYS -->
+    <section class="ds-section" id="overlays">
+      <h2><span class="n">14</span> <span data-ar="النوافذ المنبثقة والقوائم" data-en="Dialogs & dropdowns">النوافذ المنبثقة والقوائم</span></h2>
+      <div class="ds-row">
+        <button class="btn btn-accent" data-dialog-open="demoDialog"><span data-ar="فتح نافذة تأكيد" data-en="Open confirm dialog">فتح نافذة تأكيد</span></button>
+        <div class="dropdown">
+          <button class="btn btn-ghost" data-dropdown-trigger><span data-ar="إجراءات" data-en="Actions">إجراءات</span><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+          <div class="dropdown-menu">
+            <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg> <span data-ar="تعديل" data-en="Edit">تعديل</span></a>
+            <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-print"/></svg> <span data-ar="طباعة" data-en="Print">طباعة</span></a>
+            <div class="div"></div>
+            <button><svg class="icon-sm" style="color:var(--color-danger)"><use href="assets/icons.svg#i-trash"/></svg> <span data-ar="حذف" data-en="Delete" style="color:var(--color-danger)">حذف</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="scrim" id="dialogScrim"></div>
+      <div class="dialog" id="demoDialog" role="dialog" aria-modal="true">
+        <div class="dialog-head"><h3 data-ar="تأكيد الإجراء" data-en="Confirm action">تأكيد الإجراء</h3><button class="btn btn-icon btn-subtle" data-dialog-close><svg class="icon"><use href="assets/icons.svg#i-x"/></svg></button></div>
+        <div class="dialog-body" data-ar="هل تريد بالتأكيد إغلاق هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء." data-en="Are you sure you want to close this request? This cannot be undone.">هل تريد بالتأكيد إغلاق هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.</div>
+        <div class="dialog-foot"><button class="btn btn-ghost" data-dialog-close data-ar="إلغاء" data-en="Cancel">إلغاء</button><button class="btn btn-danger" data-dialog-close data-ar="إغلاق الطلب" data-en="Close request">إغلاق الطلب</button></div>
+      </div>
+      <div class="panel" style="max-width:420px;margin-top:var(--space-6)">
+        <div class="panel-head"><h3 data-ar="الإشعارات" data-en="Notifications">الإشعارات</h3></div>
+        <div class="panel-body flush">
+          <div class="notif unread"><span class="notif-icon ic-danger"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div><div class="notif-text" data-ar="طلب عاجل بانتظار التعيين" data-en="Urgent request awaiting assignment">طلب عاجل بانتظار التعيين</div><div class="notif-time" data-ar="قبل 10 دقائق" data-en="10 minutes ago">قبل 10 دقائق</div></div></div>
+          <div class="notif"><span class="notif-icon ic-success"><svg class="icon-sm"><use href="assets/icons.svg#i-check-circle"/></svg></span><div><div class="notif-text" data-ar="تمت الموافقة على الدفعة" data-en="Payment approved">تمت الموافقة على الدفعة</div><div class="notif-time" data-ar="قبل ساعة" data-en="1 hour ago">قبل ساعة</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ EMPTY / LOADING -->
+    <section class="ds-section" id="states">
+      <h2><span class="n">15</span> <span data-ar="الحالات الفارغة والتحميل" data-en="Empty & loading states">الحالات الفارغة والتحميل</span></h2>
+      <div class="grid grid-2">
+        <div class="panel"><div class="empty-state">
+          <svg class="icon-lg"><use href="assets/icons.svg#i-folder"/></svg>
+          <h4 data-ar="لا توجد نتائج" data-en="No results">لا توجد نتائج</h4>
+          <p style="max-width:34ch" data-ar="لا توجد طلبات مطابقة لعوامل الفلترة الحالية." data-en="No requests match the current filters.">لا توجد طلبات مطابقة لعوامل الفلترة الحالية.</p>
+          <button class="btn btn-ghost btn-sm" data-ar="مسح الفلاتر" data-en="Clear filters">مسح الفلاتر</button>
+        </div></div>
+        <div class="panel"><div class="panel-body stack">
+          <div class="flex"><div class="skeleton" style="width:40px;height:40px;border-radius:50%"></div><div style="flex:1" class="stack"><div class="skeleton" style="height:14px;width:60%"></div><div class="skeleton" style="height:11px;width:40%"></div></div></div>
+          <div class="skeleton" style="height:14px;width:90%"></div>
+          <div class="skeleton" style="height:14px;width:75%"></div>
+          <div class="flex" style="margin-top:8px"><div class="spinner"></div><span style="font-size:13px;color:var(--color-text-muted)" data-ar="جارٍ التحميل…" data-en="Loading…">جارٍ التحميل…</span></div>
+        </div></div>
+      </div>
+      <div class="stack" style="max-width:420px;margin-top:var(--space-6)">
+        <span class="field-label" data-ar="مؤشر التقدم / الخطوات" data-en="Progress / steps">مؤشر التقدم / الخطوات</span>
+        <div class="progress"><span style="width:62%"></span></div>
+        <div class="steps" style="margin-top:14px">
+          <div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="الطلب" data-en="Request">الطلب</span></div>
+          <div class="step done"><div class="dot">2</div><span data-ar="المراجعة" data-en="Review">المراجعة</span></div>
+          <div class="step current"><div class="dot">3</div><span data-ar="التنفيذ" data-en="In progress">التنفيذ</span></div>
+          <div class="step"><div class="dot">4</div><span data-ar="الإنجاز" data-en="Done">الإنجاز</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ SHELL PATTERNS -->
+    <section class="ds-section" style="border-bottom:0" id="shell">
+      <h2><span class="n">16</span> <span data-ar="قوالب الهيكل: الشريط الجانبي وأعلى الصفحة والتنقل على الجوال" data-en="Shell patterns: sidebar, topbar, mobile nav">قوالب الهيكل</span></h2>
+      <p style="color:var(--color-text-muted)" data-ar="مطابقة لآلية admin_nav.ejs الحالية — قائمة جانبية ثابتة أعلى 1000px، درج قابل للسحب تحتها." data-en="Matches the existing admin_nav.ejs mechanism — a docked sidebar above 1000px, a slide-in drawer below it.">مطابقة لآلية admin_nav.ejs الحالية — قائمة جانبية ثابتة أعلى 1000px، درج قابل للسحب تحتها.</p>
+      <div class="demo-frame" style="overflow:hidden;padding:0">
+        <div style="display:flex;height:340px">
+          <aside style="width:220px;background:var(--navy-900);color:#dfe7e9;padding:16px;flex:none">
+            <div class="side-link active"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></div>
+            <div class="side-link"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات" data-en="Requests">الطلبات</span></div>
+            <div class="side-link"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="القضايا" data-en="Cases">القضايا</span></div>
+            <div class="side-link"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></div>
+          </aside>
+          <div style="flex:1;background:var(--color-bg-app);padding:16px">
+            <div class="topbar" style="border-radius:10px;margin-bottom:12px"><span class="brand"><span class="seal">س</span></span><span class="topbar-spacer"></span><span class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></span><span class="avatar">A</span></div>
+            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="stat-card"><div><div class="label">KPI</div><div class="value">128</div></div></div>
+              <div class="stat-card"><div><div class="label">KPI</div><div class="value">54</div></div></div>
+              <div class="stat-card"><div><div class="label">KPI</div><div class="value">9</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:20px" data-ar="ملاحظة القياس المتجاوب: نفس تجربة الجوال الحالية بالضبط — زر همبرغر، درج ينزلق من الحافة الصحيحة حسب الاتجاه، طبقة تعتيم خلفية، وحبس تركيز لوحة المفاتيح." data-en="Responsive note: the exact same mobile experience as today — hamburger button, drawer sliding from the correct edge per direction, background scrim, keyboard focus trap.">ملاحظة القياس المتجاوب: نفس تجربة الجوال الحالية بالضبط — زر همبرغر، درج ينزلق من الحافة الصحيحة حسب الاتجاه، طبقة تعتيم خلفية، وحبس تركيز لوحة المفاتيح.</p>
+    </section>
+
+  </main>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  // spacing scale swatches
+  var space = [['1','4px'],['2','8px'],['3','12px'],['4','16px'],['5','20px'],['6','24px'],['8','32px'],['10','40px'],['12','48px'],['16','64px']];
+  document.getElementById('spacingSwatches').innerHTML = space.map(function(s){
+    return '<div style="display:flex;align-items:center;gap:12px"><div style="width:'+s[1]+';height:20px;background:var(--brass-500);border-radius:4px"></div><code style="font-size:12px;color:var(--color-text-muted)">--space-'+s[0]+' · '+s[1]+'</code></div>';
+  }).join('');
+  // icon grid
+  var icons = ['i-home','i-grid','i-list','i-briefcase','i-calendar','i-clock','i-wallet','i-chart','i-users','i-user','i-folder','i-file','i-bell','i-search','i-filter','i-settings','i-logout','i-menu','i-x','i-chevron-down','i-plus','i-check','i-check-circle','i-x-circle','i-alert-triangle','i-info','i-eye','i-lock','i-mail','i-phone','i-building','i-message','i-download','i-upload','i-paperclip','i-print','i-edit','i-trash','i-gauge','i-receipt','i-scale','i-shield','i-globe'];
+  document.getElementById('iconGrid').innerHTML = icons.map(function(i){
+    return '<div class="icon-tile"><svg class="icon"><use href="assets/icons.svg#'+i+'"/></svg>'+i.replace('i-','')+'</div>';
+  }).join('');
+</script>
+</body>
+</html>

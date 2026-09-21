@@ -1,0 +1,124 @@
+/* ==========================================================================
+   Sanad Design System — Tokens (Phase 1 preview)
+   Evolves the existing Sanad palette (admin.css / style.css --ink/--brass/
+   --paper/--muted) rather than replacing it. Every text/background pairing
+   below is WCAG AA verified (>=4.5:1 normal text, >=3:1 large text/UI) —
+   see design-preview/README.md for the full contrast table.
+   ========================================================================== */
+
+:root{
+  /* ---- primitives -------------------------------------------------- */
+  --navy-900:#0b2029;
+  --navy-800:#12303a;   /* = existing --ink, unchanged */
+  --navy-700:#1c4351;   /* = existing --ink-3 */
+  --navy-600:#2c5568;   /* new: lighter navy for secondary surfaces */
+  --navy-500:#3f6b7d;
+
+  --brass-700:#856527;  /* = current --brass-deep (fixed in Phase 0B) */
+  --brass-500:#c9a24b;  /* = existing --brass, unchanged */
+  --brass-300:#dfc383;
+  --brass-100:#f4eedd;  /* = existing --brass-soft */
+
+  --paper-50:#f7f4ee;   /* = existing --paper */
+  --gray-50:#eef1f0;    /* = existing --bg */
+  --gray-100:#e3e8e6;   /* = existing --line */
+  --gray-200:#cfd7d5;
+  --white:#ffffff;
+
+  --ink-900:#1e2a30;    /* = existing --text */
+  --slate-600:#5c6b73;  /* = current --muted (Phase 0B fixed) */
+  --slate-400:#8b979d;  /* decorative/placeholder only — never real text */
+
+  --success-700:#227a4a; --success-50:#e7f6ee;
+  --warning-700:#94571a; --warning-50:#fdf3e3;
+  --danger-700:#b3423e;  --danger-50:#fdeceb;
+  --info-700:#2568a0;    --info-50:#e8f1f9;
+
+  /* ---- semantic ------------------------------------------------------ */
+  --color-primary:var(--navy-800);
+  --color-primary-hover:var(--navy-700);
+  --color-primary-contrast:var(--white);
+
+  --color-accent-bg:var(--brass-500);      /* brass as a background/fill */
+  --color-accent-bg-hover:var(--brass-700);
+  --color-accent-text:var(--brass-700);    /* brass as text — AA safe    */
+  --color-accent-soft:var(--brass-100);
+
+  --color-bg-marketing:var(--paper-50);    /* public site canvas        */
+  --color-bg-app:var(--gray-50);           /* operational app canvas    */
+  --color-surface:var(--white);
+  --color-surface-sunken:var(--gray-50);
+
+  --color-text:var(--ink-900);
+  --color-text-strong:var(--navy-800);
+  --color-text-muted:var(--slate-600);
+  --color-text-on-dark:var(--white);
+  --color-text-on-accent:var(--navy-800);  /* dark text on brass — 5.8:1 */
+
+  --color-border:var(--gray-100);
+  --color-border-strong:var(--gray-200);
+
+  --color-success:var(--success-700); --color-success-bg:var(--success-50);
+  --color-warning:var(--warning-700); --color-warning-bg:var(--warning-50);
+  --color-danger:var(--danger-700);   --color-danger-bg:var(--danger-50);
+  --color-info:var(--info-700);       --color-info-bg:var(--info-50);
+
+  --color-focus-ring:rgba(201,162,75,.45);
+
+  /* ---- typography ------------------------------------------------- */
+  /* Tajawal already carries both scripts well in production Sanad and
+     tested legibly for Arabic; kept rather than adding a second web font
+     purely for a "premium" feel — see README for the reasoning. */
+  --font-family:'Tajawal',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+
+  --text-xs:.75rem;      /* 12   */
+  --text-sm:.844rem;     /* 13.5 */
+  --text-base:1rem;      /* 16   */
+  --text-md:1.125rem;    /* 18   */
+  --text-lg:1.25rem;     /* 20   */
+  --text-xl:1.5rem;      /* 24   */
+  --text-2xl:1.875rem;   /* 30   */
+  --text-3xl:2.375rem;   /* 38   */
+  --text-4xl:clamp(2rem,4vw,3rem); /* 32-48, fluid */
+
+  --leading-tight:1.25;
+  --leading-normal:1.5;
+  --leading-relaxed:1.7; /* Arabic body copy — matches existing Sanad */
+
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-bold:700;
+  --weight-black:800;
+
+  /* ---- spacing (4px base) ------------------------------------------ */
+  --space-1:.25rem;  --space-2:.5rem;  --space-3:.75rem; --space-4:1rem;
+  --space-5:1.25rem; --space-6:1.5rem; --space-8:2rem;   --space-10:2.5rem;
+  --space-12:3rem;   --space-16:4rem;  --space-20:5rem;
+
+  /* ---- radius -------------------------------------------------------- */
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+  --radius-full:999px;
+
+  /* ---- elevation ----------------------------------------------------- */
+  --shadow-xs:0 1px 2px rgba(18,48,58,.06);
+  --shadow-sm:0 2px 6px rgba(18,48,58,.08);
+  --shadow-md:0 8px 24px rgba(18,48,58,.10);
+  --shadow-lg:0 20px 48px rgba(18,48,58,.16);
+  --shadow-focus:0 0 0 3px var(--color-focus-ring);
+
+  /* ---- layout -------------------------------------------------------- */
+  --sidebar-w:260px;
+  --topbar-h:60px;
+  --container-max:1280px;
+  --icon-size:20px;
+}
+
+/* Dark navy surfaces (sidebar, hero) get their own text/border tokens so
+   components don't need ad-hoc overrides. */
+.on-dark{
+  --color-text:var(--white);
+  --color-text-muted:#aebdc4;
+  --color-border:rgba(255,255,255,.14);
+  --color-surface:rgba(255,255,255,.06);
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الطلبات — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — إدارة الطلبات" data-en="Design preview — requests management">معاينة تصميم — إدارة الطلبات</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button>
+  <span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span>
+  <div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div>
+</header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group">
+    <a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a>
+  </div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="إدارة الأعمال" data-en="Business">إدارة الأعمال</div>
+    <a class="side-link active" href="requests.html"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات" data-en="Requests">الطلبات</span></a>
+    <a class="side-link" href="cases.html"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="القضايا" data-en="Cases">القضايا</span></a>
+  </div>
+  <div class="side-group">
+    <div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div>
+    <a class="side-link" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a>
+  </div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الطلبات" data-en="Requests">الطلبات</span></nav>
+  <div class="page-head"><div class="title-row">
+    <div><h1 data-ar="الطلبات" data-en="Requests">الطلبات</h1><p data-ar="ابحث برقم الطلب أو العميل أو الشركة أو الفرع أو المفوَّض." data-en="Search by request number, client, company, branch, or assignee.">ابحث برقم الطلب أو العميل أو الشركة أو الفرع أو المفوَّض.</p></div>
+    <button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="طلب جديد" data-en="New request">طلب جديد</span></button>
+  </div></div>
+
+  <div class="tabs" data-tabs="req"><span class="tab active" data-ar="الطلبات الشغّالة" data-en="Open requests">الطلبات الشغّالة</span><span class="tab" data-ar="الأرشيف" data-en="Archive">الأرشيف</span></div>
+
+  <div class="filter-pills">
+    <span class="filter-pill active" data-ar="الكل" data-en="All">الكل</span>
+    <span class="filter-pill" data-ar="آخر 3 أيام" data-en="Last 3 days">آخر 3 أيام</span>
+    <span class="filter-pill" data-ar="آخر أسبوع" data-en="Last week">آخر أسبوع</span>
+    <span class="filter-pill" data-ar="آخر شهر" data-en="Last month">آخر شهر</span>
+    <span class="filter-pill urgent" data-ar="🔴 عاجل (3)" data-en="🔴 Urgent (3)">🔴 عاجل (3)</span>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-field search-input" style="flex:2"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg><input class="input" data-ar-ph="رقم الطلب، العميل، الشركة…" data-en-ph="Request #, client, company…" placeholder="رقم الطلب، العميل، الشركة…"></div>
+    <div class="filter-field"><span class="field-label" data-ar="الحالة" data-en="Status">الحالة</span><select class="select"><option data-ar="كل الحالات" data-en="All statuses">كل الحالات</option></select></div>
+    <div class="filter-field"><span class="field-label" data-ar="الشركات والمكاتب" data-en="Companies & offices">الشركات والمكاتب</span><select class="select"><option data-ar="الكل" data-en="All">الكل</option></select></div>
+    <div class="filter-field"><span class="field-label" data-ar="الموظف" data-en="Employee">الموظف</span><select class="select"><option data-ar="كل الموظفين" data-en="All employees">كل الموظفين</option></select></div>
+    <button class="btn btn-ghost"><svg class="icon"><use href="assets/icons.svg#i-filter"/></svg> <span data-ar="بحث" data-en="Search">بحث</span></button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
+      <thead><tr>
+        <th data-ar="الرقم" data-en="Ref">الرقم</th><th data-ar="العميل / الجهة" data-en="Client / party">العميل / الجهة</th>
+        <th data-ar="الخدمة" data-en="Service">الخدمة</th><th data-ar="الحالة" data-en="Status">الحالة</th>
+        <th data-ar="التقدم" data-en="Progress">التقدم</th><th data-ar="المسؤول" data-en="Assignee">المسؤول</th>
+        <th data-ar="آخر تحديث" data-en="Updated">آخر تحديث</th><th></th>
+      </tr></thead>
+      <tbody>
+        <tr><td data-label="الرقم"><span class="row-link num">SND-1048</span></td><td data-label="العميل">أحمد سعيد</td><td data-label="الخدمة" data-ar="تأسيس شركة" data-en="Company formation">تأسيس شركة</td><td data-label="الحالة"><span class="badge badge-warning">بانتظار مستندات</span></td><td data-label="التقدم"><div class="progress" style="width:70px"><span style="width:60%"></span></div></td><td data-label="المسؤول">سارة زكي</td><td data-label="آخر تحديث" class="num">21 سبتمبر</td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+        <tr><td data-label="الرقم"><span class="row-link num">SND-1047</span> <span class="flag-urgent" data-ar="عاجل" data-en="Urgent">عاجل</span></td><td data-label="العميل">شركة ألفا</td><td data-label="الخدمة" data-ar="تجديد ترخيص" data-en="License renewal">تجديد ترخيص</td><td data-label="الحالة"><span class="badge badge-info">قيد المراجعة</span></td><td data-label="التقدم"><div class="progress" style="width:70px"><span style="width:30%"></span></div></td><td data-label="المسؤول">عمرو عوض</td><td data-label="آخر تحديث" class="num">20 سبتمبر</td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+        <tr><td data-label="الرقم"><span class="row-link num">SND-1046</span></td><td data-label="العميل">منى فتحي</td><td data-label="الخدمة" data-ar="توثيق عقد" data-en="Contract notarization">توثيق عقد</td><td data-label="الحالة"><span class="badge badge-success">مكتمل</span></td><td data-label="التقدم"><div class="progress" style="width:70px"><span style="width:100%"></span></div></td><td data-label="المسؤول">خالد سمير</td><td data-label="آخر تحديث" class="num">19 سبتمبر</td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+        <tr><td data-label="الرقم"><span class="row-link num">SND-1044</span></td><td data-label="العميل">شركة بيتا</td><td data-label="الخدمة" data-ar="سجل تجاري" data-en="Commercial registry">سجل تجاري</td><td data-label="الحالة"><span class="badge badge-neutral">جديد</span></td><td data-label="التقدم"><div class="progress" style="width:70px"><span style="width:5%"></span></div></td><td data-label="المسؤول"><span style="color:var(--color-text-muted)" data-ar="غير معيَّن" data-en="Unassigned">غير معيَّن</span></td><td data-label="آخر تحديث" class="num">18 سبتمبر</td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+        <tr><td data-label="الرقم"><span class="row-link num">SND-1041</span></td><td data-label="العميل">حسن فرج</td><td data-label="الخدمة" data-ar="استشارة قانونية" data-en="Legal consultation">استشارة قانونية</td><td data-label="الحالة"><span class="badge badge-danger">ملغى</span></td><td data-label="التقدم"><div class="progress" style="width:70px"><span style="width:0%"></span></div></td><td data-label="المسؤول">سارة زكي</td><td data-label="آخر تحديث" class="num">16 سبتمبر</td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+      </tbody>
+    </table></div></div>
+    <div class="panel-body" style="padding-top:0"><div class="pagination">
+      <span class="pg-info" data-ar="عرض 1–5 من 57 طلبًا" data-en="Showing 1–5 of 57 requests">عرض 1–5 من 57 طلبًا</span>
+      <nav class="pg-nav"><button class="pg" disabled><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-start"/></svg></button><button class="pg active">1</button><button class="pg">2</button><button class="pg">3</button><span class="pg gap">…</span><button class="pg">12</button><button class="pg"><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-end"/></svg></button></nav>
+    </div></div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

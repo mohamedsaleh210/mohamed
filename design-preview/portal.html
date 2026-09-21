@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلباتي — بوابة عملاء سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.doc-pill{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 10px;border-radius:8px;background:var(--color-bg-app)}</style>
+</head>
+<body class="portal-shell">
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — قشرة بوابة العملاء (لا تغيّر التوجيه/الدخول الحالي)" data-en="Design preview — customer portal shell (does not change current routing/auth)">معاينة تصميم — قشرة بوابة العملاء (لا تغيّر التوجيه/الدخول الحالي)</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+
+<div class="portal-top"><div class="wrap flex-between">
+  <span style="display:flex;align-items:center;gap:9px;font-weight:800"><span style="width:32px;height:32px;border-radius:50%;border:2px solid var(--brass-500);display:grid;place-items:center;color:var(--brass-500);font-size:13px">س</span> <span data-ar="سند" data-en="Sanad">سند</span></span>
+  <div class="flex">
+    <button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button>
+    <span class="who"><span class="who-text" data-ar="أحمد سعيد" data-en="Ahmed Saeed">أحمد سعيد</span><span class="avatar">أ</span></span>
+  </div>
+</div></div>
+<nav class="portal-nav"><div class="wrap" style="display:flex">
+  <a class="active" href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="طلباتي" data-en="My requests">طلباتي</span></a>
+  <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-message"/></svg> <span data-ar="الدعم الفني" data-en="Support">الدعم الفني</span></a>
+  <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-bell"/></svg> <span data-ar="الإشعارات" data-en="Notifications">الإشعارات</span></a>
+  <a href="#"><svg class="icon-sm"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="حسابي" data-en="Account">حسابي</span></a>
+  <a href="#" style="margin-inline-start:auto"><svg class="icon-sm"><use href="assets/icons.svg#i-logout"/></svg> <span data-ar="خروج" data-en="Logout">خروج</span></a>
+</div></nav>
+
+<main class="wrap" style="padding-block:var(--space-6)">
+  <div class="page-head"><h1 data-ar="طلباتي" data-en="My requests">طلباتي</h1><p style="color:var(--color-text-muted)" data-ar="متابعة طلباتك من مكان واحد." data-en="Track all your requests in one place.">متابعة طلباتك من مكان واحد.</p></div>
+
+  <div class="filter-pills">
+    <span class="filter-pill active" data-ar="الكل (3)" data-en="All (3)">الكل (3)</span>
+    <span class="filter-pill" data-ar="تحتاج إجراء (1)" data-en="Needs action (1)">تحتاج إجراء (1)</span>
+    <span class="filter-pill" data-ar="مكتملة (1)" data-en="Completed (1)">مكتملة (1)</span>
+  </div>
+
+  <div class="stack">
+    <div class="request-card">
+      <div class="top">
+        <div><span class="ref">SND-1048</span><h3 style="margin:4px 0" data-ar="تأسيس شركة ذات مسؤولية محدودة" data-en="LLC company formation">تأسيس شركة ذات مسؤولية محدودة</h3></div>
+        <span class="badge badge-warning" data-ar="بانتظار مستندات" data-en="Awaiting documents">بانتظار مستندات</span>
+      </div>
+      <div class="progress" style="margin:14px 0"><span style="width:60%"></span></div>
+      <div class="alert alert-warning" style="margin-bottom:14px" role="status"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg><div><strong data-ar="مطلوب منك" data-en="Action needed">مطلوب منك</strong><p data-ar="رفع إيصال سداد الرسوم لمتابعة الطلب." data-en="Upload the fee payment receipt to continue.">رفع إيصال سداد الرسوم لمتابعة الطلب.</p></div></div>
+      <div class="flex-between">
+        <div class="flex" style="gap:8px"><span class="doc-pill"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> 2/3 <span data-ar="مستندات" data-en="documents">مستندات</span></span></div>
+        <button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-upload"/></svg> <span data-ar="رفع مستند" data-en="Upload document">رفع مستند</span></button>
+      </div>
+    </div>
+
+    <div class="request-card">
+      <div class="top">
+        <div><span class="ref">SND-1032</span><h3 style="margin:4px 0" data-ar="توثيق عقد إيجار" data-en="Lease notarization">توثيق عقد إيجار</h3></div>
+        <span class="badge badge-info" data-ar="قيد المراجعة" data-en="In review">قيد المراجعة</span>
+      </div>
+      <div class="progress" style="margin:14px 0"><span style="width:35%"></span></div>
+      <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="آخر تحديث: أمس" data-en="Last update: yesterday">آخر تحديث: أمس</span><button class="btn btn-ghost btn-sm" data-ar="عرض التفاصيل" data-en="View details">عرض التفاصيل</button></div>
+    </div>
+
+    <div class="request-card">
+      <div class="top">
+        <div><span class="ref">SND-0998</span><h3 style="margin:4px 0" data-ar="استشارة قانونية" data-en="Legal consultation">استشارة قانونية</h3></div>
+        <span class="badge badge-success" data-ar="مكتمل" data-en="Completed">مكتمل</span>
+      </div>
+      <div class="flex-between">
+        <div class="flex" style="gap:8px"><span class="doc-pill"><svg class="icon-sm"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="مدفوع بالكامل" data-en="Fully paid">مدفوع بالكامل</span></span></div>
+        <button class="btn btn-ghost btn-sm" data-ar="عرض الفاتورة" data-en="View invoice">عرض الفاتورة</button>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

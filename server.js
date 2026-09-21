@@ -1,3 +1,17 @@
+// Refusing to boot is safer than running a live site whose session cookies
+// anyone could forge from a secret that ships in the source. Checked first,
+// before migration/seed initialization, so this is always the failure an
+// operator sees on a bare production environment rather than being pre-empted
+// by a later, unrelated startup check.
+if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+  console.error(
+    '\n  ✗ SESSION_SECRET مش متظبط، والوضع production.\n' +
+      '    ولّد واحد وحطه في متغيرات البيئة:\n' +
+      '    node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"\n'
+  );
+  process.exit(1);
+}
+
 require('./lib/restore-bootstrap').applyPendingRestore();
 const express = require('express');
 const session = require('express-session');
@@ -206,17 +220,6 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).render('errors/500');
 });
-
-// Refusing to boot is safer than running a live site whose session cookies
-// anyone could forge from a secret that ships in the source.
-if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
-  console.error(
-    '\n  ✗ SESSION_SECRET مش متظبط، والوضع production.\n' +
-      '    ولّد واحد وحطه في متغيرات البيئة:\n' +
-      '    node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'hex\'))"\n'
-  );
-  process.exit(1);
-}
 
 // Read notifications older than a month, and expired reset tokens, are cleared
 // once a day so the tables do not grow without bound.

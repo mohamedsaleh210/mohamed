@@ -646,7 +646,10 @@ const countOf = (html, re) => (html.match(re) || []).length;
     check('خانات البطاقة بتظهر', has(withId, 'name="id_front"') && has(withId, 'name="id_back"'));
     check('الكاميرا مفعّلة للبطاقة', has(withId, 'capture="environment"'));
 
-    const blockedNow = await adam.client.get(`${ADMIN}/requests`);
+    // adam is the Sanad-owner account and is deliberately exempt from this
+    // gate everywhere (middleware/auth.js's isSanadOwner bypass) — nour is a
+    // real, non-owner, non-admin staff account and is actually subject to it.
+    const blockedNow = await nour.client.get(`${ADMIN}/requests`);
     check('الموظف اللي مرفعش البطاقة بيتوقف',
       (blockedNow.location || '').includes('/account/profile'), blockedNow.location);
 
@@ -1240,8 +1243,11 @@ const countOf = (html, re) => (html.match(re) || []).length;
     const defined = new Set((cssAll.match(/\.([A-Za-z][\w-]*)/g) || []).map((c) => c.slice(1)));
     const unstyled = new Set();
 
+    // Standalone pages ship their own inline <style> and never participate in
+    // admin.css/style.css by design — printed or emailed outside the panel.
+    const STANDALONE_PRINT_TEMPLATES = new Set(['request_print.ejs', 'access_card_print.ejs']);
     fsx.readdirSync(pathx.join(__dirname, 'views/admin'))
-      .filter((f) => f.endsWith('.ejs') && f !== 'request_print.ejs')
+      .filter((f) => f.endsWith('.ejs') && !STANDALONE_PRINT_TEMPLATES.has(f))
       .forEach((f) => {
         const body = fsx.readFileSync(pathx.join(__dirname, 'views/admin', f), 'utf8');
         (body.match(/class="([^"<>]+)"/g) || []).forEach((m) => {

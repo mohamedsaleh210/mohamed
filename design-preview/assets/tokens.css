@@ -93,18 +93,25 @@
 
   /* ---- spacing (4px base) ------------------------------------------ */
   --space-1:.25rem;  --space-2:.5rem;  --space-3:.75rem; --space-4:1rem;
+  --space-4-5:1.0625rem; /* operational-density padding (~15% under space-5) */
   --space-5:1.25rem; --space-6:1.5rem; --space-8:2rem;   --space-10:2.5rem;
   --space-12:3rem;   --space-16:4rem;  --space-20:5rem;
 
   /* ---- radius -------------------------------------------------------- */
-  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:20px;
+  /* Phase 1, refinement pass: large panel/card radii pulled in for a more
+     corporate/legal feel (was 16/20). Small controls (--radius-sm/md) and
+     pills (--radius-full) are untouched so chips/badges/buttons keep their
+     current shape exactly. */
+  --radius-sm:8px; --radius-md:12px; --radius-lg:10px; --radius-xl:12px;
   --radius-full:999px;
 
   /* ---- elevation ----------------------------------------------------- */
+  /* Tightened alongside the radius pass — less blur/spread reads as more
+     grounded and corporate, less "floaty" consumer SaaS. */
   --shadow-xs:0 1px 2px rgba(18,48,58,.06);
-  --shadow-sm:0 2px 6px rgba(18,48,58,.08);
-  --shadow-md:0 8px 24px rgba(18,48,58,.10);
-  --shadow-lg:0 20px 48px rgba(18,48,58,.16);
+  --shadow-sm:0 1px 3px rgba(18,48,58,.09);
+  --shadow-md:0 4px 14px rgba(18,48,58,.10);
+  --shadow-lg:0 10px 28px rgba(18,48,58,.14);
   --shadow-focus:0 0 0 3px var(--color-focus-ring);
 
   /* ---- layout -------------------------------------------------------- */

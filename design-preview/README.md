@@ -44,8 +44,29 @@ design-preview/
   portal.html          — customer portal shell (visual only, §7 below)
   lawyer-dashboard.html
   accountant-dashboard.html
-  screenshots/          — 36 real Playwright/Chromium screenshots (390/768/1440, AR+EN)
+  sidebar-full-nav.html — refinement-pass addition: full 14-module nav, collapsible groups
+  screenshots/          — real Playwright/Chromium screenshots (390/768/1440, AR+EN)
 ```
+
+---
+
+## 0. Refinement pass (post-approval visual pass, same branch)
+
+The overall Phase 1 direction was approved; this pass applies eight targeted refinements
+without touching the identity, sidebar/topbar architecture, requests table/card behavior,
+request-detail structure, lawyer/accountant dashboards, portal shell, RTL/LTR mirroring, or
+accessibility/contrast compliance established above — all of that is preserved exactly.
+
+| # | Refinement | What changed | Files |
+|---|---|---|---|
+| 1 | Public homepage | Hero rebuilt: kicker + stronger eyebrow/h1 hierarchy, a "browser-chrome" product-preview mockup (mini KPIs + live request tracker + recent-requests list) replacing the single tracking card, a subtle faint scale-of-justice watermark + dotted grid texture (CSS/SVG only, no stock imagery), a 4th trust signal (real-time tracking). Search panel, journey/steps, and all lower sections unchanged. | `public-home.html`, `layout.css` |
+| 2 | Operational density | `.main` padding, `.page-head` margin, `.panel`/`.stat-card` padding, table row height, and `.two-col` gaps reduced ~10–15% (new `--space-4-5` token) across admin/requests/cases/treasury/request-detail/lawyer/accountant screens only — marketing and portal pages are untouched since they weren't in scope. | `tokens.css`, `components.css`, `layout.css`, per-page `<style>` blocks |
+| 3 | Corporate geometry | `--radius-lg` 16→10px, `--radius-xl` 20→12px (panels, stat-cards, hero-art, dialogs). `--radius-sm`/`--radius-md` (buttons, inputs, small icons) and `--radius-full` (all pills/chips/badges) are untouched. | `tokens.css` |
+| 4 | Sidebar — full navigation | New standalone `sidebar-full-nav.html` demonstrates all 14 real Sanad modules (dashboard, appointments, requests, cases, renewals, clients/companies, employees, treasury, revenue/expenses, payroll/custody, reports, notifications, CMS, settings/security/permissions) in the *same* sidebar width/color/mechanics, using collapsible groups (`.side-group.collapsed`) for the lower-priority groups. The sidebar on every other page is untouched. | `sidebar-full-nav.html`, `layout.css` (`.side-group-label.toggle`), `app.js` |
+| 5 | Cases | Added a case-detail preview block below the list (tabs: Overview / Memoranda·Documents·Evidence / Fees·Expenses / Judgment·Appeal·Execution) covering court+circuit+case#, parties, next hearing, a multi-person team stack, memoranda/evidence rows, a fee breakdown, and a judgment→appeal→execution steps indicator. | `cases.html` |
+| 6 | Treasury | Added a second KPI row (monthly revenue, monthly expenses, outstanding custody, net in/out) and reference + linked-request columns on the transactions table; added a "Report" action alongside Export. | `treasury.html` |
+| 7 | Request detail | Kept the existing tab structure and added four tabs: Quotation, Payments, Subtasks, Visits & appointments — so the default (Details) view stays uncrowded while the full data model is demonstrated. | `request-detail.html` |
+| 8 | Design system | Elevation tokens (`--shadow-sm/md/lg`) tightened alongside the radius pass for a more grounded, less "floaty" feel; radius-scale swatch labels and a short note updated to match. Palette, typography, and all chip/badge/pill styling are unchanged. | `tokens.css`, `design-system.html` |
 
 ---
 

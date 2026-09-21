@@ -63,6 +63,12 @@
     });
   });
 
+  // ---- collapsible sidebar groups (full-navigation preview) ----
+  document.addEventListener('click', function (e) {
+    var toggle = e.target.closest('.side-group-label.toggle');
+    if (toggle) toggle.closest('.side-group').classList.toggle('collapsed');
+  });
+
   // ---- dropdowns ----
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest('[data-dropdown-trigger]');

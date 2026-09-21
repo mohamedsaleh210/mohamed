@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="assets/layout.css">
 <style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
-.two-col{display:grid;grid-template-columns:1.7fr 1fr;gap:var(--space-5)}
+.two-col{display:grid;grid-template-columns:1.7fr 1fr;gap:var(--space-4)}
 @media(max-width:1024px){.two-col{grid-template-columns:1fr}}
 .timeline{display:grid;gap:0}
 .tl-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--color-border)}
@@ -53,6 +53,10 @@
         <span class="tab" data-tab="b" data-ar="المستندات" data-en="Documents">المستندات<span class="badge badge-neutral">3</span></span>
         <span class="tab" data-tab="c" data-ar="الرسائل" data-en="Messages">الرسائل<span class="badge badge-danger">2</span></span>
         <span class="tab" data-tab="d" data-ar="السجل الزمني" data-en="Timeline">السجل الزمني</span>
+        <span class="tab" data-tab="e" data-ar="عرض السعر" data-en="Quotation">عرض السعر</span>
+        <span class="tab" data-tab="f" data-ar="المدفوعات" data-en="Payments">المدفوعات</span>
+        <span class="tab" data-tab="g" data-ar="المهام الفرعية" data-en="Subtasks">المهام الفرعية<span class="badge badge-neutral">3</span></span>
+        <span class="tab" data-tab="h" data-ar="الزيارات والمواعيد" data-en="Visits & appointments">الزيارات والمواعيد</span>
       </div>
 
       <div data-tab-panel="a" data-tab-group="rd">
@@ -96,6 +100,46 @@
             <div class="tl-item"><span class="tl-dot ic-info"><svg class="icon-sm"><use href="assets/icons.svg#i-user"/></svg></span><div><b style="font-size:14px" data-ar="عُيِّن لسارة زكي" data-en="Assigned to Sara Zaki">عُيِّن لسارة زكي</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="15 سبتمبر، 9:40 ص" data-en="Sep 15, 9:40 AM">15 سبتمبر، 9:40 ص</div></div></div>
             <div class="tl-item"><span class="tl-dot ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div><b style="font-size:14px" data-ar="طُلب مستند إضافي" data-en="Additional document requested">طُلب مستند إضافي</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="18 سبتمبر، 11:15 ص" data-en="Sep 18, 11:15 AM">18 سبتمبر، 11:15 ص</div></div></div>
           </div>
+        </div></div>
+      </div>
+
+      <div data-tab-panel="e" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-head"><h3 data-ar="عرض السعر Q-1048" data-en="Quotation Q-1048">عرض السعر Q-1048</h3><span class="badge badge-success" data-ar="مقبول من العميل" data-en="Accepted by client">مقبول من العميل</span></div>
+          <div class="panel-body flush"><table class="tbl">
+            <thead><tr><th data-ar="البند" data-en="Item">البند</th><th data-ar="القيمة" data-en="Amount">القيمة</th></tr></thead>
+            <tbody>
+              <tr><td data-ar="أتعاب تأسيس الشركة" data-en="Formation service fee">أتعاب تأسيس الشركة</td><td class="num">3,500</td></tr>
+              <tr><td data-ar="رسوم حكومية مقدّرة" data-en="Estimated government fees">رسوم حكومية مقدّرة</td><td class="num">1,200</td></tr>
+              <tr><td data-ar="ضريبة القيمة المضافة" data-en="VAT">ضريبة القيمة المضافة</td><td class="num">0</td></tr>
+            </tbody>
+          </table></div>
+          <div class="panel-foot"><span style="margin-inline-end:auto;font-weight:800" data-ar="الإجمالي: 4,700 EGP" data-en="Total: 4,700 EGP">الإجمالي: 4,700 EGP</span><button class="btn btn-ghost btn-sm" data-ar="إرسال للعميل" data-en="Send to client">إرسال للعميل</button></div>
+        </div>
+      </div>
+
+      <div data-tab-panel="f" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="المرجع" data-en="Reference">المرجع</th><th data-ar="التاريخ" data-en="Date">التاريخ</th><th data-ar="الطريقة" data-en="Method">الطريقة</th><th data-ar="القيمة" data-en="Amount">القيمة</th><th data-ar="الحالة" data-en="Status">الحالة</th></tr></thead>
+          <tbody>
+            <tr><td data-label="المرجع" class="num">TRX-8790</td><td data-label="التاريخ" class="num">15 سبتمبر</td><td data-label="الطريقة" data-ar="إنستاباي" data-en="Instapay">إنستاباي</td><td data-label="القيمة" class="num" style="font-weight:700">2,000</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td></tr>
+            <tr><td data-label="المرجع" class="num">TRX-8825</td><td data-label="التاريخ" class="num">—</td><td data-label="الطريقة" data-ar="بانتظار" data-en="Pending">بانتظار</td><td data-label="القيمة" class="num" style="font-weight:700">2,700</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="مستحقة" data-en="Due">مستحقة</span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="تسجيل دفعة" data-en="Record a payment">تسجيل دفعة</button></div></div>
+      </div>
+
+      <div data-tab-panel="g" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body stack">
+          <label class="checkbox"><input type="checkbox" checked> <span style="text-decoration:line-through;color:var(--color-text-muted)" data-ar="مراجعة المستندات الأولية — سارة زكي" data-en="Initial document review — Sara Zaki">مراجعة المستندات الأولية — سارة زكي</span></label>
+          <label class="checkbox"><input type="checkbox"> <span data-ar="التقديم للجهة الحكومية — عمرو عوض" data-en="Government filing — Amr Awad">التقديم للجهة الحكومية — عمرو عوض</span></label>
+          <label class="checkbox"><input type="checkbox"> <span data-ar="استلام السجل التجاري وتسليمه للعميل — عمرو عوض" data-en="Collect commercial registry & hand to client — Amr Awad">استلام السجل التجاري وتسليمه للعميل — عمرو عوض</span></label>
+        </div></div>
+      </div>
+
+      <div data-tab-panel="h" data-tab-group="rd" hidden>
+        <div class="panel"><div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-building"/></svg></span><div><div class="notif-text"><b data-ar="زيارة مصلحة الشركات" data-en="Companies authority visit">زيارة مصلحة الشركات</b> — <span data-ar="عمرو عوض" data-en="Amr Awad">عمرو عوض</span></div><div class="notif-time" data-ar="24 سبتمبر، 10:00 ص" data-en="Sep 24, 10:00 AM">24 سبتمبر، 10:00 ص</div></div></div>
+          <div class="notif"><span class="notif-icon ic-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg></span><div><div class="notif-text" data-ar="اجتماع توقيع العقد مع العميل" data-en="Contract-signing meeting with client">اجتماع توقيع العقد مع العميل</div><div class="notif-time" data-ar="26 سبتمبر، 1:00 م" data-en="Sep 26, 1:00 PM">26 سبتمبر، 1:00 م</div></div></div>
         </div></div>
       </div>
     </div>

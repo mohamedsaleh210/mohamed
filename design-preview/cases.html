@@ -9,9 +9,16 @@
 <link rel="stylesheet" href="assets/layout.css">
 <style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
-.case-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:var(--space-4);align-items:center;padding:16px 20px;border-top:1px solid var(--color-border)}
+.case-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:var(--space-4);align-items:center;padding:13px 18px;border-top:1px solid var(--color-border)}
 .case-row:first-child{border-top:0}
-@media(max-width:820px){.case-row{grid-template-columns:1fr 1fr;row-gap:8px}}</style>
+@media(max-width:820px){.case-row{grid-template-columns:1fr 1fr;row-gap:8px}}
+.team-stack{display:flex}
+.team-stack .avatar{width:26px;height:26px;border-radius:50%;background:var(--brass-500);color:var(--navy-800);display:grid;place-items:center;font-size:11px;font-weight:800;border:2px solid #fff;margin-inline-start:-8px}
+.team-stack .avatar:first-child{margin-inline-start:0}
+.two-col{display:grid;grid-template-columns:1.7fr 1fr;gap:var(--space-4)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.doc-row{display:flex;align-items:center;gap:10px;padding:11px var(--space-4-5);border-bottom:1px solid var(--color-border)}
+.doc-row:last-child{border-bottom:0}</style>
 </head>
 <body>
 <div class="hero-preview-bar"><span data-ar="معاينة تصميم — القضايا" data-en="Design preview — cases">معاينة تصميم — القضايا</span><button id="langToggle"><span data-lang-label>English</span></button></div>
@@ -44,10 +51,10 @@
       <span data-ar="القضية والموكل" data-en="Case & client">القضية والموكل</span><span data-ar="المحكمة" data-en="Court">المحكمة</span><span data-ar="أقرب جلسة" data-en="Next hearing">أقرب جلسة</span><span data-ar="الفريق" data-en="Team">الفريق</span><span></span>
     </div>
     <a class="case-row" href="#" style="color:inherit">
-      <span><b class="num">2026/145</b><br><span style="font-size:13px;color:var(--color-text-muted)" data-ar="ضد شركة النور للاستيراد" data-en="vs. Al-Noor Import Co.">ضد شركة النور للاستيراد</span></span>
+      <span><b class="num">2026/145 <small style="font-weight:400;color:var(--color-text-muted)" data-ar="· الدائرة 3 تجاري" data-en="· Circuit 3 (Commercial)">· الدائرة 3 تجاري</small></b><br><span style="font-size:13px;color:var(--color-text-muted)" data-ar="ضد شركة النور للاستيراد" data-en="vs. Al-Noor Import Co.">ضد شركة النور للاستيراد</span></span>
       <span style="font-size:13px" data-ar="محكمة القاهرة الاقتصادية" data-en="Cairo Economic Court">محكمة القاهرة الاقتصادية</span>
       <span class="num" style="font-size:13px">22 سبتمبر</span>
-      <span style="font-size:13px">عمرو عوض</span>
+      <span class="team-stack"><span class="avatar" title="عمرو عوض">ع</span><span class="avatar" title="سارة زكي">س</span></span>
       <span class="badge badge-info" data-ar="نشطة" data-en="Active">نشطة</span>
     </a>
     <a class="case-row" href="#" style="color:inherit">
@@ -64,6 +71,85 @@
       <span style="font-size:13px">سارة زكي</span>
       <span class="badge badge-success" data-ar="حكم صادر" data-en="Judgment issued">حكم صادر</span>
     </a>
+  </div>
+
+  <div style="margin-top:var(--space-6)">
+    <div class="flex-between" style="margin-bottom:var(--space-3)">
+      <h2 style="margin:0" data-ar="تفاصيل القضية 2026/145" data-en="Case 2026/145 — detail">تفاصيل القضية 2026/145</h2>
+      <span class="badge badge-info" data-ar="نشطة" data-en="Active">نشطة</span>
+    </div>
+    <div class="two-col">
+      <div class="stack">
+        <div class="tabs" data-tabs="cd">
+          <span class="tab active" data-tab="a" data-ar="نظرة عامة" data-en="Overview">نظرة عامة</span>
+          <span class="tab" data-tab="b" data-ar="المذكرات والمستندات والأدلة" data-en="Memoranda, documents & evidence">المذكرات والمستندات والأدلة<span class="badge badge-neutral">5</span></span>
+          <span class="tab" data-tab="c" data-ar="الرسوم والمصروفات" data-en="Fees & expenses">الرسوم والمصروفات</span>
+          <span class="tab" data-tab="d" data-ar="الحكم والاستئناف والتنفيذ" data-en="Judgment, appeal & execution">الحكم والاستئناف والتنفيذ</span>
+        </div>
+
+        <div data-tab-panel="a" data-tab-group="cd">
+          <div class="panel"><div class="panel-body grid grid-2">
+            <div><span class="field-label" data-ar="رقم القضية / الدائرة" data-en="Case # / circuit">رقم القضية / الدائرة</span><p class="num" style="margin:0">2026/145 · <span data-ar="الدائرة 3 تجاري" data-en="Circuit 3 (Commercial)">الدائرة 3 تجاري</span></p></div>
+            <div><span class="field-label" data-ar="المحكمة" data-en="Court">المحكمة</span><p style="margin:0" data-ar="محكمة القاهرة الاقتصادية" data-en="Cairo Economic Court">محكمة القاهرة الاقتصادية</p></div>
+            <div><span class="field-label" data-ar="الأطراف" data-en="Parties">الأطراف</span><p style="margin:0" data-ar="موكلنا: شركة ألفا — ضد: شركة النور للاستيراد" data-en="Our client: Alpha Co. — vs. Al-Noor Import Co.">موكلنا: شركة ألفا — ضد: شركة النور للاستيراد</p></div>
+            <div><span class="field-label" data-ar="أقرب جلسة" data-en="Next hearing">أقرب جلسة</span><p class="num" style="margin:0;color:var(--color-danger);font-weight:700">22 سبتمبر 2026</p></div>
+          </div></div>
+          <div class="panel" style="margin-top:var(--space-4)"><div class="panel-head"><h3 data-ar="الفريق القانوني المعيَّن" data-en="Assigned legal team">الفريق القانوني المعيَّن</h3></div>
+            <div class="panel-body stack">
+              <div class="flex-between"><span class="flex"><span class="team-stack"><span class="avatar">ع</span></span> عمرو عوض — <span data-ar="محامي القضية الرئيسي" data-en="Lead counsel">محامي القضية الرئيسي</span></span><span class="badge badge-accent" data-ar="رئيسي" data-en="Lead">رئيسي</span></div>
+              <div class="flex-between"><span class="flex"><span class="team-stack"><span class="avatar">س</span></span> سارة زكي — <span data-ar="إعداد المذكرات" data-en="Memo preparation">إعداد المذكرات</span></span><span class="badge badge-neutral" data-ar="مساند" data-en="Support">مساند</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div data-tab-panel="b" data-tab-group="cd" hidden>
+          <div class="panel"><div class="panel-body flush">
+            <div class="doc-row"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-file"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="مذكرة الدفاع الأولى" data-en="First defense memorandum">مذكرة الدفاع الأولى</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="PDF · قُدّمت 10 سبتمبر" data-en="PDF · filed Sep 10">PDF · قُدّمت 10 سبتمبر</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+            <div class="doc-row"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-file"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="صحيفة الدعوى" data-en="Statement of claim">صحيفة الدعوى</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="PDF · 2.1MB" data-en="PDF · 2.1MB">PDF · 2.1MB</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+            <div class="doc-row"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-paperclip"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="أدلة — مراسلات تجارية موثّقة" data-en="Evidence — notarized business correspondence">أدلة — مراسلات تجارية موثّقة</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="3 ملفات" data-en="3 files">3 ملفات</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+            <div class="doc-row"><svg class="icon" style="color:var(--color-accent-text)"><use href="assets/icons.svg#i-file"/></svg><div style="flex:1"><b style="font-size:14px" data-ar="تقرير خبير حسابي" data-en="Accounting expert report">تقرير خبير حسابي</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="PDF · 900KB" data-en="PDF · 900KB">PDF · 900KB</div></div><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg></button></div>
+            <div class="doc-row"><span class="badge badge-danger" style="padding:8px" data-ar="مطلوب" data-en="Required">مطلوب</span><div style="flex:1"><b style="font-size:14px" data-ar="مذكرة الدفاع الختامية" data-en="Closing defense memorandum">مذكرة الدفاع الختامية</b><div style="font-size:12px;color:var(--color-text-muted)" data-ar="موعد التسليم: 20 سبتمبر" data-en="Due: Sep 20">موعد التسليم: 20 سبتمبر</div></div></div>
+          </div></div>
+        </div>
+
+        <div data-tab-panel="c" data-tab-group="cd" hidden>
+          <div class="panel"><div class="panel-body stack">
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="أتعاب التقاضي" data-en="Litigation fees">أتعاب التقاضي</span><span class="num" style="font-weight:700">15,000</span></div>
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="أتعاب خبير حسابي" data-en="Accounting expert fees">أتعاب خبير حسابي</span><span class="num" style="font-weight:700">3,500</span></div>
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="مصروفات انتقال وجلسات" data-en="Travel & hearing expenses">مصروفات انتقال وجلسات</span><span class="num" style="font-weight:700">950</span></div>
+            <div class="flex-between" style="border-top:1px solid var(--color-border);padding-top:10px"><span style="font-weight:800" data-ar="الإجمالي" data-en="Total">الإجمالي</span><span class="num" style="font-weight:800;color:var(--navy-800)">19,450 EGP</span></div>
+          </div></div>
+        </div>
+
+        <div data-tab-panel="d" data-tab-group="cd" hidden>
+          <div class="panel"><div class="panel-body">
+            <div class="steps" style="max-width:520px">
+              <div class="step done"><div class="dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></div><span data-ar="قيد النظر" data-en="Under review">قيد النظر</span></div>
+              <div class="step current"><div class="dot">2</div><span data-ar="حكم ابتدائي" data-en="First-instance judgment">حكم ابتدائي</span></div>
+              <div class="step"><div class="dot">3</div><span data-ar="استئناف" data-en="Appeal">استئناف</span></div>
+              <div class="step"><div class="dot">4</div><span data-ar="تنفيذ" data-en="Execution">تنفيذ</span></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="panel"><div class="panel-head"><h3 data-ar="ملخص القضية" data-en="Case summary">ملخص القضية</h3></div>
+          <div class="panel-body stack">
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="نوع القضية" data-en="Case type">نوع القضية</span><span style="font-size:13px;font-weight:700" data-ar="تجاري" data-en="Commercial">تجاري</span></div>
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="تاريخ القيد" data-en="Filed on">تاريخ القيد</span><span class="num" style="font-size:13px;font-weight:700">3 أغسطس 2026</span></div>
+            <div class="flex-between"><span style="font-size:13px;color:var(--color-text-muted)" data-ar="الحالة الحالية" data-en="Current status">الحالة الحالية</span><span class="badge badge-info" data-ar="نشطة" data-en="Active">نشطة</span></div>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3 data-ar="إجراءات" data-en="Actions">إجراءات</h3></div>
+          <div class="panel-body stack">
+            <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg> <span data-ar="تحديد جلسة" data-en="Schedule hearing">تحديد جلسة</span></button>
+            <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-upload"/></svg> <span data-ar="رفع مستند" data-en="Upload document">رفع مستند</span></button>
+            <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="إضافة عضو للفريق" data-en="Add team member">إضافة عضو للفريق</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 </div>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التنقل الكامل — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم — الشريط الجانبي بكامل تسلسل قوائم سند الحقيقي (مجموعات قابلة للطي)" data-en="Design preview — sidebar with Sanad's full real navigation hierarchy (collapsible groups)">معاينة تصميم — الشريط الجانبي بكامل تسلسل قوائم سند الحقيقي (مجموعات قابلة للطي)</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button>
+  <span class="brand"><span class="seal">س</span> <span data-ar="سند" data-en="Sanad">سند</span></span>
+  <span class="topbar-spacer"></span>
+  <div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group">
+    <a class="side-link active" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a>
+    <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg> <span data-ar="المواعيد والاستشارات" data-en="Appointments & consultations">المواعيد والاستشارات</span></a>
+  </div>
+
+  <div class="side-group">
+    <button class="side-group-label toggle" type="button"><span data-ar="إدارة الأعمال" data-en="Business">إدارة الأعمال</span><svg class="icon chev"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+    <div class="side-group-body">
+      <a class="side-link" href="requests.html"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات" data-en="Requests">الطلبات</span></a>
+      <a class="side-link" href="cases.html"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg> <span data-ar="القضايا" data-en="Cases">القضايا</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg> <span data-ar="الانتهاء والتجديد" data-en="Renewals">الانتهاء والتجديد<span class="badge badge-danger">24</span></span></a>
+    </div>
+  </div>
+
+  <div class="side-group">
+    <button class="side-group-label toggle" type="button"><span data-ar="العملاء والموظفون" data-en="Clients & staff">العملاء والموظفون</span><svg class="icon chev"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+    <div class="side-group-body">
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="الموظفون" data-en="Employees">الموظفون</span></a>
+    </div>
+  </div>
+
+  <div class="side-group">
+    <button class="side-group-label toggle" type="button"><span data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</span><svg class="icon chev"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+    <div class="side-group-body">
+      <a class="side-link" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="المرتبات والعهد" data-en="Payroll & custody">المرتبات والعهد</span></a>
+    </div>
+  </div>
+
+  <div class="side-group collapsed">
+    <button class="side-group-label toggle" type="button"><span data-ar="التقارير والتنبيهات" data-en="Reports & alerts">التقارير والتنبيهات</span><svg class="icon chev"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+    <div class="side-group-body">
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg> <span data-ar="التقارير" data-en="Reports">التقارير</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg> <span data-ar="الإشعارات" data-en="Notifications">الإشعارات</span></a>
+    </div>
+  </div>
+
+  <div class="side-group collapsed">
+    <button class="side-group-label toggle" type="button"><span data-ar="المحتوى والإعدادات" data-en="Content & settings">المحتوى والإعدادات</span><svg class="icon chev"><use href="assets/icons.svg#i-chevron-down"/></svg></button>
+    <div class="side-group-body">
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-folder"/></svg> <span data-ar="المحتوى (CMS)" data-en="Content (CMS)">المحتوى (CMS)</span></a>
+      <a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-settings"/></svg> <span data-ar="الإعدادات والصلاحيات" data-en="Settings, security & permissions">الإعدادات والصلاحيات</span></a>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-head">
+    <h1 data-ar="التنقل الكامل — كل وحدات سند الحقيقية" data-en="Full navigation — every real Sanad module">التنقل الكامل — كل وحدات سند الحقيقية</h1>
+    <p style="color:var(--color-text-muted);max-width:64ch" data-ar="هذه الصفحة توضّح فقط كيف يستوعب الشريط الجانبي الحالي (نفس الآلية والعرض والألوان) كل وحدات سند الـ14 دون حذف أي منها، عبر مجموعات قابلة للطي. لا تغييرات على معمارية الشريط الجانبي نفسها." data-en="This page only demonstrates how the existing sidebar (same mechanics, width, and colors) can hold all 14 real Sanad modules without removing any, using collapsible groups. No change to the sidebar's underlying architecture.">هذه الصفحة توضّح فقط كيف يستوعب الشريط الجانبي الحالي (نفس الآلية والعرض والألوان) كل وحدات سند الـ14 دون حذف أي منها، عبر مجموعات قابلة للطي. لا تغييرات على معمارية الشريط الجانبي نفسها.</p>
+  </div>
+
+  <div class="panel"><div class="panel-body">
+    <div class="alert alert-info" role="status">
+      <svg class="icon"><use href="assets/icons.svg#i-info"/></svg>
+      <div><strong data-ar="14 وحدة، 6 مجموعات" data-en="14 modules, 6 groups">14 وحدة، 6 مجموعات</strong>
+      <p data-ar="لوحة التحكم والمواعيد ثابتتان أعلى الشريط. المجموعات الأربع الأولى مفتوحة افتراضيًا (تُستخدم يوميًا)، ومجموعتا التقارير والإعدادات مطويتان افتراضيًا — بنفس منطق أولوية الاستخدام. انقر عنوان أي مجموعة لطيّها أو فتحها." data-en="Dashboard and Appointments are pinned at the top. The first four groups are open by default (daily-use modules); Reports and Settings start collapsed — the same usage-priority logic. Click any group's label to collapse or expand it.">لوحة التحكم والمواعيد ثابتتان أعلى الشريط. المجموعات الأربع الأولى مفتوحة افتراضيًا (تُستخدم يوميًا)، ومجموعتا التقارير والإعدادات مطويتان افتراضيًا — بنفس منطق أولوية الاستخدام. انقر عنوان أي مجموعة لطيّها أو فتحها.</p></div>
+    </div>
+  </div></div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

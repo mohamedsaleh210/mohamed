@@ -35,6 +35,12 @@
 
   --sidebar-w: 246px;
   --topbar-h: 58px;
+
+  /* Aliases for tokens referenced here but canonically defined once —
+     --ink-deep/--paper mirror the public site's style.css naming so the
+     same var() calls resolve to a sane value in both stylesheets. */
+  --ink-deep: var(--ink-2);
+  --paper: var(--brass-soft);
 }
 
 * { box-sizing: border-box; }
@@ -56,6 +62,17 @@ body.admin {
   -webkit-font-smoothing: antialiased;
   /* Stops iOS Safari zooming when a field is focused. */
   -webkit-text-size-adjust: 100%;
+}
+
+/* body.admin above hardcodes rtl/right as the default (Arabic is the
+   primary language). When a user switches to English, <html dir="ltr">
+   must actually flip the body's own text direction/alignment too — an
+   author rule on the element wins over inheritance from <html dir>,
+   so without this override English mode kept RTL text flow while only
+   the sidebar/topbar/main positioning (already [dir]-gated below) flipped. */
+[dir="ltr"] body.admin {
+  direction: ltr;
+  text-align: left;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -115,16 +132,6 @@ a { color: inherit; text-decoration: none; }
 .topbar .brand b { font-size: 18px; font-weight: 800; }
 .topbar .brand .seal { width: 32px; height: 32px; }
 .topbar .brand .seal span { font-size: 14px; }
-
-.menu-btn {
-  background: var(--brass-soft);
-  border: 0; color: var(--ink);
-  width: 40px; height: 40px; border-radius: var(--radius-sm);
-  display: grid; place-items: center; cursor: pointer;
-  flex: none; font-size: 19px; line-height: 1;
-}
-.menu-btn:hover { background: var(--line-soft); }
-.menu-btn svg { width: 22px; height: 22px; }
 
 .topbar-spacer { margin-inline-start: auto; }
 
@@ -493,12 +500,17 @@ table.tbl .row-actions { text-align: left; white-space: nowrap; }
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2366757e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
+  /* Physical left here matches [dir=rtl] (the default admin language);
+     background-position has no logical form, so LTR gets an explicit
+     mirrored override below instead of inheriting the RTL-only value. */
   background-position: left 13px center;
   background-size: 17px;
   padding-inline-start: 40px;
   cursor: pointer;
 }
 .field select:hover, .toolbar select:hover { border-color: var(--muted); }
+[dir="ltr"] .field select,
+[dir="ltr"] .toolbar select { background-position: right 13px center; }
 
 /* Category headings inside a grouped list of services. */
 .field select optgroup {
@@ -783,7 +795,7 @@ svg:not([width]):not([height]) {
     transform: none;
     width: var(--sidebar-w);
   }
-  .sidebar-close, .menu-btn, .scrim { display: none; }
+  .sidebar-close, .scrim { display: none; }
 
   [dir="rtl"] .sidebar { left: auto; right: 0; }
   [dir="ltr"] .sidebar { right: auto; left: 0; }
@@ -1747,7 +1759,6 @@ input,select,textarea,button{min-width:0;max-width:100%}
 @media(max-width:999px){
   .topbar{position:sticky;top:0;z-index:60;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
   .topbar-inner{padding-inline:12px;gap:9px}
-  .topbar .menu-btn{display:grid;place-items:center;width:44px;height:44px;min-width:44px;padding:0}
   .topbar-user .who{display:none}
   .main{padding:18px 14px calc(70px + env(safe-area-inset-bottom))}
   .main-inner{width:100%;padding:0}

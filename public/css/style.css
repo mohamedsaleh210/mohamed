@@ -7,6 +7,10 @@ svg:not([width]):not([height]){width:18px;height:18px;flex:none}
   --paper:#f7f4ee; --card:#ffffff; --text:#1e2a30; --muted:#63727b; --line:#e6dfd1;
   --shadow:0 1px 2px rgba(18,48,58,.04),0 10px 30px rgba(18,48,58,.06);
   --radius:16px; --maxw:1120px;
+  /* Mirror admin.css's tokens of the same name (this stylesheet never loads
+     alongside admin.css, so var() can't reach across files) — these were
+     referenced elsewhere in this file with no local definition. */
+  --brass-soft:#f4eedd; --bg:#eef1f0; --danger:#c15450; --gold:var(--brass);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}

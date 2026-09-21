@@ -1,0 +1,73 @@
+<% pageTitle = 'الإشعارات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الإشعارات' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>الإشعارات</h1>
+    <p class="sub">مش بتختفي لوحدها — بتفضل هنا لحد ما تضغط «شوفتها».</p>
+  </div>
+  <% if (unseen) { %>
+    <form method="post" action="<%= adminPath %>/notifications/seen-all" data-confirm="تعلّم كل الإشعارات كمقروءة؟">
+      <%- csrfField %>
+      <button class="btn ghost" type="submit">علّم الكل كمقروء</button>
+    </form>
+  <% } %>
+</div>
+
+<nav class="tabs">
+  <a href="<%= adminPath %>/notifications" class="<%= onlyUnseen ? 'active' : '' %>">
+    الجديدة <% if (unseen) { %>(<%= unseen %>)<% } %>
+  </a>
+  <a href="<%= adminPath %>/notifications?filter=all" class="<%= onlyUnseen ? '' : 'active' %>">الكل</a>
+</nav>
+
+<div class="panel">
+  <div class="panel-body">
+    <% if (items.length) { %>
+      <% items.forEach(n => { %>
+        <div class="notif <%= n.seen_at ? '' : 'unseen' %> <%= n.priority === 'critical' ? 'critical' : '' %>">
+          <span class="ic"><%= { comment:'💬', assigned:'👤', status:'🔄', deadline:'📅', upload:'📎' }[n.type] || '🔔' %></span>
+          <div class="nb">
+            <div class="m"><%= n.text %></div>
+            <div class="meta">
+              <% if (n.ref) { %><span class="num"><%= n.ref %></span> · <%= n.client_name %> · <% } %>
+              <%= timeAgo(n.created_at) %>
+              <% if (n.seen_at) { %> · <span style="color:var(--ok)">مقروء</span><% } %>
+            </div>
+          </div>
+          <div class="acts">
+            <%if(n.booking_id){%><a class="btn ghost sm" href="<%=adminPath%>/appointments/<%=n.booking_id%>">افتح الموعد</a><%}%>
+            <% if (n.request_id) { %>
+              <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= n.request_id %>">افتح الطلب</a>
+              <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= n.request_id %>"
+                 target="_blank" rel="noopener" aria-label="فتح في تاب جديدة" title="فتح في تاب جديدة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                     stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <path d="M15 3h6v6M10 14L21 3"/>
+                </svg>
+              </a>
+            <% } %>
+            <% if (!n.seen_at) { %>
+              <form method="post" action="<%= adminPath %>/notifications/<%= n.id %>/seen">
+                <%- csrfField %>
+                <input type="hidden" name="next" value="<%= adminPath %>/notifications<%= onlyUnseen ? '' : '?filter=all' %>">
+                <button class="btn ghost sm" type="submit">شوفتها</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">🔔</span>
+        <p><%= onlyUnseen ? 'مفيش إشعارات جديدة.' : 'مفيش إشعارات.' %></p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

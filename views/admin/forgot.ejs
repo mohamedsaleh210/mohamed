@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>استعادة كلمة المرور — سند</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin">
+<div class="login-page">
+  <div class="login-card">
+    <span class="seal"><span>س</span></span>
+    <h1>استعادة كلمة المرور</h1>
+    <p class="sub">اكتب اسم المستخدم أو البريد الإلكتروني، وسنرسل رابط إعادة التعيين.</p>
+
+    <% if (sent) { %>
+      <div class="alert ok">
+        <span>لو البيانات دي مسجّلة عندنا، الرابط اتبعت على الإيميل. صلاحيته ساعة واحدة.</span>
+      </div>
+    <% } %>
+    <% if (error) { %><div class="alert err"><span><%= error %></span></div><% } %>
+
+    <form method="post" action="<%= adminPath %>/forgot">
+      <%- csrfField %>
+      <div class="field">
+        <label for="identifier">اسم المستخدم أو البريد الإلكتروني</label>
+        <input type="text" id="identifier" name="identifier" required autocomplete="username"
+               dir="ltr" style="text-align:left" autocapitalize="none">
+      </div>
+      <button class="btn brass block" type="submit">إرسال الرابط</button>
+    </form>
+
+    <p style="text-align:center;margin:18px 0 0">
+      <a href="<%= adminPath %>/login" style="color:var(--muted);font-size:14px">← رجوع لتسجيل الدخول</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+SANAD v16.0 DATA PRESERVATION MANIFEST
+======================================
+
+Source: v15.6.1 working copy based on Sanad-v15.4.1-With-v14-Original-Data
+
+PRESERVED COUNTS
+users=38
+clients=33
+companies=3
+requests=80
+services=82
+categories=19
+payments=87
+expenses=54
+
+DATABASE CHECKS
+integrity_check=ok
+foreign_key_violations=0
+
+PRE-UPGRADE BACKUP
+backups/pre-v16/sanad.db
+backups/pre-v16/sanad.db-wal
+backups/pre-v16/sanad.db-shm
+
+The upgrade added homepage content and layout migrations only. Existing login
+hashes, staff accounts, clients, requests, payments and operational records
+were not replaced or re-seeded.

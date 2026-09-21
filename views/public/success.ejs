@@ -1,0 +1,96 @@
+<% pageTitle = t.success_title %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="success-wrap">
+      <div class="big-seal">
+        <span class="ref"><%= reqRow.ref %></span>
+        <span class="lbl"><%= lang === 'ar' ? 'سند' : 'Sanad' %></span>
+      </div>
+
+      <h1><%= t.success_title %></h1>
+      <p><%= t.success_body %></p>
+
+      <div class="ref-box">
+        <span class="ref-label"><%= t.your_ref %></span>
+        <strong class="ref-value" id="refValue"><%= reqRow.ref %></strong>
+        <button class="btn ghost sm" type="button" id="copyRef">
+          <%= lang === 'ar' ? 'نسخ' : 'Copy' %>
+        </button>
+      </div>
+
+      <% if (uploadToken) { %>
+        <div class="next-step" style="border-color:var(--brass);background:#fdf9f0;margin-bottom:16px">
+          <h3><%= lang === 'ar' ? 'هل لديك مستندات تخص هذا الطلب؟' : 'Do you have documents for this request?' %></h3>
+          <p>
+            <%= lang === 'ar'
+              ? 'يمكنك رفعها الآن في دقيقة — صوّرها بهاتفك أو أرفق ملف PDF. الرفع اختياري تماماً، ويمكنك العودة في أي وقت.'
+              : 'Upload them in a minute — photograph them with your phone or attach a PDF. Entirely optional, and you can come back any time.' %>
+          </p>
+          <a class="btn brass" href="/upload/<%= reqRow.id %>?t=<%= uploadToken %>">
+            <%= lang === 'ar' ? 'رفع المستندات' : 'Upload documents' %>
+          </a>
+        </div>
+      <% } %>
+
+      <div class="next-step">
+        <h3><%= lang === 'ar' ? 'تابع طلبك عبر الموقع' : 'Follow your request online' %></h3>
+        <p>
+          <%= lang === 'ar'
+            ? 'أنشئ حساباً بنفس البريد الإلكتروني لمتابعة حالة الطلب، ومعرفة المستندات المطلوبة منك، ورفعها في أي وقت.'
+            : 'Create an account with the same email to see your status, what we need from you, and upload documents any time.' %>
+        </p>
+        <div class="success-actions">
+          <a class="btn brass" href="/portal/register<%= reqRow.email ? '?email=' + encodeURIComponent(reqRow.email) : '' %>">
+            <%= lang === 'ar' ? 'إنشاء حساب' : 'Create account' %>
+          </a>
+          <a class="btn ghost" href="/portal/login">
+            <%= lang === 'ar' ? 'لديّ حساب' : 'I have an account' %>
+          </a>
+        </div>
+      </div>
+
+      <div class="success-actions" style="margin-top:22px">
+        <% if (site.whatsapp) {
+             const waMsg = (lang === 'ar'
+               ? 'مرحباً، لدي طلب برقم ' + reqRow.ref + ' - الاسم: ' + reqRow.name
+               : 'Hello, I have a request ' + reqRow.ref + ' - Name: ' + reqRow.name); %>
+          <a class="btn wa" href="<%= waLink(site.whatsapp, waMsg) %>" target="_blank" rel="noopener noreferrer"><%= t.wa_now %></a>
+        <% } %>
+        <a class="btn ghost" href="/"><%= t.back_home %></a>
+      </div>
+
+      <p class="ref-note">
+        <%= lang === 'ar'
+          ? 'احتفظ برقم الطلب — واذكره عند مراسلتنا على واتساب حتى نصل إلى ملفك بسرعة.'
+          : 'Keep your reference number — mention it on WhatsApp so we can find your file quickly.' %>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyRef');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var text = document.getElementById('refValue').textContent.trim();
+      var done = function () {
+        var old = btn.textContent;
+        btn.textContent = '<%= lang === "ar" ? "تم النسخ" : "Copied" %>';
+        setTimeout(function () { btn.textContent = old; }, 1800);
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, done);
+      else {
+        var t = document.createElement('textarea');
+        t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(t); done();
+      }
+    });
+  })();
+</script>
+
+<%- include('../partials/footer') %>

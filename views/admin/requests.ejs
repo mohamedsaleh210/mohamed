@@ -1,0 +1,218 @@
+<% pageTitle = archived ? 'الأرشيف' : 'الطلبات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: archived ? 'أرشيف الطلبات' : 'الطلبات' }] }) %>
+
+<div class="page-head-row">
+  <% if (query.msg === 'erased') { %>
+  <div class="alert ok">
+    <span>
+      تم حذف الطلب <b class="num"><%= query.ref %></b> نهائياً،
+      وأرقام الإيرادات اتحدّثت.
+    </span>
+  </div>
+<% } %>
+
+<div class="page-head">
+  <h1><%= archived ? 'أرشيف الطلبات' : 'الطلبات' %></h1>
+  <p class="sub">
+    <% if (user.role === 'lawyer') { %>الطلبات المعيّن عليها انت بس.
+    <% } else { %>ابحث برقم الطلب أو العميل أو الشركة أو المكتب أو الفرع أو المفوض.<% } %>
+  </p>
+  </div>
+  <% if (['admin','supervisor'].includes(user.role)) { %>
+    <a class="btn brass" href="<%= adminPath %>/requests/new">+ طلب جديد</a>
+  <% } %>
+</div>
+
+<nav class="tabs">
+  <a href="<%= adminPath %>/requests" class="<%= archived ? '' : 'active' %>">الطلبات الشغّالة</a>
+  <a href="<%= adminPath %>/requests?archived=1" class="<%= archived ? 'active' : '' %>">الأرشيف</a>
+</nav>
+
+<%
+  const quick = (label, params) => {
+    const qs = Object.entries(params).filter(([, v]) => v).map(([k, v]) => k + '=' + v).join('&');
+    const active =
+      String(params.days || 0) === String(days || 0) &&
+      !!params.open === !!open &&
+      (params.status || '') === (status || '');
+    return { label, href: adminPath + '/requests' + (qs ? '?' + qs : ''), active };
+  };
+  const quickFilters = [
+    quick('الكل', {}),
+    quick('المفتوحة', { open: 1 }),
+    quick('آخر ٣ أيام', { days: 3, open: 1 }),
+    quick('آخر أسبوع', { days: 7, open: 1 }),
+    quick('آخر ١٠ أيام', { days: 10, open: 1 }),
+    quick('آخر شهر', { days: 30, open: 1 }),
+    quick('آخر ٣ شهور', { days: 90, open: 1 }),
+    quick('آخر ٦ شهور', { days: 180, open: 1 }),
+  ];
+%>
+
+<div class="quick-filters">
+  <% quickFilters.forEach(f => { %>
+    <a href="<%= f.href %>" class="qf <%= f.active && !critical ? 'on' : '' %>"><%= f.label %></a>
+  <% }) %>
+  <% if (criticalCount) { %>
+    <a href="<%= adminPath %>/requests?critical=1&open=1"
+       class="qf urgent <%= critical ? 'on' : '' %>">🔴 عاجل (<%= criticalCount %>)</a>
+  <% } %>
+</div>
+
+<form class="toolbar" method="get" action="<%= adminPath %>/requests">
+  <% if (archived) { %><input type="hidden" name="archived" value="1"><% } %>
+  <% if (days) { %><input type="hidden" name="days" value="<%= days %>"><% } %>
+  <% if (open) { %><input type="hidden" name="open" value="1"><% } %>
+  <input type="search" name="q" value="<%= q %>" placeholder="رقم الطلب · العميل · الشركة · الفرع · المفوض" aria-label="بحث">
+  <select name="party" id="request-party-filter" aria-label="نوع صاحب الطلب"><option value="">كل الطلبات</option><option value="individual" <%=party==='individual'?'selected':''%>>طلبات الأفراد</option><option value="company" <%=party==='company'?'selected':''%>>طلبات الشركات والمكاتب</option></select>
+  <select name="company" id="request-company-filter" aria-label="الشركة أو المكتب"><option value="">كل الشركات والمكاتب</option><% companies.forEach(c => { %><option value="<%=c.id%>" <%=companyId===c.id?'selected':''%>><%=c.name%></option><% }) %></select>
+  <select name="branch" id="request-branch-filter" aria-label="الفرع"><option value="">كل الفروع</option><% branches.forEach(b => { %><option value="<%=b.id%>" data-company="<%=b.company_id%>" <%=branchId===b.id?'selected':''%>><%=b.name%></option><% }) %></select>
+  <details class="filter-checks"><summary class="btn ghost sm">الحالات (<%= statuses.length || 'الكل' %>)</summary><div class="check-menu"><% Object.keys(STATUS).forEach(k => { %><label><input type="checkbox" name="status" value="<%= k %>" <%= statuses.includes(k) ? 'checked' : '' %>> <%= STATUS[k].ar %></label><% }) %></div></details>
+  <select name="employee" aria-label="الموظف"><option value="">كل الموظفين</option><% staff.forEach(u => { %><option value="<%= u.id %>" <%= employeeId === u.id ? 'selected' : '' %>><%= u.display_name %></option><% }) %></select>
+  <button class="btn sm" type="submit">بحث</button>
+  <% const exportQs=[]; if(q)exportQs.push('q='+encodeURIComponent(q)); if(party)exportQs.push('party='+party); if(companyId)exportQs.push('company='+companyId); if(branchId)exportQs.push('branch='+branchId); statuses.forEach(s=>exportQs.push('status='+encodeURIComponent(s))); if(employeeId)exportQs.push('employee='+employeeId); if(archived)exportQs.push('archived=1'); %>
+  <%if(can('requests.export')){%><a class="btn ghost sm" href="<%=adminPath%>/requests/export.csv?<%=exportQs.join('&')%>">Excel</a>
+  <a class="btn ghost sm" target="_blank" href="<%=adminPath%>/requests/print?<%=exportQs.join('&')%>">PDF / طباعة</a><%}%>
+  <% if (q || party || companyId || branchId || statuses.length || employeeId) { %><a class="btn ghost sm" href="<%= adminPath %>/requests<%= archived ? '?archived=1' : '' %>">مسح</a><% } %>
+</form>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (requests.length) { %>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>الرقم</th><th>العميل / الجهة</th><th>الخدمة</th><th>المحامون</th>
+            <th>الحالة</th><th>الموعد</th><th>الخطوات</th>
+            <% if (user.role !== 'lawyer') { %><th>المتبقي</th><% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% requests.forEach(r => { const rem = (r.total_amount || 0) - (r.paid_amount || 0); %>
+            <tr onclick="location.href='<%= adminPath %>/requests/<%= r.id %>'" style="cursor:pointer">
+              <td data-label="الرقم">
+                <% if (r.is_critical) { %>
+                  <span class="flag urgent" title="<%= r.critical_reason || '' %>">عاجل</span><br>
+                <% } %>
+                <a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
+                <% if (r.comment_count) { %><span class="chip">💬 <%= r.comment_count %></span><% } %>
+                <% if (r.doc_count) { %><span class="chip">📎 <%= r.doc_count %></span><% } %>
+              </td>
+              <td data-label="العميل / الجهة">
+                <% if (r.company_id) { %><span class="chip">شركة / مكتب</span> <a href="<%= adminPath %>/clients/companies/<%= r.company_id %>" style="font-weight:800;color:var(--ink)"><%= r.company_name %></a><%if(r.branch_name){%><br><span class="chip">الفرع: <%= r.branch_name %></span><%}%><%if(r.name){%><br><small>المفوض/العميل: <%=r.name%></small><%}%><% } else { %><a href="<%= adminPath %>/clients/<%= r.client_id || encodeURIComponent(r.phone) %>" style="font-weight:800;color:var(--ink)"><%= r.name %></a><% } %>
+                <% if (r.title) { %><br><span style="font-size:13px;color:var(--ink)"><%= r.title %></span><% } %>
+                <br><span class="num" style="font-size:12.5px;color:var(--muted)"><%= r.phone %></span>
+              </td>
+              <td data-label="الخدمة"><span class="chip"><%= r.service_label ? r.service_label.split(' / ')[0] : '—' %></span></td>
+              <td data-label="المحامون" style="font-size:13.5px"><%= r.lawyers || '—' %></td>
+              <td data-label="الحالة">
+                <span class="badge" style="background:<%= STATUS[r.status] ? STATUS[r.status].color : '#888' %>">
+                  <%= STATUS[r.status] ? STATUS[r.status].ar : r.status %>
+                </span>
+              </td>
+              <td data-label="الموعد">
+                <% if (r.deadline) { %>
+                  <span class="num" style="font-size:13.5px"><%= r.deadline %></span>
+                  <% if (r.overdue) { %><span class="flag late">متأخر</span><% } %>
+                  <% if (r.dueSoon) { %><span class="flag soon">النهاردة</span><% } %>
+                <% } else { %><span style="color:var(--muted)">—</span><% } %>
+              </td>
+              <td data-label="الخطوات">
+                <% if (r.todo_total) { %>
+                  <span class="num" style="font-size:13px"><%= r.todo_done %>/<%= r.todo_total %></span>
+                  <div class="progress" style="margin-top:4px;max-width:80px"><i style="width:<%= Math.round(r.todo_done / r.todo_total * 100) %>%"></i></div>
+                <% } else { %><span style="color:var(--muted)">—</span><% } %>
+              </td>
+              <% if (user.role !== 'lawyer') { %>
+                <td data-label="المتبقي" class="num" style="font-weight:800;color:<%= rem > 0 ? 'var(--danger)' : 'var(--ok)' %>">
+                  <%= rem.toLocaleString('en-US') %>
+                </td>
+              <% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">🔍</span>
+        <% if (q || status) { %>
+          <p>مفيش نتايج للبحث ده.</p>
+          <a class="btn ghost sm" href="<%= adminPath %>/requests">امسح البحث</a>
+        <% } else if (archived) { %>
+          <p>الأرشيف فاضي.</p>
+        <% } else if (user.role === 'lawyer') { %>
+          <p>مفيش طلبات معيّنة عليك دلوقتي.</p>
+        <% } else { %>
+          <p>مفيش طلبات لسه. أول ما عميل يبعت طلب من الموقع هيظهر هنا.</p>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (pages > 1) {
+     const qs = (n) => {
+       const parts = [];
+       if (archived) parts.push('archived=1');
+       if (days) parts.push('days=' + days);
+       if (critical) parts.push('critical=1');
+       if (open) parts.push('open=1');
+       if (q) parts.push('q=' + encodeURIComponent(q));
+       if (party) parts.push('party=' + party);
+       if (companyId) parts.push('company=' + companyId);
+       if (branchId) parts.push('branch=' + branchId);
+       statuses.forEach(s => parts.push('status=' + encodeURIComponent(s)));
+       if (employeeId) parts.push('employee=' + employeeId);
+       parts.push('page=' + n);
+       return '?' + parts.join('&');
+     };
+     const from = (page - 1) * pageSize + 1;
+     const to = Math.min(page * pageSize, total);
+     const window = [];
+     for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) window.push(i);
+%>
+  <nav class="pager">
+    <span class="pager-info"><%= from %>–<%= to %> من <%= total %></span>
+
+    <span class="pager-links">
+      <% if (page > 1) { %>
+        <a href="<%= qs(page - 1) %>" class="pg" rel="prev">السابق</a>
+      <% } else { %><span class="pg off">السابق</span><% } %>
+
+      <% if (window[0] > 1) { %>
+        <a href="<%= qs(1) %>" class="pg">1</a>
+        <% if (window[0] > 2) { %><span class="pg gap">…</span><% } %>
+      <% } %>
+
+      <% window.forEach(n => { %>
+        <% if (n === page) { %><span class="pg cur"><%= n %></span>
+        <% } else { %><a href="<%= qs(n) %>" class="pg"><%= n %></a><% } %>
+      <% }) %>
+
+      <% if (window[window.length - 1] < pages) { %>
+        <% if (window[window.length - 1] < pages - 1) { %><span class="pg gap">…</span><% } %>
+        <a href="<%= qs(pages) %>" class="pg"><%= pages %></a>
+      <% } %>
+
+      <% if (page < pages) { %>
+        <a href="<%= qs(page + 1) %>" class="pg" rel="next">التالي</a>
+      <% } else { %><span class="pg off">التالي</span><% } %>
+    </span>
+  </nav>
+<% } else if (total > 0) { %>
+  <p class="pager-info" style="text-align:center;margin-top:14px"><%= total %> طلب</p>
+<% } %>
+
+<script>
+(function(){
+  const party=document.getElementById('request-party-filter'),company=document.getElementById('request-company-filter'),branch=document.getElementById('request-branch-filter');
+  if(!party||!company||!branch)return;
+  const sync=()=>{const selected=company.value;[...branch.options].forEach((option,index)=>{if(!index)return;option.hidden=!selected||option.dataset.company!==selected});if(branch.selectedOptions[0]?.hidden)branch.value='';branch.disabled=!selected;company.disabled=party.value==='individual';if(company.disabled){company.value='';branch.value='';branch.disabled=true}};
+  company.addEventListener('change',()=>{if(company.value)party.value='company';sync()});party.addEventListener('change',sync);sync();
+})();
+</script>
+
+<%- include('../partials/admin_foot') %>

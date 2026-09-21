@@ -1,0 +1,66 @@
+<% pageTitle = pick(category, 'name') %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+
+    <nav class="crumbs">
+      <a href="/"><%= lang === 'ar' ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <% if (page) { %>
+        <a href="/p/<%= page.slug %>"><%= lang === 'ar' ? page.name_ar : page.name_en %></a>
+      <% } else { %>
+        <a href="/services"><%= lang === 'ar' ? 'خدماتنا' : 'Our services' %></a>
+      <% } %>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= pick(category, 'name') %></strong>
+    </nav>
+
+    <div class="section-head" style="text-align:start;margin-bottom:26px">
+      <h2 style="margin-bottom:8px"><%= pick(category, 'name') %></h2>
+      <% if (pick(category, 'desc')) { %>
+        <p style="margin:0"><%= pick(category, 'desc') %></p>
+      <% } %>
+    </div>
+
+    <div class="grid">
+      <% services.forEach(s => { %>
+        <a class="card" href="/request?service=<%= s.id %>">
+          <h4><%= pick(s, 'title') %></h4>
+          <p><%= pick(s, 'body') %></p>
+          <span class="req"><%= t.request_this %> <span class="arr"><%= dir === 'rtl' ? '←' : '→' %></span></span>
+        </a>
+      <% }) %>
+    </div>
+
+    <div class="not-found-note">
+      <h3><%= lang === 'ar' ? 'خدمتك ليست في القائمة؟' : 'Your service is not listed?' %></h3>
+      <p>
+        <%= lang === 'ar'
+          ? 'أرسل طلبك واذكر ما تحتاجه بالتفصيل — كثير من الإجراءات تندرج تحت خدمات قائمة، وسنوجّهك إلى الصحيح.'
+          : 'Send your request describing what you need — many procedures fall under an existing service, and we will point you to the right one.' %>
+      </p>
+      <a class="btn brass" href="/request"><%= t.hero_cta %></a>
+    </div>
+
+    <% if (others.length) { %>
+      <div class="other-cats">
+        <h3>
+          <%= lang === 'ar' ? 'أقسام تانية في' : 'More in' %>
+          <%= page
+            ? (lang === 'ar' ? page.name_ar : page.name_en)
+            : (lang === 'ar' ? 'خدماتنا' : 'our services') %>
+        </h3>
+        <div class="other-cats-list">
+          <% others.forEach(c => { %>
+            <a href="/services/<%= c.id %>"><%= pick(c, 'name') %></a>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

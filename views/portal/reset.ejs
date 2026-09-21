@@ -1,0 +1,57 @@
+<% pageTitle = T.resetTitle %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="form-card" style="max-width:440px">
+
+      <% if (!valid) { %>
+        <h2 style="text-align:center;color:var(--ink);margin:0 0 10px"><%= T.resetTitle %></h2>
+        <div class="form-alert"><%= T.resetInvalid %></div>
+        <a class="btn brass block" href="/portal/forgot"><%= T.forgotTitle %></a>
+      <% } else { %>
+        <h2 style="text-align:center;color:var(--ink);margin:0 0 8px"><%= T.resetTitle %></h2>
+        <p style="text-align:center;color:var(--muted);margin:0 0 22px;font-size:14.5px"><%= name %></p>
+
+        <% if (error) { %><div class="form-alert"><%= error %></div><% } %>
+
+        <form method="post" action="/portal/reset">
+          <%- csrfField %>
+          <input type="hidden" name="token" value="<%= token %>">
+
+          <div class="field">
+            <label for="password"><%= T.newPassword %></label>
+            <input type="password" id="password" name="password" required data-pw="new"
+                   dir="ltr" autocomplete="new-password">
+          </div>
+
+          <div class="pw-meter" data-pw-meter data-level="0">
+            <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+            <span class="pw-label"></span>
+          </div>
+          <ul class="pw-rules" data-pw-rules></ul>
+
+          <div class="field">
+            <label for="confirm"><%= T.passwordAgain %></label>
+            <input type="password" id="confirm" name="password_confirm" required data-pw="confirm"
+                   dir="ltr" autocomplete="new-password">
+          </div>
+          <p class="pw-match" data-pw-match></p>
+
+          <div class="pw-tools">
+            <button class="btn ghost sm" type="button" data-pw-toggle>
+              <%= lang === 'ar' ? 'إظهار' : 'Show' %>
+            </button>
+          </div>
+
+          <button class="btn brass block" type="submit"><%= T.save %></button>
+        </form>
+      <% } %>
+
+    </div>
+  </div>
+</section>
+
+<script src="/js/password.js" defer></script>
+<%- include('../partials/footer') %>

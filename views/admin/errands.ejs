@@ -1,0 +1,194 @@
+<% pageTitle = 'المشاوير' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'المشاوير' }] }) %>
+
+<%
+  const okMsgs = {
+    destination_created: 'تم إضافة الجهة.',
+    destination_deleted: 'تم حذف الجهة.',
+    destination_hidden: 'اتخفت الجهة — فيها طلبات معلّقة فمااتحذفتش.',
+    trip_closed: 'تم قفل المشوار. اللي مخلّصش رجع للقائمة.',
+  };
+  const totalPending = destinations.reduce((n, d) => n + d.pending, 0);
+%>
+
+<div class="page-head">
+  <h1>المشاوير</h1>
+  <p class="sub">كل طلب محتاج حاجة من جهة خارجية، مجمّع حسب المكان — عشان المشوار الواحد يخلّص كل اللي عنده.</p>
+</div>
+<%if(can('errands.export')){%><div class="btn-row" style="margin-bottom:14px"><a class="btn ghost" href="<%=adminPath%>/errands/export.csv">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/errands/print">PDF / طباعة</a></div><%}%>
+
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (msg === 'need_name') { %><div class="alert err"><span>اسم الجهة مطلوب.</span></div><% } %>
+<% if (msg === 'bad_date') { %><div class="alert err"><span>اختار تاريخ صحيح للمشوار.</span></div><% } %>
+<%- include('../partials/undo_banner') %>
+
+<% if (!totalPending) { %>
+  <div class="alert info">
+    <span>
+      <b>مفيش مطلوب من أي جهة دلوقتي.</b>
+      من صفحة أي طلب، اختار الجهة اللي محتاج منها حاجة، وهتلاقيها هنا مجمّعة.
+    </span>
+  </div>
+<% } %>
+
+<!-- ============================================================ upcoming trips -->
+<% if (upcoming.length) { %>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>مشاوير قادمة</h3>
+      <span class="chip spacer"><%= upcoming.length %></span>
+    </div>
+    <div class="panel-body flush">
+      <table class="tbl">
+        <thead><tr><th>التاريخ</th><th>الجهة</th><th>المسؤول</th><th>طلبات</th><th></th></tr></thead>
+        <tbody>
+          <% upcoming.forEach(t => { %>
+            <tr class="<%= t.trip_date < today ? 'row-late' : '' %>">
+              <td data-label="التاريخ">
+                <span class="num"><%= t.trip_date %></span>
+                <% if (t.trip_date === today) { %><span class="chip brass">النهاردة</span>
+                <% } else if (t.trip_date < today) { %><span class="flag late">فات</span><% } %>
+              </td>
+              <td data-label="الجهة">
+                <span class="dot" style="background:<%= t.colour || '#888' %>"></span>
+                <%= t.destination || '—' %>
+              </td>
+              <td data-label="المسؤول"><%= t.assignee_name || '—' %></td>
+              <td data-label="طلبات"><%= t.stops %></td>
+              <td data-label="" class="row-actions">
+                <a class="btn ghost sm" href="<%= adminPath %>/errands/trip/<%= t.id %>">فتح</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ by destination -->
+<% groups.forEach(g => { %>
+  <div class="panel">
+    <div class="panel-head">
+      <span class="dot" style="background:<%= g.colour %>"></span>
+      <h3><%= g.name %></h3>
+      <span class="chip spacer"><%= g.items.length %> طلب</span>
+      <a class="btn ghost sm" href="<%= adminPath %>/errands/destination/<%= g.id %>">كل التفاصيل</a>
+    </div>
+    <div class="panel-body flush">
+      <table class="tbl">
+        <thead><tr><th>الطلب</th><th>المطلوب</th><th>العميل</th><th></th></tr></thead>
+        <tbody>
+          <% g.items.slice(0, 8).forEach(item => { %>
+            <tr class="<%= item.is_critical ? 'row-urgent' : '' %>">
+              <td data-label="الطلب">
+                <% if (item.is_critical) { %><span class="flag urgent">عاجل</span><br><% } %>
+                <a class="num" href="<%= adminPath %>/requests/<%= item.request_id %>"
+                   style="font-weight:800;color:var(--brass-deep)"><%= item.ref %></a>
+              </td>
+              <td data-label="المطلوب"><%= item.task || '—' %></td>
+              <td data-label="العميل"><%= item.name %></td>
+              <td data-label="" class="row-actions">
+                <form method="post" action="<%= adminPath %>/errands/item/<%= item.id %>/done">
+                  <%- csrfField %>
+                  <input type="hidden" name="next" value="<%= adminPath %>/errands">
+                  <button class="btn ghost sm" type="submit">تم</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (g.items.length > 8) { %>
+            <tr>
+              <td colspan="4" style="text-align:center;color:var(--muted)">
+                + <%= g.items.length - 8 %> طلب —
+                <a href="<%= adminPath %>/errands/destination/<%= g.id %>"
+                   style="color:var(--brass-deep);font-weight:700">عرض الكل</a>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% }) %>
+
+<!-- ============================================================ manage -->
+<% if (canManage) { %>
+  <div class="two-col wide">
+    <div class="panel">
+      <div class="panel-head"><h3>تخطيط مشوار</h3></div>
+      <div class="panel-body">
+        <form method="post" action="<%= adminPath %>/errands/trips/new">
+          <%- csrfField %>
+          <div class="field req">
+            <label>الجهة</label>
+            <select name="destination_id" required>
+              <% destinations.forEach(d => { %>
+                <option value="<%= d.id %>"><%= d.name %> (<%= d.pending %> معلّق)</option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="two-col">
+            <div class="field req">
+              <label>التاريخ</label>
+              <input type="date" name="trip_date" required value="<%= today %>">
+            </div>
+            <div class="field">
+              <label>المسؤول</label>
+              <select name="assignee_id">
+                <option value="">— مش محدد —</option>
+                <% staffOptions.forEach(u => { %>
+                  <option value="<%= u.id %>"><%= u.display_name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>ملاحظة</label>
+            <input type="text" name="note" placeholder="مثال: الدور التالت — شباك ٤">
+          </div>
+          <div class="help" style="margin-bottom:10px">
+            كل الطلبات المعلّقة في الجهة دي هتنضم للمشوار تلقائياً.
+          </div>
+          <button class="btn brass block" type="submit">إنشاء المشوار</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>الجهات</h3></div>
+      <div class="panel-body flush">
+        <ul class="dest-list">
+          <% destinations.forEach(d => { %>
+            <li>
+              <span class="dot" style="background:<%= d.colour %>"></span>
+              <span class="dest-name"><%= d.name %></span>
+              <span class="chip <%= d.pending ? 'brass' : '' %>"><%= d.pending %></span>
+              <form method="post" action="<%= adminPath %>/errands/destinations/<%= d.id %>/delete"
+                    data-confirm="تحذف «<%= d.name %>»؟">
+                <%- csrfField %>
+                <button class="btn danger sm" type="submit">حذف</button>
+              </form>
+            </li>
+          <% }) %>
+        </ul>
+        <div class="panel-body">
+          <form method="post" action="<%= adminPath %>/errands/destinations/new"
+                style="display:flex;gap:8px;flex-wrap:wrap">
+            <%- csrfField %>
+            <input type="text" name="name" required placeholder="اسم جهة جديدة"
+                   style="flex:1;min-width:160px;padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:44px">
+            <input type="color" name="colour" value="#2f7bbf"
+                   style="width:52px;height:44px;border:1.5px solid var(--line);border-radius:9px;padding:3px">
+            <button class="btn sm" type="submit">إضافة</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

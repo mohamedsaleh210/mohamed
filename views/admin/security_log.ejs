@@ -1,0 +1,47 @@
+<% pageTitle = 'سجل الدخول' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الأمان والدخول', href: adminPath + '/security' }, { label: 'السجل الكامل' }] }) %>
+
+<div class="page-head">
+  <h1>سجل الدخول الكامل</h1>
+  <p class="sub">آخر ٢٠٠ محاولة دخول، ناجحة وفاشلة.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (entries.length) { %>
+      <table class="tbl">
+        <thead><tr><th>الوقت</th><th>المستخدم</th><th>النتيجة</th><th>IP والموقع</th><th>الجهاز</th></tr></thead>
+        <tbody>
+          <% entries.forEach(e => { %>
+            <tr>
+              <td data-label="الوقت"><%= fmtDateTime(e.created_at) %></td>
+              <td data-label="المستخدم"><span class="num"><%= e.username || '—' %></span></td>
+              <td data-label="النتيجة">
+                <% if (e.success) { %><span class="chip ok">ناجح</span>
+                <% } else { %><span class="chip danger">فاشل</span><% } %>
+              </td>
+              <td data-label="IP والموقع">
+                <span class="num"><%= e.ip %></span><br>
+                <% if (e.location_status === 'captured' && e.latitude != null && e.longitude != null) { %>
+                  <a class="location-link" target="_blank" rel="noopener noreferrer"
+                     href="https://www.google.com/maps?q=<%= e.latitude %>,<%= e.longitude %>">📍 فتح الموقع</a>
+                  <% if (e.location_accuracy) { %><small> (دقة ±<%= Math.round(e.location_accuracy) %>م)</small><% } %>
+                <% } else { const loc = {denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم',not_requested:'لم يُطلب'}; %>
+                  <small class="location-missing"><%= loc[e.location_status] || 'غير مسجل' %></small>
+                <% } %>
+              </td>
+              <td data-label="الجهاز"><%= e.device %> · <%= e.browser %> · <%= e.os %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty"><p>مفيش سجل دخول لسه.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

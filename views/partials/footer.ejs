@@ -1,0 +1,86 @@
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div class="foot-about">
+      <div class="brand" style="align-items:flex-start">
+      <span class="seal"><span>س</span></span>
+      <span>
+        <b><%= lang==='ar' ? site.name_ar : site.name_en %></b>
+        <small style="color:#9fb0b5"><%= lang==='ar' ? site.tagline_ar : site.tagline_en %></small>
+      </span>
+      </div>
+      <p>منصة مصرية للخدمات القانونية والإدارية، تربط العميل بمقدم الخدمة وتوثق رحلة العمل حتى الإنجاز.</p>
+    </div>
+    <div class="foot-column"><b>الخدمات</b><a href="/services">جميع الخدمات</a><%menuPages.slice(0,4).forEach(p=>{%><a href="/p/<%=p.slug%>"><%=p.name_ar%></a><%})%></div>
+    <div class="foot-column"><b>المنصة</b><a href="/track">تتبّع طلب</a><a href="/guides">دليل الاستخدام</a><a href="/faq">الأسئلة الشائعة</a><a href="/support">الدعم الفني</a></div>
+    <div class="foot-column"><b>تواصل معنا</b><%if(site.whatsapp){%><a dir="ltr" href="<%=waLink(site.whatsapp,'مرحباً')%>"><%=site.whatsapp%></a><%}%><%if(site.email){%><a dir="ltr" href="mailto:<%=site.email%>"><%=site.email%></a><%}%><a href="/contact">مواعيد وطرق التواصل</a>
+    <% if (socialLinks.length) { %>
+        <div class="foot-social-title"><%= t.follow_us %></div>
+        <div class="foot-social">
+          <% socialLinks.forEach(l => { %>
+            <a href="<%= l.url %>" target="_blank" rel="noopener noreferrer"
+               aria-label="<%= l.label || l.meta.ar %>" title="<%= l.label || l.meta.ar %>"
+               style="--brand:<%= l.meta.color %>">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="<%= l.meta.icon %>"/></svg>
+            </a>
+          <% }) %>
+        </div>
+    <% } %>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© <%= new Date().getFullYear() %> <%= lang==='ar' ? site.name_ar : site.name_en %> — <%= t.footer_rights %></span>
+  </div>
+</footer>
+
+<% if (site.whatsapp) { %>
+<a class="wa-float" href="<%= waLink(site.whatsapp, lang==='ar' ? 'مرحباً، أرغب في الاستفسار عن خدماتكم' : 'Hello, I would like to ask about your services') %>" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.7-.85-2-.94-.26-.1-.45-.15-.64.15-.19.28-.73.94-.9 1.13-.16.19-.33.21-.62.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.34.44-.51.15-.17.2-.29.3-.48.1-.19.05-.36-.02-.5-.08-.15-.64-1.54-.88-2.11-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.36-.26.28-1 1-1 2.43 0 1.44 1.03 2.82 1.17 3.02.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.32.19 1.81.12.55-.08 1.7-.7 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.34z"/><path d="M12 2C6.48 2 2 6.48 2 12c0 1.77.46 3.43 1.27 4.88L2 22l5.25-1.24A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18.2c-1.55 0-3-.44-4.23-1.2l-.3-.18-3.12.74.74-3.04-.2-.31A8.15 8.15 0 0 1 3.8 12 8.2 8.2 0 0 1 12 3.8a8.2 8.2 0 0 1 8.2 8.2 8.2 8.2 0 0 1-8.2 8.2z"/></svg>
+  <span><%= t.wa_float %></span>
+</a>
+<% } %>
+
+<script>
+  (function () {
+    var nav = document.getElementById('nav');
+    var btn = document.getElementById('menuBtn');
+    var close = document.getElementById('mobileNavClose');
+    var scrim = document.getElementById('mobileNavScrim');
+    var returnFocus = null;
+    var savedScrollY = 0;
+    if (!btn || !nav) return;
+    function focusables() {
+      return Array.prototype.slice.call(nav.querySelectorAll('a[href],button:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'))
+        .filter(function (el) { return el.offsetParent !== null; });
+    }
+    function setOpen(open) {
+      if (open) { returnFocus = document.activeElement; savedScrollY = window.scrollY || 0; document.body.style.top = '-' + savedScrollY + 'px'; }
+      nav.classList.toggle('open', open);
+      document.body.classList.toggle('mobile-nav-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      nav.setAttribute('aria-hidden', open ? 'false' : (window.innerWidth <= 1180 ? 'true' : 'false'));
+      if (scrim) { scrim.hidden = !open; scrim.classList.toggle('show', open); }
+      if (!open) nav.querySelectorAll('details[open]').forEach(function (d) { d.removeAttribute('open'); });
+      if (open) window.setTimeout(function () { var f = focusables(); if (f[0]) f[0].focus(); }, 30);
+      else { document.body.style.top = ''; window.scrollTo(0, savedScrollY); if (returnFocus && returnFocus.focus) returnFocus.focus(); }
+    }
+    btn.addEventListener('click', function () { setOpen(!nav.classList.contains('open')); });
+    if (close) close.addEventListener('click', function () { setOpen(false); });
+    if (scrim) scrim.addEventListener('click', function () { setOpen(false); });
+    nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Tab' && nav.classList.contains('open')) {
+        var f = focusables(); if (!f.length) return;
+        if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1180) { setOpen(false); nav.setAttribute('aria-hidden', 'false'); }
+      else if (!nav.classList.contains('open')) nav.setAttribute('aria-hidden', 'true');
+    });
+    nav.setAttribute('aria-hidden', window.innerWidth <= 1180 ? 'true' : 'false');
+  })();
+</script>
+</body>
+</html>

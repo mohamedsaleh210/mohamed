@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>بطاقة دخول — <%=card.name%></title>
+<style>
+*{box-sizing:border-box}html,body{margin:0}body{font-family:Tahoma,Arial,sans-serif;background:#eef1ef;color:#0b2b34;padding:24px;min-height:100vh}.wrap{max-width:840px;margin:auto}.actions{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 14px}.actions form{margin:0}.btn{appearance:none;border:1px solid #c7d1cd;border-radius:10px;padding:11px 15px;background:#fff;color:#0b2b34;font:700 14px Tahoma,Arial;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:44px}.btn.primary{background:#d1a747;border-color:#d1a747;color:#082b34}.btn.danger{border-color:#e8c5c5;color:#9c3131}.btn:hover{filter:brightness(.98)}.status{border-radius:12px;padding:11px 14px;margin:0 0 14px;font-size:14px}.status.ok{background:#edf8f0;border:1px solid #bfe1c8;color:#256139}.status.err{background:#fff0f0;border:1px solid #efc6c6;color:#8d2e2e}.card{background:#fff;border:2px solid #d1a747;border-radius:20px;padding:32px;box-shadow:0 10px 30px #00000012}.head{display:flex;justify-content:space-between;align-items:center;gap:18px;border-bottom:3px solid #0b2b34;padding-bottom:18px}.brand{font-size:28px;font-weight:bold}.seal{width:58px;height:58px;border:3px solid #d1a747;border-radius:50%;display:grid;place-items:center;font-size:25px;font-weight:bold;flex:0 0 auto}.kind{color:#aa7c18;font-weight:bold;margin-top:20px}.name{font-size:28px;margin:5px 0 4px}.company{font-size:18px;color:#45575d}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:24px}.field{background:#f5f6f5;border:1px solid #dce2df;border-radius:11px;padding:14px;min-width:0}.field span{display:block;color:#6b797e;font-size:12px}.field b{display:block;margin-top:6px;overflow-wrap:anywhere}.wide{grid-column:1/-1}.password{font-family:Consolas,"Courier New",monospace;font-size:19px;direction:ltr}.qr-section{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:22px;padding:18px;border:1px dashed #c9d2ce;border-radius:14px;background:#fbfcfb}.qr-section img{width:170px;height:170px;display:block;border-radius:8px;background:#fff}.qr-copy{max-width:330px}.qr-copy b{display:block;font-size:17px;margin-bottom:7px}.qr-copy p{margin:0;color:#66777c;font-size:13px;line-height:1.7}.note{margin-top:20px;border-right:4px solid #d1a747;padding:11px 13px;background:#fffaf0;border-radius:6px}.issued{font-size:11px;color:#77858a;margin-top:20px;direction:rtl}.delivery-state{font-size:12px;color:#6b797e;margin-top:10px}.screen-help{margin:10px 0 0;color:#65767b;font-size:12px}@media(max-width:680px){body{padding:12px}.card{padding:20px;border-radius:15px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.qr-section{flex-direction:column;text-align:center}.actions{display:grid;grid-template-columns:1fr 1fr}.actions form,.actions .btn{width:100%}.btn{justify-content:center}.name{font-size:23px}.company{font-size:15px}}@media(max-width:390px){.actions{grid-template-columns:1fr}.head{align-items:flex-start}.seal{width:48px;height:48px;font-size:20px}.card{padding:16px}.qr-section img{width:150px;height:150px}}@media print{body{background:#fff;padding:0}.actions,.status,.screen-help,.delivery-state{display:none!important}.wrap{max-width:none}.card{box-shadow:none;margin:0;max-width:none;border-width:2px;page-break-inside:avoid}.qr-section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <% const advancedActions = !!card.userId; const noticeText = (typeof notice !== "undefined" ? notice : ""); const errorText = (typeof error !== "undefined" ? error : ""); const liveMail = (typeof mailLive !== "undefined" ? mailLive : false); const liveSms = (typeof smsConfigured !== "undefined" ? smsConfigured : false); %>
+  <% if (noticeText) { %><div class="status ok"><%=noticeText%></div><% } %>
+  <% if (errorText) { %><div class="status err"><%=errorText%></div><% } %>
+
+  <div class="actions" aria-label="إجراءات بطاقة الدخول">
+    <% if (advancedActions) { %>
+    <form method="post" action="<%=adminPath%>/users/<%=card.userId%>/access-card/pdf">
+      <%- csrfField %>
+      <input type="hidden" name="temporary_password" value="<%=card.password%>">
+      <input type="hidden" name="event_id" value="<%=eventId%>">
+      <button class="btn primary" type="submit">⬇ تحميل PDF</button>
+    </form>
+    <button class="btn" type="button" onclick="window.print()">🖨 طباعة</button>
+    <form method="post" action="<%=adminPath%>/users/<%=card.userId%>/access-card/email">
+      <%- csrfField %>
+      <input type="hidden" name="temporary_password" value="<%=card.password%>">
+      <input type="hidden" name="event_id" value="<%=eventId%>">
+      <button class="btn" type="submit">✉ إرسال بالبريد</button>
+    </form>
+    <form method="post" action="<%=adminPath%>/users/<%=card.userId%>/access-card/sms">
+      <%- csrfField %>
+      <input type="hidden" name="temporary_password" value="<%=card.password%>">
+      <input type="hidden" name="event_id" value="<%=eventId%>">
+      <button class="btn" type="submit">▣ إرسال SMS</button>
+    </form>
+    <button class="btn" id="copy-login" type="button" data-url="<%=card.url%>">⧉ نسخ رابط الدخول</button>
+    <form method="post" action="<%=adminPath%>/users/<%=card.userId%>/access-card" onsubmit="return confirm('سيتم إبطال كلمة المرور المؤقتة الحالية وإصدار كلمة جديدة. متابعة؟')">
+      <%- csrfField %>
+      <button class="btn danger" type="submit">↻ إعادة إصدار كلمة المرور</button>
+    </form>
+    <a class="btn" href="<%=adminPath%>/users/<%=card.userId%>">← ملف الموظف</a>
+    <% } else { %>
+      <button class="btn primary" type="button" onclick="window.print()">🖨 طباعة / حفظ PDF</button>
+      <a class="btn" href="javascript:history.back()">← العودة</a>
+    <% } %>
+  </div>
+
+  <article class="card">
+    <div class="head">
+      <div><div class="brand">سند</div><small>منصة الخدمات القانونية والإدارية</small></div>
+      <div class="seal">س</div>
+    </div>
+    <div class="kind"><%=card.type==='company'?'بطاقة دخول صاحب/مدير الشركة':'بطاقة دخول موظف'%></div>
+    <h1 class="name"><%=card.name%></h1>
+    <div class="company"><%=card.company%> · <%=card.branch%></div>
+
+    <div class="grid">
+      <div class="field wide"><span>رابط الدخول</span><b dir="ltr"><%=card.url%></b></div>
+      <div class="field"><span>اسم المستخدم</span><b dir="ltr"><%=card.username%></b></div>
+      <div class="field"><span>كلمة المرور المؤقتة</span><b class="password"><%=card.password%></b></div>
+      <%if(card.email){%><div class="field"><span>البريد الإلكتروني</span><b dir="ltr"><%=card.email%></b></div><%}%>
+      <%if(card.phone){%><div class="field"><span>رقم الجوال</span><b dir="ltr"><%=card.phone%></b></div><%}%>
+    </div>
+
+    <% if (advancedActions) { %>
+    <div class="qr-section">
+      <img src="<%=adminPath%>/users/<%=card.userId%>/access-card/qr" alt="QR Code لرابط الدخول">
+      <div class="qr-copy">
+        <b>امسح QR Code لفتح صفحة الدخول</b>
+        <p>يوجه الرمز مباشرة إلى رابط دخول الجهة الظاهر في البطاقة. يمكن استخدامه من الهاتف بدل كتابة الرابط يدويًا.</p>
+      </div>
+    </div>
+    <% } %>
+
+    <div class="note"><b>تنبيه أمني:</b> يجب تغيير كلمة المرور عند أول دخول. بعد تغييرها لا يمكن استرجاعها من البطاقة، ويمكن فقط إصدار كلمة مرور مؤقتة جديدة.</div>
+    <div class="issued">رقم الإصدار: <%=eventId%> · <%=card.issuedAt.toLocaleString('ar-EG')%></div>
+  </article>
+
+  <div class="delivery-state">
+    <% if (advancedActions) { %>البريد: <%=card.email ? (liveMail ? 'الإرسال الفعلي مفعّل' : 'وضع Outbox تجريبي حتى تفعيل مزود البريد') : 'لا يوجد بريد مسجل'%>
+    · SMS: <%=card.phone ? (liveSms ? 'المزود مفعّل' : 'يحتاج إعداد SMS_API_URL') : 'لا يوجد رقم جوال مسجل'%><% } %>
+  </div>
+  <p class="screen-help">الأزرار لا تظهر عند الطباعة أو داخل نسخة PDF.</p>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('copy-login');
+  if(!btn)return;
+  btn.addEventListener('click',async function(){
+    var url=btn.getAttribute('data-url')||'';
+    try{await navigator.clipboard.writeText(url);btn.textContent='✓ تم نسخ رابط الدخول';}
+    catch(e){var t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();btn.textContent='✓ تم نسخ رابط الدخول';}
+    setTimeout(function(){btn.textContent='⧉ نسخ رابط الدخول';},2200);
+  });
+})();
+</script>
+</body>
+</html>

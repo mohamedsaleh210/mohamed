@@ -1,0 +1,137 @@
+<% pageTitle = T.register %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+
+    <p class="crumb-home">
+      <a href="/">&larr; <%= lang === 'ar' ? 'الرئيسية' : 'Home' %></a>
+    </p>
+
+    <div class="form-card" style="max-width:520px">
+      <h2 style="text-align:center;color:var(--ink);margin:0 0 6px"><%= T.register %></h2>
+      <p style="text-align:center;color:var(--muted);margin:0 0 22px;font-size:14.5px"><%= T.registerSub %></p>
+
+      <% if (error) { %><div class="form-alert"><%= error %></div><% } %>
+
+      <% if (typeof googleOn !== 'undefined' && googleOn) { %>
+        <a class="btn google block" href="/portal/google<%= next ? '?next=' + encodeURIComponent(next) : '' %>">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.6z"/>
+            <path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3a12 12 0 0 0 10.2 6.3z"/>
+            <path fill="#FBBC05" d="M5.6 14.7a7.2 7.2 0 0 1 0-4.6v-3H1.8a12 12 0 0 0 0 10.6l3.8-3z"/>
+            <path fill="#EA4335" d="M12 4.8c1.7 0 3.2.6 4.4 1.7l3.3-3.3A11.6 11.6 0 0 0 12 0 12 12 0 0 0 1.8 6.1l3.8 3C6.5 6.7 9 4.8 12 4.8z"/>
+          </svg>
+          <%= T.googleBtn %>
+        </a>
+        <p class="help" style="text-align:center;margin:8px 0 0">
+          <%= lang === 'ar'
+            ? 'هنحتاج رقم هاتفك بعد الدخول لإتمام أي طلب.'
+            : 'We will ask for your phone number after signing in.' %>
+        </p>
+        <div class="or-split"><span><%= T.googleOr %></span></div>
+      <% } %>
+
+      <form method="post" action="/portal/register">
+        <% if (typeof next !== "undefined" && next) { %><input type="hidden" name="next" value="<%= next %>"><% } %>
+        <%- csrfField %>
+
+        <div class="field">
+          <label for="full_name"><%= T.fullName %> *</label>
+          <input type="text" id="full_name" name="full_name" required value="<%= form.full_name || '' %>"
+                 placeholder="<%= lang === 'ar' ? 'محمد أحمد إبراهيم' : 'First Middle Last' %>">
+        </div>
+
+        <div class="field">
+          <label for="relation"><%= T.relation %> *</label>
+          <select id="relation" name="relation" onchange="toggleBeneficiary()">
+            <option value="self" <%= form.relation === 'self' || !form.relation ? 'selected' : '' %>>
+              <%= lang === 'ar' ? 'صاحب الطلب' : 'The request is for me' %></option>
+            <option value="guardian" <%= form.relation === 'guardian' ? 'selected' : '' %>>
+              <%= lang === 'ar' ? 'ولي أمر' : 'Guardian' %></option>
+            <option value="agent" <%= form.relation === 'agent' ? 'selected' : '' %>>
+              <%= lang === 'ar' ? 'وكيل' : 'Agent' %></option>
+            <option value="relative" <%= form.relation === 'relative' ? 'selected' : '' %>>
+              <%= lang === 'ar' ? 'قريب' : 'Relative' %></option>
+            <option value="other" <%= form.relation === 'other' ? 'selected' : '' %>>
+              <%= lang === 'ar' ? 'أخرى' : 'Other' %></option>
+          </select>
+          <div class="field-help">
+            <%= lang === 'ar'
+              ? 'يمكنك تغييرها مع كل طلب — فقد تطلب لنفسك مرة، ولأحد أبنائك مرة أخرى.'
+              : 'You can change this per request — for yourself once, for your child another time.' %>
+          </div>
+        </div>
+
+        <div class="field" id="beneficiaryField" hidden>
+          <label for="beneficiary_name"><%= T.beneficiary %></label>
+          <input type="text" id="beneficiary_name" name="beneficiary_name" value="<%= form.beneficiary_name || '' %>">
+        </div>
+
+        <div class="field">
+          <label for="phone"><%= T.phone %> *</label>
+          <input type="text" id="phone" name="phone" required inputmode="tel" dir="ltr"
+                 value="<%= form.phone || '' %>" placeholder="+201000000000">
+        </div>
+
+        <div class="field">
+          <label for="email"><%= T.email %> *</label>
+          <input id="email" name="email" type="email" required dir="ltr" autocomplete="email"
+                 value="<%= form.email || '' %>">
+          <div class="field-help">
+            <%= lang === 'ar'
+              ? 'إذا سبق أن قدّمت طلباً بنفس البريد الإلكتروني، سنربطه بحسابك تلقائياً.'
+              : 'If you already sent a request with this email, we will link it automatically.' %>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password"><%= T.password %> *</label>
+          <input id="password" name="password" type="password" required
+                 data-pw="new" dir="ltr" autocomplete="new-password">
+        </div>
+
+        <div class="pw-meter" data-pw-meter data-level="0">
+          <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+          <span class="pw-label"></span>
+        </div>
+
+        <ul class="pw-rules" data-pw-rules></ul>
+
+        <div class="field">
+          <label for="password_confirm"><%= T.passwordAgain %> *</label>
+          <input id="password_confirm" name="password_confirm" type="password" required
+                 data-pw="confirm" dir="ltr" autocomplete="new-password">
+        </div>
+        <p class="pw-match" data-pw-match></p>
+
+        <div class="pw-tools">
+          <button class="btn ghost sm" type="button" data-pw-toggle>
+            <%= lang === 'ar' ? 'إظهار' : 'Show' %>
+          </button>
+        </div>
+
+        <button class="btn brass block" type="submit"><%= T.createBtn %></button>
+      </form>
+
+      <p style="text-align:center;margin:18px 0 0;color:var(--muted);font-size:14.5px">
+        <%= T.haveAccount %>
+        <a href="/portal/login" style="color:var(--brass-deep);font-weight:700"><%= T.signIn %></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  function toggleBeneficiary() {
+    var sel = document.getElementById('relation');
+    var box = document.getElementById('beneficiaryField');
+    box.hidden = sel.value === 'self';
+  }
+  toggleBeneficiary();
+</script>
+
+<script src="/js/password.js" defer></script>
+
+<%- include('../partials/footer') %>

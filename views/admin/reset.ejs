@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>كلمة مرور جديدة — سند</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin">
+<div class="login-page">
+  <div class="login-card">
+    <span class="seal"><span>س</span></span>
+
+    <% if (!valid) { %>
+      <h1>الرابط غير صالح</h1>
+      <p class="sub" style="margin-bottom:22px">
+        الرابط ده انتهت صلاحيته أو اتستخدم قبل كده. اطلب رابط جديد.
+      </p>
+      <a class="btn brass block" href="<%= adminPath %>/forgot">طلب رابط جديد</a>
+    <% } else { %>
+      <h1>كلمة مرور جديدة</h1>
+      <p class="sub">أهلاً <%= name %> — اختار كلمة مرور جديدة لحسابك.</p>
+
+      <% if (error) { %><div class="alert err"><span><%= error %></span></div><% } %>
+
+      <form method="post" action="<%= adminPath %>/reset">
+        <%- csrfField %>
+        <input type="hidden" name="token" value="<%= token %>">
+
+        <div class="field">
+          <label for="password">كلمة المرور الجديدة</label>
+          <input type="password" id="password" name="password" required data-pw="new"
+                 autocomplete="new-password" dir="ltr" style="text-align:left">
+        </div>
+
+        <div class="pw-meter" data-pw-meter data-level="0">
+          <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+          <span class="pw-label"></span>
+        </div>
+        <ul class="pw-rules" data-pw-rules></ul>
+
+        <div class="field">
+          <label for="confirm">اكتبها تاني</label>
+          <input type="password" id="confirm" name="password_confirm" required data-pw="confirm"
+                 autocomplete="new-password" dir="ltr" style="text-align:left">
+        </div>
+        <p class="pw-match" data-pw-match></p>
+
+        <div class="pw-tools">
+          <button class="btn ghost sm" type="button" data-pw-toggle>إظهار</button>
+          <button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button>
+        </div>
+
+        <button class="btn brass block" type="submit">حفظ كلمة المرور</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+<script src="/js/password.js" defer></script>
+</body>
+</html>

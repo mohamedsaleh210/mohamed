@@ -1,0 +1,19 @@
+<%pageTitle='حجز الاستشارات والمواعيد'%><%-include('../partials/head')%><%-include('../partials/header')%>
+<section class="section booking-page"><div class="wrap narrow">
+  <div class="section-head booking-title"><div class="eyebrow">الحجز المباشر</div><h1>احجز استشارة أو موعدًا</h1><p>أدخل بياناتك واختر الموعد المناسب دون إنشاء حساب. يراجع المكتب الحجز ثم يعيّن الموظف المختص.</p></div>
+  <%if(clientUser){%><a class="btn ghost" href="/appointments/mine">مواعيدي</a><%}%>
+  <form method="post" class="booking-form"><%-csrfField%>
+    <%if(!clientUser){%>
+      <label>الاسم الكامل<input type="text" name="full_name" required minlength="2" maxlength="150" autocomplete="name"></label>
+      <label>رقم الموبايل<input type="tel" name="phone" required minlength="7" maxlength="30" inputmode="tel" autocomplete="tel" dir="ltr"></label>
+      <label>البريد الإلكتروني<input name="email" type="email" required maxlength="200" autocomplete="email" dir="ltr"></label>
+    <%}%>
+    <label>نوع الحجز<select name="kind"><option value="appointment">موعد حضور المكتب</option><option value="consultation" <%=kind==='consultation'?'selected':''%>>استشارة</option></select></label>
+    <label>الخدمة<select name="service_id"><option value="">موعد عام</option><%services.forEach(s=>{%><option value="<%=s.id%>"><%=s.is_consultation?'استشارة: ':''%><%=s.title_ar%></option><%})%></select></label>
+    <label>طريقة الاستشارة<select name="mode_id"><%modes.forEach(m=>{%><option value="<%=m.id%>"><%=m.name%></option><%})%></select></label>
+    <label class="booking-wide">الموعد المتاح<select name="slot_id" required><%slots.forEach(s=>{%><option value="<%=s.id%>"><%=s.starts_at%> — <%=s.ends_at%> / <%=s.location%></option><%})%></select></label>
+    <label class="booking-wide">تفاصيل الطلب<textarea name="notes" maxlength="2000" rows="4" placeholder="اكتب نبذة مختصرة تساعد المكتب على تجهيز الموعد"></textarea></label>
+    <button class="btn brass booking-submit" <%=slots.length?'':'disabled'%>>تأكيد الحجز</button>
+  </form>
+  <%if(!slots.length){%><div class="booking-empty"><b>لا توجد مواعيد متاحة الآن</b><p>سيضيف المكتب مواعيد جديدة قريبًا. يمكنك العودة لاحقًا أو التواصل معه مباشرة.</p></div><%}%>
+</div></section><%-include('../partials/footer')%>

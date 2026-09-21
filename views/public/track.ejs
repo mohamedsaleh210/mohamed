@@ -1,0 +1,38 @@
+<% pageTitle = T.title %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="form-card" style="max-width:470px">
+      <h2 style="text-align:center;color:var(--ink);margin:0 0 8px"><%= T.title %></h2>
+      <p style="text-align:center;color:var(--muted);margin:0 0 22px;font-size:14.5px"><%= T.sub %></p>
+
+      <% if (error) { %><div class="form-alert"><%= error %></div><% } %>
+
+      <form method="post" action="/track">
+        <%- csrfField %>
+        <div class="field">
+          <label for="ref"><%= T.ref %></label>
+          <input type="text" id="ref" name="ref" required dir="ltr" autocomplete="off"
+                 style="text-align:left;letter-spacing:1px;font-weight:700"
+                 placeholder="SND-26-K7F2Q" value="<%= form.ref || '' %>">
+          <div class="field-help"><%= T.hint %></div>
+        </div>
+        <div class="field">
+          <label for="phone"><%= T.phone %></label>
+          <input type="text" id="phone" name="phone" required dir="ltr" inputmode="tel"
+                 style="text-align:left" placeholder="01000000000" value="<%= form.phone || '' %>">
+        </div>
+        <button class="btn brass block" type="submit"><%= T.submit %></button>
+      </form>
+
+      <p style="text-align:center;margin:18px 0 0;color:var(--muted);font-size:14.5px">
+        <%= T.haveAccount %>
+        <a href="/portal/login" style="color:var(--brass-deep);font-weight:700"><%= T.signIn %></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

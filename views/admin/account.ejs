@@ -1,0 +1,87 @@
+<% pageTitle = 'حسابي' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'كلمة السر' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>كلمة السر</h1>
+    <p class="sub">
+      داخل باسم <strong><%= user.display_name || user.username %></strong>.
+      تغييرها بيقفل أي جلسة تانية مفتوحة بحسابك.
+    </p>
+  </div>
+  <% if (!force) { %>
+    <a class="btn ghost" href="<%= adminPath %>/account/profile">تعديل بياناتي</a>
+  <% } %>
+</div>
+
+<% if (force) { %>
+  <div class="alert warn">
+    <span>
+      <b>لازم تغيّر كلمة السر قبل ما تكمل.</b>
+      الحساب ده اتعمل بكلمة سر مؤقتة من الأدمن. اختار واحدة تخصك انت بس.
+    </span>
+  </div>
+<% } %>
+
+<% if (!user.email) { %>
+  <div class="alert warn">
+    <span>
+      <b>مفيش إيميل على حسابك.</b>
+      لو نسيت كلمة السر مش هتقدر تستعيدها بنفسك — هتحتاج أدمن تاني يعمل لك واحدة.
+      ضيف إيميلك من صفحة الموظفين.
+    </span>
+  </div>
+<% } %>
+
+<% if (msg === 'ok') { %><div class="alert ok"><span>تم تغيير كلمة السر.</span></div><% } %>
+<% if (msg === 'wrong') { %><div class="alert err"><span>كلمة السر الحالية غلط.</span></div><% } %>
+<% if (err) { %><div class="alert err"><span><%= err %></span></div><% } %>
+<% if (msg === 'mismatch') { %><div class="alert err"><span>التأكيد مش مطابق لكلمة السر الجديدة.</span></div><% } %>
+<% if (msg === 'same') { %><div class="alert err"><span>اختار كلمة سر مختلفة عن الحالية.</span></div><% } %>
+
+<div class="panel" style="max-width:480px">
+  <div class="panel-head"><h3>تغيير كلمة السر</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/account/password">
+      <%- csrfField %>
+      <div class="field req">
+        <label for="current">كلمة السر الحالية</label>
+        <input id="current" name="current" type="password" required autocomplete="current-password"
+               dir="ltr" style="text-align:left">
+      </div>
+      <div class="field req">
+        <label for="next">كلمة السر الجديدة</label>
+        <input id="next" name="next" type="password" required data-pw="new"
+               autocomplete="new-password" dir="ltr" style="text-align:left">
+      </div>
+
+      <div class="pw-meter" data-pw-meter data-level="0">
+        <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+        <span class="pw-label"></span>
+      </div>
+
+      <ul class="pw-rules" data-pw-rules></ul>
+
+      <div class="field req">
+        <label for="confirm">اكتب كلمة السر تاني</label>
+        <input id="confirm" name="confirm" type="password" required data-pw="confirm"
+               autocomplete="new-password" dir="ltr" style="text-align:left">
+      </div>
+      <p class="pw-match" data-pw-match></p>
+
+      <div class="pw-tools">
+        <button class="btn ghost sm" type="button" data-pw-toggle>إظهار</button>
+        <button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button>
+      </div>
+
+      <button class="btn brass block" type="submit">تغيير كلمة السر</button>
+    </form>
+  </div>
+</div>
+
+<script src="/js/password.js" defer></script>
+
+<%- include('../partials/admin_foot') %>

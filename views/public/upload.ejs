@@ -1,0 +1,460 @@
+<% pageTitle = lang === 'ar' ? 'رفع المستندات' : 'Upload documents' %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<%
+  const ar = lang === 'ar';
+  const q = token ? '?t=' + encodeURIComponent(token) : '';
+  const sep = token ? '&' : '?';
+  const errMsgs = {
+    no_name: ar ? 'اكتب اسم المستند الأول.' : 'Please name the document first.',
+    no_file: ar ? 'اختر صورة أو ملف PDF.' : 'Choose an image or a PDF.',
+    too_big: ar ? `الملف أكبر من ${maxFileMb} ميجا.` : `File is larger than ${maxFileMb} MB.`,
+    bad_type: ar ? 'نوع الملف مش مدعوم. الصور و PDF بس.' : 'Unsupported file type. Images and PDF only.',
+    too_many: ar ? `الحد الأقصى ${maxFiles} ملف للطلب الواحد.` : `Maximum ${maxFiles} files per request.`,
+    too_late: ar ? 'عدّى وقت الحذف. كلّم المكتب لو محتاج تشيله.' : 'The deletion window has passed. Contact the office.',
+    failed: ar ? 'الرفع فشل. جرّب تاني.' : 'Upload failed. Please try again.',
+  };
+%>
+
+<section class="section">
+  <div class="wrap" style="max-width:720px">
+
+    <nav class="crumbs">
+      <a href="<%= clientUser ? '/portal' : '/' %>">
+        <%= clientUser ? (ar ? 'طلباتي' : 'My requests') : (ar ? 'الرئيسية' : 'Home') %>
+      </a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= ar ? 'رفع المستندات' : 'Upload documents' %></strong>
+    </nav>
+
+    <div class="up-head">
+      <span class="up-ref"><%= r.ref %></span>
+      <h1><%= ar ? 'مستندات طلبك' : 'Your documents' %></h1>
+      <p>
+        <%= ar
+          ? 'الرفع اختياري تماماً — طلبك مسجّل لدينا بالفعل. يمكنك الرفع الآن أو العودة في أي وقت.'
+          : 'Uploading is entirely optional — your request is already registered. Upload now or come back any time.' %>
+      </p>
+    </div>
+
+    <% if (msg === 'uploaded') { %>
+      <div class="notice-ok"><%= ar ? 'تم رفع المستند. تقدر تضيف غيره.' : 'Document uploaded. You can add more.' %></div>
+    <% } %>
+    <% if (msg === 'deleted') { %>
+      <div class="notice-ok"><%= ar ? 'تم حذف المستند.' : 'Document removed.' %></div>
+    <% } %>
+    <% if (err && errMsgs[err]) { %>
+      <div class="form-alert"><%= errMsgs[err] %></div>
+    <% } %>
+
+    <% if (requirements.length) { %>
+      <div class="up-needed">
+        <h3><%= ar ? 'المكتب طالب منك' : 'The office has asked you for' %></h3>
+        <% requirements.forEach(rq => { %>
+          <button type="button" class="need-chip" data-fill="<%= rq.title %>"><%= rq.title %></button>
+        <% }) %>
+        <p class="up-hint">
+          <%= ar ? 'دوس على أي واحد يتحط اسمه تلقائياً في الخانة تحت.' : 'Tap one to fill the name field below automatically.' %>
+        </p>
+      </div>
+    <% } %>
+
+    <!-- ============================================ uploaded so far -->
+    <% if (documents.length) { %>
+      <div class="up-card">
+        <div class="up-card-head">
+          <h3><%= ar ? 'المستندات المرفوعة' : 'Uploaded' %></h3>
+          <span class="up-count"><%= fileCount %> / <%= maxFiles %></span>
+        </div>
+
+        <div class="up-list">
+          <% documents.forEach(d => {
+               const ageH = (Date.now() - new Date(String(d.created_at).replace(' ','T') + 'Z').getTime()) / 3600000;
+               const canDelete = ageH <= 48 && d.source === 'client'; %>
+            <div class="up-item">
+              <div class="up-thumb">
+                <% if (d.kind === 'pdf') { %>
+                  <span class="up-pdf">PDF</span>
+                <% } else if (d.files[0]) { %>
+                  <img src="/files/<%= d.files[0].id %>" alt="">
+                <% } %>
+              </div>
+              <div class="up-info">
+                <strong><%= d.name %></strong>
+                <span>
+                  <%= d.kind === 'pdf' ? (ar ? 'ملف PDF' : 'PDF file') : d.files.length + (ar ? ' صورة' : ' images') %>
+                  <% if (d.files.some(f => f.side === 'back')) { %>
+                    · <%= ar ? 'وجه وظهر' : 'front & back' %>
+                  <% } %>
+                </span>
+                <% if (d.note) { %><span class="up-note"><%= d.note %></span><% } %>
+              </div>
+              <% if (canDelete) { %>
+                <form method="post" action="/upload/<%= r.id %>/documents/<%= d.id %>/delete"
+                      onsubmit="return confirm('<%= ar ? "تحذف المستند ده؟" : "Delete this document?" %>')">
+                  <%- csrfField %>
+                  <% if (token) { %><input type="hidden" name="t" value="<%= token %>"><% } %>
+                  <button class="up-del" type="submit" aria-label="<%= ar ? 'حذف' : 'Delete' %>">&times;</button>
+                </form>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- ============================================ add a document -->
+    <% if (remaining > 0) { %>
+      <form class="up-card" method="post" action="/upload/<%= r.id %>" enctype="multipart/form-data" id="upForm">
+        <%- csrfField %>
+        <% if (token) { %><input type="hidden" name="t" value="<%= token %>"><% } %>
+
+        <div class="up-card-head">
+          <h3><%= ar ? 'إضافة مستند' : 'Add a document' %></h3>
+        </div>
+
+        <!-- step 1 -->
+        <div class="up-step">
+          <span class="up-num">1</span>
+          <div class="up-step-body">
+            <label for="docName"><%= ar ? 'ما اسم هذا المستند؟' : 'What is this document?' %></label>
+            <input type="text" id="docName" name="name" required
+                   placeholder="<%= ar ? 'مثال: بطاقة الرقم القومي' : 'e.g. National ID' %>">
+          </div>
+        </div>
+
+        <!-- step 2 -->
+        <div class="up-step">
+          <span class="up-num">2</span>
+          <div class="up-step-body">
+            <label><%= ar ? 'صور ولا ملف PDF؟' : 'Photos or a PDF?' %></label>
+
+            <div class="up-modes">
+              <button type="button" class="up-mode active" data-mode="images">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                </svg>
+                <%= ar ? 'صور الورق' : 'Photograph' %>
+              </button>
+              <button type="button" class="up-mode" data-mode="pdf">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
+                </svg>
+                <%= ar ? 'ملف PDF' : 'PDF file' %>
+              </button>
+            </div>
+
+            <!-- images -->
+            <div id="modeImages">
+              <p class="up-compress-note" id="compressNote" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9z"/>
+          </svg>
+          <%= ar
+            ? 'بنصغّر الصور على تليفونك قبل الرفع — نفس الوضوح، وقت وبيانات أقل بكتير.'
+            : 'We shrink photos on your phone before uploading — same clarity, far less time and data.' %>
+        </p>
+
+        <div class="up-drop" id="frontDrop">
+                <input type="file" name="front" id="frontInput" accept="image/*" multiple capture="environment" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5M12 5v13"/>
+                </svg>
+                <b><%= ar ? 'صوّر الورقة أو اختر من الصور' : 'Take a photo or choose images' %></b>
+                <span><%= ar ? 'تقدر تختار أكتر من صفحة مرة واحدة' : 'You can select several pages at once' %></span>
+              </div>
+              <div class="up-preview" id="frontPreview"></div>
+
+              <button type="button" class="up-back-toggle" id="backToggle">
+                + <%= ar ? 'الورق ليه ظهر فيه أختام أو كتابة؟' : 'Does the back have stamps or writing?' %>
+              </button>
+
+              <div class="up-back" id="backBox" hidden>
+                <div class="up-drop small" id="backDrop">
+                  <input type="file" name="back" id="backInput" accept="image/*" multiple capture="environment" hidden>
+                  <b><%= ar ? 'صوّر الظهر' : 'Photograph the back' %></b>
+                  <span><%= ar ? 'بنفس ترتيب الوجه' : 'In the same order as the front' %></span>
+                </div>
+                <div class="up-preview" id="backPreview"></div>
+              </div>
+            </div>
+
+            <!-- pdf -->
+            <div id="modePdf" hidden>
+              <div class="up-drop" id="pdfDrop">
+                <input type="file" name="pdf" id="pdfInput" accept="application/pdf" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>
+                </svg>
+                <b><%= ar ? 'اختر ملف PDF' : 'Choose a PDF file' %></b>
+                <span><%= ar ? `حتى ${maxFileMb} ميجا` : `Up to ${maxFileMb} MB` %></span>
+              </div>
+              <div class="up-preview" id="pdfPreview"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- step 3 -->
+        <div class="up-step">
+          <span class="up-num">3</span>
+          <div class="up-step-body">
+            <label for="docNote"><%= ar ? 'ملاحظة (اختياري)' : 'Note (optional)' %></label>
+            <input type="text" id="docNote" name="note"
+                   placeholder="<%= ar ? 'أي حاجة تحب المكتب ياخد باله منها' : 'Anything the office should know' %>">
+          </div>
+        </div>
+
+        <button class="btn brass block" type="submit" id="upSubmit">
+          <%= ar ? 'رفع المستند' : 'Upload document' %>
+        </button>
+        <div class="up-progress" id="upProgress" hidden>
+          <div class="up-bar"><i id="upBarFill"></i></div>
+          <span id="upStatus"><%= ar ? 'جارٍ التحضير…' : 'Preparing…' %></span>
+        </div>
+        <div class="up-saved" id="upSaved" hidden></div>
+      </form>
+    <% } else { %>
+      <div class="notice-warn"><%= ar ? 'وصلت للحد الأقصى للملفات. كلّم المكتب لو محتاج ترفع أكتر.' : 'You have reached the file limit. Contact the office to add more.' %></div>
+    <% } %>
+
+    <div class="up-later">
+      <h3><%= ar ? 'ليس الآن؟' : 'Not now?' %></h3>
+      <p>
+        <%= ar
+          ? 'لا مشكلة — طلبك يسير كالمعتاد. رابط هذه الصفحة في رسالة التأكيد التي وصلتك، ويمكنك العودة إليه في أي وقت، أو تسجيل الدخول وستجده ضمن «طلباتي».'
+          : 'No problem — your request continues as normal. The link to this page is in your confirmation email, or sign in and find it under "My requests".' %>
+      </p>
+      <div class="up-later-actions">
+        <a class="btn ghost" href="/"><%= ar ? 'الرئيسية' : 'Home' %></a>
+        <% if (clientUser) { %>
+          <a class="btn brass" href="/portal/requests/<%= r.id %>"><%= ar ? 'صفحة طلبي' : 'My request' %></a>
+        <% } else { %>
+          <a class="btn brass" href="/portal/register?email=<%= encodeURIComponent(r.email || '') %>">
+            <%= ar ? 'إنشاء حساب للمتابعة' : 'Create an account to track it' %>
+          </a>
+        <% } %>
+        <% if (site.whatsapp) { %>
+          <a class="btn wa" target="_blank" rel="noopener noreferrer"
+             href="<%= waLink(site.whatsapp, (ar ? 'مرحباً، بخصوص طلبي رقم ' : 'Hello, regarding my request ') + r.ref) %>">
+            <%= ar ? 'أرسلها على واتساب' : 'Send on WhatsApp' %>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="/js/compress.js"></script>
+<script>
+(function () {
+  var AR = <%= ar ? 'true' : 'false' %>;
+  var MAX_MB = <%= maxFileMb %>;
+  var C = window.SanadCompress;
+
+  var note = document.getElementById('compressNote');
+  if (note && C && C.supported) note.hidden = false;
+
+  // ---- mode switch -------------------------------------------------
+  var modes = document.querySelectorAll('.up-mode');
+  var boxImages = document.getElementById('modeImages');
+  var boxPdf = document.getElementById('modePdf');
+
+  modes.forEach(function (b) {
+    b.addEventListener('click', function () {
+      modes.forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      var pdf = b.getAttribute('data-mode') === 'pdf';
+      boxImages.hidden = pdf;
+      boxPdf.hidden = !pdf;
+      // Clear the other side so a stale pick is never submitted.
+      if (pdf) { clear('frontInput', 'frontPreview'); clear('backInput', 'backPreview'); }
+      else { clear('pdfInput', 'pdfPreview'); }
+    });
+  });
+
+  function clear(inputId, previewId) {
+    var i = document.getElementById(inputId);
+    if (i) i.value = '';
+    var p = document.getElementById(previewId);
+    if (p) p.innerHTML = '';
+  }
+
+  // ---- pickers -----------------------------------------------------
+  [['frontDrop','frontInput','frontPreview'],
+   ['backDrop','backInput','backPreview'],
+   ['pdfDrop','pdfInput','pdfPreview']].forEach(function (t) {
+    var drop = document.getElementById(t[0]);
+    var input = document.getElementById(t[1]);
+    var preview = document.getElementById(t[2]);
+    if (!drop || !input) return;
+
+    drop.addEventListener('click', function () { input.click(); });
+    input.addEventListener('change', function () { render(input, preview); });
+  });
+
+  function render(input, preview) {
+    preview.innerHTML = '';
+    var files = Array.prototype.slice.call(input.files || []);
+    var tooBig = files.filter(function (f) { return f.size > MAX_MB * 1024 * 1024; });
+
+    if (tooBig.length) {
+      preview.innerHTML = '<div class="up-warn">' +
+        (AR ? 'فيه ملف أكبر من ' + MAX_MB + ' ميجا: ' : 'A file exceeds ' + MAX_MB + ' MB: ') +
+        tooBig.map(function (f) { return f.name; }).join(', ') + '</div>';
+      input.value = '';
+      return;
+    }
+
+    files.forEach(function (f, i) {
+      var cell = document.createElement('div');
+      cell.className = 'up-chip';
+      if (f.type.indexOf('image/') === 0 && window.URL) {
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(f);
+        img.onload = function () { URL.revokeObjectURL(img.src); };
+        cell.appendChild(img);
+      } else {
+        var tag = document.createElement('span');
+        tag.className = 'up-chip-pdf';
+        tag.textContent = 'PDF';
+        cell.appendChild(tag);
+      }
+      var cap = document.createElement('em');
+      cap.textContent = AR ? 'صفحة ' + (i + 1) : 'Page ' + (i + 1);
+      cell.appendChild(cap);
+      preview.appendChild(cell);
+    });
+  }
+
+  // ---- back side ---------------------------------------------------
+  var backToggle = document.getElementById('backToggle');
+  var backBox = document.getElementById('backBox');
+  if (backToggle && backBox) {
+    backToggle.addEventListener('click', function () {
+      backBox.hidden = !backBox.hidden;
+      backToggle.classList.toggle('open', !backBox.hidden);
+      if (!backBox.hidden) document.getElementById('backInput').click();
+    });
+  }
+
+  // ---- requirement chips fill the name field -----------------------
+  document.querySelectorAll('[data-fill]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = document.getElementById('docName');
+      f.value = b.getAttribute('data-fill');
+      f.focus();
+      f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+
+  // ---- compress, then upload ---------------------------------------
+  var form = document.getElementById('upForm');
+  if (!form) return;
+
+  var btn = document.getElementById('upSubmit');
+  var prog = document.getElementById('upProgress');
+  var statusEl = document.getElementById('upStatus');
+  var barFill = document.getElementById('upBarFill');
+  var savedEl = document.getElementById('upSaved');
+
+  function setStatus(text, percent) {
+    if (statusEl) statusEl.textContent = text;
+    if (barFill && typeof percent === 'number') {
+      barFill.style.animation = 'none';
+      barFill.style.width = Math.max(4, Math.min(100, percent)) + '%';
+      barFill.style.marginInlineStart = '0';
+    }
+  }
+
+  form.addEventListener('submit', function (e) {
+    // Without canvas support or fetch, fall back to the ordinary form post —
+    // the server compresses either way, it just costs the client more data.
+    if (!C || !C.supported || !window.fetch || !window.FormData) return;
+
+    e.preventDefault();
+    btn.disabled = true;
+    prog.hidden = false;
+    savedEl.hidden = true;
+    setStatus(AR ? 'بنحضّر الصور…' : 'Preparing images…', 5);
+
+    var fields = [
+      { name: 'front', input: document.getElementById('frontInput') },
+      { name: 'back', input: document.getElementById('backInput') },
+      { name: 'pdf', input: document.getElementById('pdfInput') },
+    ];
+
+    var totalBefore = 0;
+    var totalAfter = 0;
+
+    var work = fields.reduce(function (chain, f) {
+      return chain.then(function (acc) {
+        var files = f.input && f.input.files ? f.input.files : [];
+        if (!files.length) return acc;
+
+        // PDFs pass through untouched; only photos are re-encoded.
+        if (f.name === 'pdf') {
+          acc.push({ name: f.name, files: Array.prototype.slice.call(files) });
+          return acc;
+        }
+
+        return C.compressAll(files, function (done, total) {
+          var pct = 5 + Math.round((done / Math.max(1, total)) * 55);
+          setStatus(
+            AR ? 'بنصغّر الصور… ' + done + '/' + total : 'Shrinking images… ' + done + '/' + total,
+            pct
+          );
+        }).then(function (out) {
+          totalBefore += out.before;
+          totalAfter += out.after;
+          acc.push({ name: f.name, files: out.files });
+          return acc;
+        });
+      });
+    }, Promise.resolve([]));
+
+    work
+      .then(function (groups) {
+        var fd = new FormData();
+        form.querySelectorAll('input[type=hidden], input[name=name], input[name=note]')
+          .forEach(function (el) { fd.append(el.name, el.value); });
+
+        groups.forEach(function (g) {
+          g.files.forEach(function (file) { fd.append(g.name, file, file.name); });
+        });
+
+        if (totalBefore > totalAfter) {
+          savedEl.hidden = false;
+          savedEl.textContent = AR
+            ? 'صغّرنا الصور من ' + C.humanSize(totalBefore) + ' إلى ' + C.humanSize(totalAfter) +
+              ' (وفّرنا ' + Math.round(((totalBefore - totalAfter) / totalBefore) * 100) + '%)'
+            : 'Reduced from ' + C.humanSize(totalBefore) + ' to ' + C.humanSize(totalAfter) +
+              ' (' + Math.round(((totalBefore - totalAfter) / totalBefore) * 100) + '% saved)';
+        }
+
+        setStatus(AR ? 'جارٍ الرفع…' : 'Uploading…', 70);
+
+        return fetch(form.action, {
+          method: 'POST',
+          body: fd,
+          credentials: 'same-origin',
+          redirect: 'follow',
+        });
+      })
+      .then(function (res) {
+        setStatus(AR ? 'تم' : 'Done', 100);
+        window.location.href = res.url || window.location.href;
+      })
+      .catch(function () {
+        // Anything unexpected: hand it back to the browser's own submit.
+        prog.hidden = true;
+        btn.disabled = false;
+        form.removeEventListener('submit', arguments.callee);
+        HTMLFormElement.prototype.submit.call(form);
+      });
+  });
+})();
+</script>
+
+<%- include('../partials/footer') %>

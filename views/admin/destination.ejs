@@ -1,0 +1,145 @@
+<% pageTitle = destination.name %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', {
+  crumbs: [{ label: 'المشاوير', href: adminPath + '/errands' }, { label: destination.name }]
+}) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1><span class="dot" style="background:<%= destination.colour %>"></span> <%= destination.name %></h1>
+    <p class="sub">
+      <%= pending.length %> طلب معلّق
+      <% if (destination.address) { %> · <%= destination.address %><% } %>
+    </p>
+  </div>
+  <a class="btn ghost" href="<%= adminPath %>/errands/destination/<%= destination.id %>?print=1"
+     target="_blank" rel="noopener">طباعة القائمة</a>
+</div>
+
+<% if (destination.note) { %>
+  <div class="alert info"><span><%= destination.note %></span></div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>المطلوب من الجهة دي</h3>
+    <span class="chip spacer"><%= pending.length %></span>
+  </div>
+  <div class="panel-body flush">
+    <% if (pending.length) { %>
+      <table class="tbl">
+        <thead>
+          <tr><th>الطلب</th><th>المطلوب</th><th>العميل</th><th>الموعد</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% pending.forEach(item => { %>
+            <tr class="<%= item.is_critical ? 'row-urgent' : '' %>">
+              <td data-label="الطلب">
+                <% if (item.is_critical) { %><span class="flag urgent">عاجل</span><br><% } %>
+                <a class="num" href="<%= adminPath %>/requests/<%= item.request_id %>"
+                   style="font-weight:800;color:var(--brass-deep)"><%= item.ref %></a>
+                <% if (item.title) { %><br><span style="font-size:12.5px;color:var(--muted)"><%= item.title %></span><% } %>
+              </td>
+              <td data-label="المطلوب"><%= item.task || '—' %></td>
+              <td data-label="العميل">
+                <%= item.name %><br>
+                <span class="num" style="font-size:12.5px;color:var(--muted)"><%= item.phone %></span>
+              </td>
+              <td data-label="الموعد" style="font-size:13px;color:var(--muted)">
+                <%= item.deadline ? item.deadline : '—' %>
+              </td>
+              <td data-label="" class="row-actions">
+                <button class="btn ghost sm" type="button" data-done="<%= item.id %>">تم</button>
+                <% if (canManage) { %>
+                  <form method="post" action="<%= adminPath %>/errands/item/<%= item.id %>/remove">
+                    <%- csrfField %>
+                    <input type="hidden" name="next" value="<%= adminPath %>/errands/destination/<%= destination.id %>">
+                    <button class="btn danger sm" type="submit">شيل</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+            <tr class="edit-row" hidden id="done-<%= item.id %>">
+              <td colspan="5">
+                <form method="post" action="<%= adminPath %>/errands/item/<%= item.id %>/done"
+                      style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                  <%- csrfField %>
+                  <input type="hidden" name="next" value="<%= adminPath %>/errands/destination/<%= destination.id %>">
+                  <label style="font-size:13.5px;font-weight:700">اتعمل في</label>
+                  <input type="date" name="done_on" value="<%= today %>"
+                         style="padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+                  <input type="text" name="result_note" placeholder="النتيجة (اختياري)"
+                         style="flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+                  <button class="btn brass sm" type="submit">تأكيد</button>
+                  <button class="btn ghost sm" type="button" data-close-done="<%= item.id %>">إلغاء</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">✓</span>
+        <p>مفيش حاجة معلّقة في الجهة دي.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (done.length) { %>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>اتخلّص</h3>
+      <span class="chip spacer"><%= done.length %></span>
+    </div>
+    <div class="panel-body flush">
+      <table class="tbl">
+        <thead><tr><th>الطلب</th><th>المطلوب</th><th>خلّصه</th><th>التاريخ</th><th></th></tr></thead>
+        <tbody>
+          <% done.forEach(item => { %>
+            <tr style="opacity:.72">
+              <td data-label="الطلب">
+                <a class="num" href="<%= adminPath %>/requests/<%= item.request_id %>"><%= item.ref %></a>
+              </td>
+              <td data-label="المطلوب">
+                <%= item.task || '—' %>
+                <% if (item.result_note) { %>
+                  <br><span style="font-size:12.5px;color:var(--muted)"><%= item.result_note %></span>
+                <% } %>
+              </td>
+              <td data-label="خلّصه"><%= item.done_by || '—' %></td>
+              <td data-label="التاريخ"><span class="num"><%= item.done_on || '—' %></span></td>
+              <td data-label="" class="row-actions">
+                <form method="post" action="<%= adminPath %>/errands/item/<%= item.id %>/done">
+                  <%- csrfField %>
+                  <input type="hidden" name="next" value="<%= adminPath %>/errands/destination/<%= destination.id %>">
+                  <button class="btn ghost sm" type="submit">رجّعه</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<script>
+  document.addEventListener('click', function (e) {
+    var d = e.target.closest('[data-done]');
+    if (d) {
+      var row = document.getElementById('done-' + d.getAttribute('data-done'));
+      if (row) row.hidden = !row.hidden;
+    }
+    var c = e.target.closest('[data-close-done]');
+    if (c) {
+      var r = document.getElementById('done-' + c.getAttribute('data-close-done'));
+      if (r) r.hidden = true;
+    }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,44 @@
+{
+  "name": "sanad",
+  "version": "16.7.3-account-menu-toggle",
+  "description": "Sanad - Multi-tenant legal and administrative services and office operations platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo \"no build step — Sanad renders on the server\"",
+    "test": "node test.js",
+    "test:imports": "node import-test.js",
+    "security": "node security.js",
+    "test:all": "node test.js && node integration.js && node edge.js && node security.js",
+    "edge": "node edge.js",
+    "demo": "node demo.js",
+    "demo:clear": "node demo-clear.js",
+    "integration": "node integration.js",
+    "test:payroll": "node payroll-excel-test.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "archiver": "5.3.2",
+    "better-sqlite3": "12.4.1",
+    "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.0",
+    "express-session": "^1.19.0",
+    "multer": "^2.2.0",
+    "pg": "^8.23.0",
+    "unzipper": "0.10.14"
+  },
+  "optionalDependencies": {
+    "heic-convert": "^2.1.0",
+    "sharp": "^0.35.3"
+  },
+  "overrides": {
+    "brace-expansion": "^2.1.4",
+    "qs": "^6.16.0",
+    "uuid": "^11.1.1"
+  }
+}

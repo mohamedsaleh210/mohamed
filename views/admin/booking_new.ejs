@@ -1,0 +1,17 @@
+<%pageTitle='إنشاء موعد جديد'%><%-include('../partials/admin_head')%><%-include('../partials/admin_nav')%><%-include('../partials/crumbs',{crumbs:[{label:'المواعيد والاستشارات',href:adminPath+'/appointments'},{label:'إنشاء موعد'}]})%>
+<div class="page-head"><h1>إنشاء موعد أو استشارة</h1><p class="sub">سجّل الموعد نيابةً عن العميل، ويمكن تعيين الموظف مباشرةً أو تركه في قائمة «تحتاج تعيين».</p></div>
+<%if(error){%><div class="alert danger"><span><%=error%></span></div><%}%>
+<form method="post" class="panel panel-body form-grid"><%-csrfField%>
+ <label class="wide">عميل مسجل<select name="client_id" id="booking-client"><option value="">عميل جديد</option><%clients.forEach(c=>{%><option value="<%=c.id%>"><%=c.full_name%> — <%=c.phone||c.email%></option><%})%></select></label>
+ <div id="new-client-fields" class="form-grid wide"><label>اسم العميل<input type="text" name="full_name" minlength="2" maxlength="150"></label><label>رقم الموبايل<input type="tel" name="phone" minlength="7" maxlength="30"></label><label>البريد الإلكتروني<input type="email" name="email" maxlength="200"></label></div>
+ <label>نوع الحجز<select name="kind" id="booking-kind"><option value="appointment">موعد حضور المكتب</option><option value="consultation">استشارة</option></select></label>
+ <label>الخدمة<select name="service_id" id="booking-service"><option value="">موعد عام</option><%services.forEach(s=>{%><option value="<%=s.id%>" data-consultation="<%=s.is_consultation?1:0%>"><%=s.is_consultation?'استشارة: ':''%><%=s.title_ar%></option><%})%></select></label>
+ <label id="mode-field">نوع الاستشارة<select name="mode_id"><%modes.forEach(m=>{%><option value="<%=m.id%>"><%=m.name%></option><%})%></select></label>
+ <label>الموعد المتاح<select name="slot_id" required><option value="">اختر الموعد</option><%slots.forEach(s=>{%><option value="<%=s.id%>"><%=s.starts_at%> — <%=s.ends_at%> / <%=s.location||'المكتب'%></option><%})%></select></label>
+ <%if(can('bookings.manage')){%><label>الموظف المسؤول<select name="user_id"><option value="">يُعيّن لاحقًا</option><%staff.forEach(u=>{%><option value="<%=u.id%>"><%=u.display_name%></option><%})%></select></label><%}%>
+ <label class="wide">التفاصيل<textarea name="notes" maxlength="2000"></textarea></label>
+ <button class="btn brass" <%=slots.length?'':'disabled'%>>إنشاء الموعد</button>
+</form>
+<%if(!slots.length){%><div class="empty"><p>أضف وقتًا متاحًا أولًا من شاشة المواعيد المتاحة.</p></div><%}%>
+<script>(function(){const client=document.getElementById('booking-client'),fields=document.getElementById('new-client-fields'),kind=document.getElementById('booking-kind'),mode=document.getElementById('mode-field'),service=document.getElementById('booking-service');const syncClient=()=>{const fresh=!client.value;fields.hidden=!fresh;fields.querySelectorAll('input').forEach(x=>x.required=fresh)};const syncKind=()=>{const consultation=kind.value==='consultation';mode.hidden=!consultation;mode.querySelector('select').required=consultation;[...service.options].forEach((o,i)=>{if(!i)return;o.hidden=consultation&&o.dataset.consultation!=='1'});if(service.selectedOptions[0]?.hidden)service.value=''};client.addEventListener('change',syncClient);kind.addEventListener('change',syncKind);syncClient();syncKind()})();</script>
+<%-include('../partials/admin_foot')%>

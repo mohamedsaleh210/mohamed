@@ -1,0 +1,32 @@
+<%
+  /**
+   * Breadcrumbs.
+   *
+   * Pages set `crumbs` to an array of { label, href }; the last entry is the
+   * current page and is not a link. The dashboard is always the first step, so
+   * there is a way home from anywhere.
+   */
+  const trail = typeof crumbs !== 'undefined' && Array.isArray(crumbs) ? crumbs : [];
+  const arrow = '‹';
+%>
+
+<% if (trail.length) { %>
+  <nav class="crumbs-bar" aria-label="مسار التنقّل">
+    <a class="home" href="<%= adminPath %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h14V10"/>
+      </svg>
+      لوحة التحكم
+    </a>
+
+    <% trail.forEach((c, i) => { %>
+      <span class="sep"><%= arrow %></span>
+      <% if (c.href && i < trail.length - 1) { %>
+        <a href="<%= c.href %>"><%= c.label %></a>
+      <% } else { %>
+        <span class="here"><%= c.label %></span>
+      <% } %>
+    <% }) %>
+  </nav>
+<% } %>

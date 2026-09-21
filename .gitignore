@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Runtime data, uploads, and databases — never committed
+data/
+backups/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Credentials / test account dumps
+TEST-ACCOUNTS.txt
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Caches / temp
+*.tmp
+*.temp
+.cache/
+tmp/

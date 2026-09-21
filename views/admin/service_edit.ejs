@@ -1,0 +1,75 @@
+<% pageTitle = svc ? 'تعديل خدمة' : 'خدمة جديدة' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الأقسام والخدمات', href: adminPath + '/content' }, { label: svc ? 'تعديل خدمة' : 'خدمة جديدة' }] }) %>
+
+<div class="page-head">
+  <h1><%= svc ? 'تعديل خدمة' : 'خدمة جديدة' %></h1>
+  <p class="sub">املا اللغتين عشان الموقع يشتغل بالعربي والإنجليزي.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-body">
+    <form method="post" action="<%= svc ? adminPath + '/content/services/' + svc.id + '/edit' : adminPath + '/content/services/new' %>">
+      <%- csrfField %>
+
+      <div class="field req">
+        <label for="category_id">القسم</label>
+        <select id="category_id" name="category_id" required>
+          <% categories.forEach(c => { %>
+            <option value="<%= c.id %>" <%= preselect === c.id ? 'selected' : '' %>><%= c.name_ar %></option>
+          <% }) %>
+        </select>
+        <div class="help">ترتيب الخدمة جوّه القسم بيتظبط بالسحب من صفحة الأقسام والخدمات.</div>
+      </div>
+
+      <div class="two-col">
+        <div class="field req">
+          <label for="title_ar">عنوان الخدمة (عربي)</label>
+          <input id="title_ar" type="text" name="title_ar" required value="<%= svc ? svc.title_ar : '' %>">
+        </div>
+        <div class="field">
+          <label for="title_en">Service title (English)</label>
+          <input id="title_en" type="text" name="title_en" dir="ltr" style="text-align:left" value="<%= svc ? svc.title_en : '' %>">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label for="body_ar">الوصف (عربي)</label>
+          <textarea id="body_ar" name="body_ar"><%= svc ? svc.body_ar : '' %></textarea>
+        </div>
+        <div class="field">
+          <label for="body_en">Description (English)</label>
+          <textarea id="body_en" name="body_en" dir="ltr" style="text-align:left"><%= svc ? svc.body_en : '' %></textarea>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:8px">
+        <label class="check">
+          <input type="checkbox" name="is_consultation" value="1" <%= svc && svc.is_consultation ? 'checked' : '' %>>
+          <span class="txt">
+            استشارة
+            <small>هتظهر في صفحة الاستشارات بدل صفحة الخدمات.</small>
+          </span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" name="active" value="1" <%= !svc || svc.active ? 'checked' : '' %>>
+          <span class="txt">
+            ظاهرة على الموقع
+            <small>شيل العلامة عشان تخفيها من العملاء من غير ما تحذفها.</small>
+          </span>
+        </label>
+      </div>
+
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn brass" type="submit"><%= svc ? 'حفظ التعديلات' : 'إضافة الخدمة' %></button>
+        <a class="btn ghost" href="<%= adminPath %>/content">إلغاء</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

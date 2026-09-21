@@ -1,0 +1,123 @@
+<% pageTitle = 'محتوى الصفحة الرئيسية' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+<%- include('../partials/crumbs', { crumbs: [{ label: 'محتوى الصفحة الرئيسية' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>محتوى الصفحة الرئيسية</h1>
+    <p class="sub">تحكم في ظهور الأقسام وترتيبها والمؤشرات والخدمات المثبتة والآراء والأسئلة الشائعة.</p>
+  </div>
+  <a class="btn ghost" href="/" target="_blank" rel="noopener">معاينة الرئيسية</a>
+</div>
+
+<% if (msg === 'saved') { %><div class="alert ok"><span>تم حفظ التعديلات.</span></div><% } %>
+
+<div class="panel">
+  <div class="panel-head"><h3>محرر محتوى الواجهة</h3><span class="chip">مرتبط مباشرة بالرئيسية</span></div>
+  <div class="panel-body">
+    <p class="help">عدّل النصوص والأزرار وصورة الواجهة من هنا. التصميم والترتيب محميان، بينما يظل المحتوى تحت سيطرة أدمن سند.</p>
+    <form method="post" action="<%=adminPath%>/homepage/content"><%-csrfField%>
+      <% const groupLabels={hero:'الواجهة الرئيسية',audiences:'فئات العملاء',partners:'المكاتب والشركات',popular:'الخدمات الأكثر طلبًا',steps:'خطوات العمل',why:'لماذا سند',system:'سند للأعمال',plans:'الباقات',social:'الآراء والأسئلة',cta:'الدعوة الختامية'}; %>
+      <% Object.keys(groupLabels).forEach(group => { const items=content.filter(x=>x.group_key===group); if(!items.length)return; %>
+        <fieldset class="content-group">
+          <legend><%=groupLabels[group]%></legend>
+          <div class="two-col">
+            <% items.forEach(item => { %>
+              <label><%=item.label_ar%> — عربي
+                <% if(item.input_type==='textarea'){ %><textarea name="ar_<%=item.content_key%>" rows="3"><%=item.value_ar||''%></textarea>
+                <% }else{ %><input type="<%=item.input_type==='url'?'text':'text'%>" name="ar_<%=item.content_key%>" value="<%=item.value_ar||''%>"><% } %>
+              </label>
+              <label><%=item.label_ar%> — English
+                <% if(item.input_type==='textarea'){ %><textarea name="en_<%=item.content_key%>" rows="3" dir="ltr"><%=item.value_en||''%></textarea>
+                <% }else{ %><input type="text" name="en_<%=item.content_key%>" value="<%=item.value_en||''%>" dir="ltr"><% } %>
+              </label>
+            <% }) %>
+          </div>
+        </fieldset>
+      <% }) %>
+      <div class="form-actions"><button class="btn brass" type="submit">حفظ محتوى الصفحة</button><a class="btn ghost" href="/" target="_blank" rel="noopener">فتح المعاينة</a></div>
+    </form>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>ترتيب أقسام الرئيسية</h3><span class="chip"><%= sections.length %></span></div>
+  <div class="panel-body">
+    <p class="help">الرقم الأصغر يظهر أولًا. يمكن إخفاء أي قسم دون حذف محتواه.</p>
+    <div class="table-wrap"><table><thead><tr><th>القسم</th><th>الترتيب</th><th>ظاهر</th><th></th></tr></thead><tbody>
+      <% sections.forEach(s => { %><tr><form method="post" action="<%=adminPath%>/homepage/sections/<%=s.id%>"><%-csrfField%>
+        <td><b><%=s.label_ar%></b><small class="muted"><%=s.section_key%></small></td>
+        <td><input type="number" name="sort" value="<%=s.sort%>" min="0" style="max-width:90px"></td>
+        <td><label class="check"><input type="checkbox" name="visible" <%=s.visible?'checked':''%>> إظهار</label></td>
+        <td><button class="btn sm" type="submit">حفظ</button></td>
+      </form></tr><% }) %>
+    </tbody></table></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>المؤشرات اليدوية</h3></div>
+  <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>القيمة</th><th>العنوان العربي</th><th>العنوان الإنجليزي</th><th>الترتيب والظهور</th><th></th></tr></thead><tbody>
+    <% metrics.forEach(m => { %><tr><form method="post" action="<%=adminPath%>/homepage/metrics/<%=m.id%>"><%-csrfField%>
+      <td><input type="text" name="value" value="<%=m.value%>" required style="max-width:120px"><input type="text" name="icon" value="<%=m.icon||''%>" aria-label="الأيقونة" style="max-width:60px"></td>
+      <td><input type="text" name="label_ar" value="<%=m.label_ar%>" required></td>
+      <td><input type="text" name="label_en" value="<%=m.label_en||''%>"></td>
+      <td><input type="number" name="sort" value="<%=m.sort%>" min="0" style="max-width:80px"><label class="check"><input type="checkbox" name="visible" <%=m.visible?'checked':''%>> ظاهر</label></td>
+      <td><button class="btn sm" type="submit">حفظ</button></td>
+    </form></tr><% }) %>
+  </tbody></table></div></div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>تثبيت خدمات ضمن الأكثر طلبًا</h3></div>
+  <div class="panel-body"><p class="help">الخدمات المثبتة تظهر أولًا، ثم يكمل النظام القائمة تلقائيًا حسب حجم الطلب.</p><div class="table-wrap"><table><thead><tr><th>الخدمة</th><th>القسم</th><th>مثبتة</th><th>الترتيب</th><th></th></tr></thead><tbody>
+    <% services.forEach(s => { %><tr><form method="post" action="<%=adminPath%>/homepage/popular/<%=s.id%>"><%-csrfField%>
+      <td><%=s.title_ar%></td><td><%=s.category_name||'—'%></td>
+      <td><input type="checkbox" name="home_pinned" <%=s.home_pinned?'checked':''%>></td>
+      <td><input type="number" name="home_pinned_sort" value="<%=s.home_pinned_sort||0%>" min="0" style="max-width:80px"></td>
+      <td><button class="btn sm" type="submit">حفظ</button></td>
+    </form></tr><% }) %>
+  </tbody></table></div></div>
+</div>
+
+<div class="two-col">
+  <div class="panel"><div class="panel-head"><h3>إضافة رأي عميل</h3></div><div class="panel-body">
+    <form method="post" action="<%=adminPath%>/homepage/testimonials"><%-csrfField%>
+      <label>اسم العميل<input type="text" name="customer_name"></label>
+      <label>الرأي بالعربية<textarea name="quote_ar" required></textarea></label>
+      <label>الرأي بالإنجليزية<textarea name="quote_en"></textarea></label>
+      <div class="two-col"><label>التقييم<input type="number" name="rating" value="5" min="1" max="5"></label><label>الدولة<input type="text" name="country_code" maxlength="2" placeholder="EG أو SA"></label></div>
+      <div class="check-row"><label class="check"><input type="checkbox" name="approved"> معتمد</label><label class="check"><input type="checkbox" name="visible" checked> ظاهر</label><label class="check"><input type="checkbox" name="anonymous"> مجهول</label></div>
+      <button class="btn brass" type="submit">إضافة الرأي</button>
+    </form>
+  </div></div>
+  <div class="panel"><div class="panel-head"><h3>إضافة سؤال شائع</h3></div><div class="panel-body">
+    <form method="post" action="<%=adminPath%>/homepage/faqs"><%-csrfField%>
+      <label>السؤال بالعربية<input type="text" name="question_ar" required></label>
+      <label>الإجابة بالعربية<textarea name="answer_ar" required></textarea></label>
+      <label>السؤال بالإنجليزية<input type="text" name="question_en"></label>
+      <label>الإجابة بالإنجليزية<textarea name="answer_en"></textarea></label>
+      <div class="check-row"><label class="check"><input type="checkbox" name="approved" checked> معتمد</label><label class="check"><input type="checkbox" name="visible" checked> ظاهر</label></div>
+      <button class="btn brass" type="submit">إضافة السؤال</button>
+    </form>
+  </div></div>
+</div>
+
+<div class="panel"><div class="panel-head"><h3>مراجعة آراء العملاء</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>العميل والرأي</th><th>التقييم</th><th>النشر</th><th></th></tr></thead><tbody>
+  <% testimonials.forEach(t => { %><tr><form method="post" action="<%=adminPath%>/homepage/testimonials/<%=t.id%>"><%-csrfField%>
+    <td><b><%=t.anonymous?'عميل سند':(t.customer_name||'بدون اسم')%></b><small class="muted"><%=t.quote_ar%></small></td><td><%=t.rating%>/5</td>
+    <td><label class="check"><input type="checkbox" name="approved" <%=t.approved?'checked':''%>> معتمد</label><label class="check"><input type="checkbox" name="visible" <%=t.visible?'checked':''%>> ظاهر</label><label class="check"><input type="checkbox" name="anonymous" <%=t.anonymous?'checked':''%>> مجهول</label><input type="number" name="sort" value="<%=t.sort%>" style="max-width:70px"></td>
+    <td><button class="btn sm" type="submit">حفظ</button></td>
+  </form></tr><% }) %>
+</tbody></table></div></div></div>
+
+<div class="panel"><div class="panel-head"><h3>مراجعة الأسئلة الشائعة</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>السؤال</th><th>النشر</th><th></th></tr></thead><tbody>
+  <% faqs.forEach(f => { %><tr><form method="post" action="<%=adminPath%>/homepage/faqs/<%=f.id%>"><%-csrfField%>
+    <td><b><%=f.question_ar%></b><small class="muted"><%=f.answer_ar%></small></td>
+    <td><label class="check"><input type="checkbox" name="approved" <%=f.approved?'checked':''%>> معتمد</label><label class="check"><input type="checkbox" name="visible" <%=f.visible?'checked':''%>> ظاهر</label><input type="number" name="sort" value="<%=f.sort%>" style="max-width:70px"></td>
+    <td><button class="btn sm" type="submit">حفظ</button></td>
+  </form></tr><% }) %>
+</tbody></table></div></div></div>
+
+<%- include('../partials/admin_foot') %>

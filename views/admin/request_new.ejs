@@ -1,0 +1,170 @@
+<% pageTitle = 'طلب جديد' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الطلبات', href: adminPath + '/requests' }, { label: 'طلب جديد' }] }) %>
+
+<div class="page-head">
+  <h1>فتح طلب لعميل</h1>
+  <p class="sub">للعميل اللي كلّمك أو جه المكتب. الطلب هيبقى زي أي طلب من الموقع بالظبط.</p>
+</div>
+
+<% if (err === 'missing') { %>
+  <div class="alert err"><span>الاسم ورقم الموبايل مطلوبين.</span></div>
+<% } %>
+<% if (err === 'company_branch') { %><div class="alert err"><span>اختيار الشركة والفرع إلزامي لطلبات الشركات.</span></div><% } %>
+
+<div class="alert info">
+  <span>
+    لو كتبت إيميل، هيوصله <b>نفس رسالة تأكيد الطلب</b> وفيها رقم الطلب ولينك رفع
+    المستندات — فيقدر يرفع أوراقه من غير ما يعمل حساب. ولو سجّل بعدين بنفس
+    الإيميل، الطلب بيتربط بحسابه لوحده.
+  </span>
+</div>
+
+<form method="post" action="<%= adminPath %>/requests/new">
+  <%- csrfField %>
+
+  <div class="panel">
+    <div class="panel-head"><h3>العميل</h3></div>
+    <div class="panel-body">
+      <div class="field req"><label>نوع صاحب الطلب</label><select name="party_type" id="partyType"><option value="person">فرد</option><option value="company" <%= selectedCompany?'selected':'' %>>شركة</option></select></div>
+      <div id="companyFields" <%= selectedCompany?'':'hidden' %>>
+        <div class="two-col"><div class="field req"><label>الشركة</label><select name="company_id" id="companyPick"><option value="">اختر الشركة</option><% companies.forEach(c=>{%><option value="<%=c.id%>" data-name="<%=c.contact_name||c.name%>" data-phone="<%=c.phone||''%>" data-email="<%=c.email||''%>" <%=selectedCompany===c.id?'selected':''%>><%=c.name%></option><%})%></select></div>
+        <div class="field req"><label>الفرع</label><select name="branch_id" id="branchPick"><option value="">اختر الفرع</option><% branches.forEach(b=>{%><option value="<%=b.id%>" data-company="<%=b.company_id%>" data-name="<%=b.manager||''%>" data-phone="<%=b.phone||''%>" data-email="<%=b.email||''%>" <%=selectedBranch===b.id?'selected':''%>><%=b.name%></option><%})%></select></div></div>
+        <div class="help">طلبات الشركات لا تُحفظ إلا بعد اختيار فرع.</div>
+      </div>
+
+      <% if (forClient) { %>
+        <div class="alert ok">
+          <span>
+            <b>الطلب ده لـ <%= forClient.full_name %>.</b>
+            <%= forClient.id
+              ? 'هيتربط بحسابه على طول.'
+              : 'العميل ده مالوش حساب — الطلب هيتربط برقم موبايله، وأول ما يسجّل هيتضم لحسابه.' %>
+          </span>
+        </div>
+        <input type="hidden" name="client_id" value="<%= forClient.id || '' %>">
+      <% } else if (recentClients.length) { %>
+        <div class="field">
+          <label for="clientPick">عميل مسجّل عندنا</label>
+          <select id="clientPick">
+            <option value="">— عميل جديد أو غير مسجّل —</option>
+            <% recentClients.forEach(c => { %>
+              <option value="<%= c.id %>"
+                      data-name="<%= c.full_name || '' %>"
+                      data-phone="<%= c.phone || '' %>"
+                      data-email="<%= c.email || '' %>">
+                <%= c.full_name %> — <%= c.phone %>
+              </option>
+            <% }) %>
+          </select>
+          <div class="help">اختياره بيملا البيانات تحت ويربط الطلب بحسابه على طول.</div>
+        </div>
+        <input type="hidden" name="client_id" id="clientId" value="">
+      <% } %>
+
+      <div class="two-col">
+        <div class="field req">
+          <label for="name">اسم مقدّم الطلب</label>
+          <input type="text" id="name" name="name" required
+                 value="<%= forClient ? forClient.full_name || '' : '' %>">
+        </div>
+        <div class="field req">
+          <label for="phone">رقم الموبايل</label>
+          <input type="tel" id="phone" name="phone" required dir="ltr" style="text-align:left"
+                 placeholder="+201000000000" value="<%= forClient ? forClient.phone || '' : '' %>">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">الإيميل</label>
+        <input type="email" id="email" name="email" dir="ltr" style="text-align:left"
+               value="<%= forClient ? forClient.email || '' : '' %>">
+        <div class="help">اختياري — بس من غيره مش هيوصله رقم الطلب ولا لينك الرفع.</div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label for="relation">صفته في الطلب</label>
+          <select id="relation" name="relation" onchange="toggleBeneficiary()">
+            <option value="self">صاحب الطلب</option>
+            <option value="guardian">ولي أمر</option>
+            <option value="agent">وكيل</option>
+            <option value="relative">قريب</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+        <div class="field" id="beneficiaryField" hidden>
+          <label for="beneficiary_name">اسم صاحب الطلب</label>
+          <input type="text" id="beneficiary_name" name="beneficiary_name">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>الطلب</h3></div>
+    <div class="panel-body">
+
+      <div class="field">
+        <label>الخدمات — يمكن اختيار أكثر من خدمة</label>
+        <details class="picker-box"><summary>اختر الخدمات المطلوبة</summary><%groups.forEach(g=>{%><h4><%=g.category.name_ar%></h4><div class="check-grid"><%g.items.forEach(s=>{%><label class="check"><input type="checkbox" name="service_ids" value="<%=s.id%>"> <%=s.title_ar%></label><%})%></div><%})%><button type="button" class="btn brass" onclick="this.closest('details').removeAttribute('open')">موافق وإغلاق الاختيار</button></details>
+      </div>
+
+      <div class="three-col"><div class="field"><label>تاريخ الإصدار (اختياري)</label><input type="date" name="issued_on"></div><div class="field"><label>تاريخ الانتهاء (اختياري)</label><input type="date" name="expires_on"></div><div class="field"><label>موعد التجديد (اختياري)</label><input type="date" name="renewal_on"></div></div>
+
+      <div class="field">
+        <label for="title">عنوان الطلب</label>
+        <input type="text" name="title" id="title"
+               placeholder="مثال: ترخيص فيلا الشيخ زايد — قطعة ٤٧">
+        <div class="help">
+          اختياري. بيساعدك تفرّق بين طلبات نفس العميل لنفس الخدمة، وبيظهر في القوائم.
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="message">تفاصيل الطلب</label>
+        <textarea id="message" name="message" style="min-height:130px"
+                  placeholder="اكتب اللي العميل قاله بالظبط…"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn brass" type="submit">فتح الطلب</button>
+    <a class="btn ghost" href="<%= adminPath %>/requests">إلغاء</a>
+  </div>
+</form>
+
+<script>
+  var partyType=document.getElementById('partyType'), companyFields=document.getElementById('companyFields');
+  var companyPick=document.getElementById('companyPick'), branchPick=document.getElementById('branchPick');
+  function fillParty(opt){ if(!opt)return; document.getElementById('name').value=opt.dataset.name||''; document.getElementById('phone').value=opt.dataset.phone||''; document.getElementById('email').value=opt.dataset.email||''; }
+  function filterBranches(){ var cid=companyPick.value; Array.from(branchPick.options).forEach(function(o,i){if(i)o.hidden=o.dataset.company!==cid;}); if(branchPick.selectedOptions[0]&&branchPick.selectedOptions[0].hidden)branchPick.value=''; fillParty(companyPick.selectedOptions[0]); }
+  partyType.addEventListener('change',function(){companyFields.hidden=partyType.value!=='company';});
+  companyPick.addEventListener('change',filterBranches); branchPick.addEventListener('change',function(){fillParty(branchPick.selectedOptions[0]);}); filterBranches();
+  function toggleBeneficiary() {
+    document.getElementById('beneficiaryField').hidden =
+      document.getElementById('relation').value === 'self';
+  }
+  toggleBeneficiary();
+
+  // Picking a registered client fills the fields rather than making the clerk
+  // retype details that are already on file.
+  var pick = document.getElementById('clientPick');
+  if (pick) {
+    pick.addEventListener('change', function () {
+      var opt = pick.options[pick.selectedIndex];
+      document.getElementById('clientId').value = pick.value || '';
+      if (!pick.value) return;
+      document.getElementById('name').value = opt.getAttribute('data-name') || '';
+      document.getElementById('phone').value = opt.getAttribute('data-phone') || '';
+      document.getElementById('email').value = opt.getAttribute('data-email') || '';
+    });
+  }
+</script>
+
+<%- include('../partials/admin_foot') %>

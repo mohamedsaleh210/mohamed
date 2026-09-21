@@ -1,0 +1,18 @@
+Sanad final verification — 2026-09-16
+
+Functional deep suite:  PASS 961 / FAIL 0
+Integration journeys:   PASS 74  / FAIL 0
+Edge cases:            PASS 178 / FAIL 0
+Security scan:         PASS 138 / FAIL 0
+Total:                 PASS 1351 / FAIL 0
+
+Production dependency audit: 0 vulnerabilities
+
+Additional release checks:
+- GET /, /guides, /faq, /system: HTTP 200
+- Active + published company appears on home: PASS
+- Linked company services appear in company profile: PASS
+- Suspended company disappears from home: PASS
+- Suspended company profile returns HTTP 404: PASS
+- Package prices/features are loaded from central database: PASS
+- Every EJS input has an explicit type: PASS

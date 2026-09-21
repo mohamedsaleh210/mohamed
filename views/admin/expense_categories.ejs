@@ -1,0 +1,130 @@
+<% pageTitle = 'أنواع المصاريف' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', {
+  crumbs: [{ label: 'المصاريف', href: adminPath + '/expenses' }, { label: 'أنواع المصاريف' }]
+}) %>
+
+<%
+  const okMsgs = { added: 'تم إضافة النوع.', saved: 'تم الحفظ.', deleted: 'تم الحذف.' };
+  const errMsgs = {
+    name: 'اسم النوع مطلوب.',
+    built_in: 'الأنواع المدمجة مش بتتحذف — تقدر تخفيها بس.',
+  };
+%>
+
+<div class="page-head">
+  <h1>أنواع المصاريف</h1>
+  <p class="sub">دي اللي الموظف بيختار منها وهو بيسجّل مصروف على طلب.</p>
+</div>
+
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (msg === 'hidden') { %>
+  <div class="alert ok">
+    <span>
+      النوع اتخفى بدل ما يتحذف — مستخدم في <b><%= query.n %></b> مصروف،
+      والمصاريف دي لازم تفضل بأسمائها.
+    </span>
+  </div>
+<% } %>
+<% if (err && errMsgs[err]) { %><div class="alert err"><span><%= errMsgs[err] %></span></div><% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>الأنواع</h3>
+    <span class="chip spacer"><%= rows.filter(r => r.active).length %> ظاهر</span>
+  </div>
+  <div class="panel-body flush">
+    <table class="tbl">
+      <thead><tr><th>النوع</th><th>مستخدم في</th><th>الحالة</th><th></th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr style="<%= r.active ? '' : 'opacity:.6' %>">
+            <td data-label="النوع">
+              <span style="font-size:17px"><%= r.icon %></span>
+              <b style="margin-inline-start:6px"><%= r.label_ar %></b>
+              <% if (r.built_in) { %><br><span class="chip">مدمج</span><% } %>
+            </td>
+            <td data-label="مستخدم في">
+              <% if (r.used) { %><%= r.used %> مصروف<% } else { %>
+                <span style="color:var(--muted)">—</span>
+              <% } %>
+            </td>
+            <td data-label="الحالة">
+              <% if (r.active) { %><span class="chip ok">ظاهر</span>
+              <% } else { %><span class="chip off">مخفي</span><% } %>
+            </td>
+            <td data-label="" class="row-actions">
+              <button class="btn ghost sm" type="button" data-toggle="ec-<%= r.id %>">تعديل</button>
+              <% if (!r.built_in) { %>
+                <form method="post" action="<%= adminPath %>/expenses/categories/<%= r.id %>/delete"
+                      data-confirm="<%= r.used ? 'النوع مستخدم — هيتخفى بدل ما يتحذف. تكمّل؟' : 'تحذف «' + r.label_ar + '»؟' %>">
+                  <%- csrfField %>
+                  <button class="btn danger sm" type="submit">
+                    <%= r.used ? 'إخفاء' : 'حذف' %>
+                  </button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+          <tr class="edit-row" hidden id="ec-<%= r.id %>">
+            <td colspan="4">
+              <form method="post" action="<%= adminPath %>/expenses/categories/<%= r.id %>/edit"
+                    style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <%- csrfField %>
+                <input type="text" name="icon" value="<%= r.icon %>" maxlength="4"
+                       style="width:64px;text-align:center;padding:9px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:18px;min-height:44px">
+                <input type="text" name="label_ar" value="<%= r.label_ar %>" required
+                       style="flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:44px">
+                <label class="check" style="margin:0">
+                  <input type="checkbox" name="active" value="1" <%= r.active ? 'checked' : '' %>>
+                  <span class="txt">ظاهر</span>
+                </label>
+                <button class="btn brass sm" type="submit">حفظ</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel" style="max-width:620px">
+  <div class="panel-head"><h3>إضافة نوع جديد</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/expenses/categories/new">
+      <%- csrfField %>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="width:90px;margin:0">
+          <label>أيقونة</label>
+          <input type="text" name="icon" maxlength="4" placeholder="📄"
+                 style="text-align:center;font-size:18px">
+        </div>
+        <div class="field req" style="flex:1;min-width:180px;margin:0">
+          <label>اسم النوع</label>
+          <input type="text" name="label_ar" required placeholder="مثال: رسوم لجنة">
+        </div>
+      </div>
+      <div class="help" style="margin:10px 0 14px">
+        هيظهر للموظفين على طول في قائمة تسجيل المصروف.
+      </div>
+      <button class="btn brass" type="submit">إضافة</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-toggle]');
+    if (!btn) return;
+    var row = document.getElementById(btn.getAttribute('data-toggle'));
+    if (row) {
+      row.hidden = !row.hidden;
+      if (!row.hidden) row.querySelector('input[name="label_ar"]').focus();
+    }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

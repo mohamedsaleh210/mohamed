@@ -1,0 +1,86 @@
+<% pageTitle = lang === 'ar' ? 'اتصل بنا' : 'Contact us' %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<% const ar = lang === 'ar'; %>
+
+<section class="section">
+  <div class="wrap" style="max-width:760px">
+
+    <nav class="crumbs">
+      <a href="/"><%= ar ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= ar ? 'اتصل بنا' : 'Contact us' %></strong>
+    </nav>
+
+    <div class="section-head" style="text-align:start;margin-bottom:26px">
+      <h2><%= ar ? 'اتصل بنا' : 'Contact us' %></h2>
+      <p style="margin:0">
+        <%= ar
+          ? 'اختر الطريقة الأنسب لك — وسنرد في أقرب وقت خلال ساعات العمل.'
+          : 'Choose whichever suits you — we reply during working hours.' %>
+      </p>
+    </div>
+
+    <% if (contacts.length) { %>
+      <div class="contact-grid">
+        <% contacts.forEach(c => {
+             const icons = { phone:'📞', mobile:'📱', whatsapp:'💬', email:'✉️', address:'📍', fax:'📠' };
+             let href = null;
+             if (c.kind === 'email') href = 'mailto:' + c.value;
+             else if (c.kind === 'whatsapp') href = waLink(c.value, ar ? 'مرحباً، أرغب في الاستفسار عن خدماتكم' : 'Hello, I would like to ask about your services');
+             else if (['phone','mobile'].includes(c.kind)) href = 'tel:' + c.value.replace(/\s/g, '');
+        %>
+          <% if (href) { %>
+            <a class="contact-card" href="<%= href %>"
+               <%= c.kind === 'whatsapp' ? 'target="_blank" rel="noopener noreferrer"' : '' %>>
+          <% } else { %>
+            <div class="contact-card">
+          <% } %>
+              <span class="cc-icon"><%= icons[c.kind] || '•' %></span>
+              <span class="cc-body">
+                <span class="cc-label"><%= c.label %></span>
+                <span class="cc-value num"><%= c.value %></span>
+                <% if (c.note) { %><span class="cc-note"><%= c.note %></span><% } %>
+              </span>
+          <% if (href) { %></a><% } else { %></div><% } %>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (hours || address) { %>
+      <div class="contact-info">
+        <% if (hours) { %>
+          <div>
+            <h3><%= ar ? 'مواعيد العمل' : 'Working hours' %></h3>
+            <p><%= hours %></p>
+          </div>
+        <% } %>
+        <% if (address) { %>
+          <div>
+            <h3><%= ar ? 'العنوان' : 'Address' %></h3>
+            <p><%= address %></p>
+            <% if (mapUrl) { %>
+              <a class="btn ghost sm" href="<%= mapUrl %>" target="_blank" rel="noopener noreferrer">
+                <%= ar ? 'افتح على الخريطة' : 'Open in maps' %>
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div class="not-found-note">
+      <h3><%= ar ? 'عندك طلب محدد؟' : 'Have a specific request?' %></h3>
+      <p>
+        <%= ar
+          ? 'قدّم طلبك من الموقع وسيصلك رقم متابعة فوراً — أسرع من الشرح على الهاتف، وكل شيء يبقى موثّقاً.'
+          : 'Submit it here and you will get a reference number right away — faster than explaining on the phone, and everything stays on record.' %>
+      </p>
+      <a class="btn brass" href="/request"><%= t.hero_cta %></a>
+    </div>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

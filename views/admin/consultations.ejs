@@ -1,0 +1,150 @@
+<% pageTitle = 'الاستشارات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الاستشارات' }] }) %>
+
+<%
+  const okMsgs = {
+    added: 'تم إضافة الاستشارة.',
+    saved: 'تم حفظ التعديلات.',
+    deleted: 'تم حذف الاستشارة.',
+    shown: 'الاستشارة ظاهرة على الموقع.',
+    hidden: 'الاستشارة اتخفت من الموقع.',
+  };
+  const live = items.filter(i => i.active).length;
+%>
+
+<div class="page-head">
+  <h1>الاستشارات</h1>
+  <p class="sub">الاستشارات ليها صفحتها الخاصة على الموقع، ومنفصلة عن الخدمات.</p>
+</div>
+
+<%- include('../partials/undo_banner') %>
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (err === 'title') { %><div class="alert err"><span>عنوان الاستشارة بالعربي مطلوب.</span></div><% } %>
+<% if (err === 'in_use') { %>
+  <div class="alert warn"><span>مش هينفع تحذفها — فيه <%= query.n %> طلب مربوط بيها. اخفيها بدل الحذف.</span></div>
+<% } %>
+
+<% if (!items.length) { %>
+  <div class="alert info">
+    <span>
+      <b>مفيش استشارات لسه، فصفحة «الاستشارات» مخفية من الموقع تلقائياً.</b>
+      أول ما تضيف واحدة ظاهرة، اللينك هيرجع لوحده في الهيدر والفوتر.
+    </span>
+  </div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>الاستشارات المضافة</h3>
+    <span class="chip spacer"><%= live %> ظاهرة من <%= items.length %></span>
+  </div>
+  <div class="panel-body flush">
+    <% if (items.length) { %>
+      <ul class="sortable" data-reorder-url="<%= adminPath %>/consultations-admin/reorder">
+        <% items.forEach(it => { %>
+          <li class="sort-item" data-id="<%= it.id %>">
+            <span class="grip" aria-hidden="true" title="اسحب للترتيب">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+            </span>
+            <span class="move-btns">
+              <button type="button" data-move="up" aria-label="فوق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button>
+              <button type="button" data-move="down" aria-label="تحت"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+            </span>
+            <div class="sort-body">
+              <div class="t">
+                <%= it.title_ar %>
+                <% if (!it.active) { %><span class="chip off">مخفية</span><% } %>
+              </div>
+              <div class="s"><%= it.title_en || '—' %></div>
+            </div>
+            <div class="sort-actions">
+              <button class="btn ghost sm" type="button" data-edit-c="<%= it.id %>">تعديل</button>
+              <form method="post" action="<%= adminPath %>/consultations-admin/<%= it.id %>/toggle">
+                <%- csrfField %>
+                <button class="btn ghost sm" type="submit"><%= it.active ? 'إخفاء' : 'إظهار' %></button>
+              </form>
+              <form method="post" action="<%= adminPath %>/consultations-admin/<%= it.id %>/delete"
+                    data-confirm="تحذف استشارة «<%= it.title_ar %>»؟">
+                <%- csrfField %>
+                <button class="btn danger sm" type="submit">حذف</button>
+              </form>
+            </div>
+          </li>
+          <li style="padding:0 14px">
+            <div class="edit-box" hidden id="c-edit-<%= it.id %>">
+              <form method="post" action="<%= adminPath %>/consultations-admin/<%= it.id %>">
+                <%- csrfField %>
+                <div class="two-col">
+                  <div class="field req"><label>العنوان (عربي)</label>
+                    <input type="text" name="title_ar" value="<%= it.title_ar %>" required></div>
+                  <div class="field"><label>Title (English)</label>
+                    <input type="text" name="title_en" dir="ltr" style="text-align:left" value="<%= it.title_en || '' %>"></div>
+                </div>
+                <div class="two-col">
+                  <div class="field"><label>الوصف (عربي)</label>
+                    <textarea name="body_ar" style="min-height:80px"><%= it.body_ar || '' %></textarea></div>
+                  <div class="field"><label>Description (English)</label>
+                    <textarea name="body_en" dir="ltr" style="text-align:left;min-height:80px"><%= it.body_en || '' %></textarea></div>
+                </div>
+                <label class="check">
+                  <input type="checkbox" name="active" value="1" <%= it.active ? 'checked' : '' %>>
+                  <span class="txt">ظاهرة على الموقع</span>
+                </label>
+                <div class="btn-row">
+                  <button class="btn brass sm" type="submit">حفظ</button>
+                  <button class="btn ghost sm" type="button" data-close-c="<%= it.id %>">إلغاء</button>
+                </div>
+              </form>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">💬</span>
+        <p>مفيش استشارات لسه. ضيف أول واحدة من تحت.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>إضافة استشارة</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/consultations-admin">
+      <%- csrfField %>
+      <div class="two-col">
+        <div class="field req"><label>العنوان (عربي)</label>
+          <input type="text" name="title_ar" required placeholder="مثال: استشارة قبل شراء عقار"></div>
+        <div class="field"><label>Title (English)</label>
+          <input type="text" name="title_en" dir="ltr" style="text-align:left" placeholder="Pre-Purchase Consultation"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>الوصف (عربي)</label>
+          <textarea name="body_ar" style="min-height:80px"></textarea></div>
+        <div class="field"><label>Description (English)</label>
+          <textarea name="body_en" dir="ltr" style="text-align:left;min-height:80px"></textarea></div>
+      </div>
+      <label class="check">
+        <input type="checkbox" name="active" value="1" checked>
+        <span class="txt">ظاهرة على الموقع</span>
+      </label>
+      <button class="btn brass" type="submit" style="margin-top:10px">إضافة</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    var o = e.target.closest('[data-edit-c]');
+    if (o) { var b = document.getElementById('c-edit-' + o.getAttribute('data-edit-c'));
+      if (b) { b.hidden = !b.hidden; if (!b.hidden) b.querySelector('input').focus(); } }
+    var c = e.target.closest('[data-close-c]');
+    if (c) { var x = document.getElementById('c-edit-' + c.getAttribute('data-close-c')); if (x) x.hidden = true; }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

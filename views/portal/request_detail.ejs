@@ -1,0 +1,111 @@
+<% pageTitle = r.ref %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<% const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
+   const remaining = (r.total_amount || 0) - (r.paid_amount || 0); %>
+
+<section class="section">
+  <div class="wrap" style="max-width:760px">
+    <a href="/portal" style="color:var(--muted);font-size:14px">← <%= T.myRequests %></a>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
+      <h2 style="margin:0;color:var(--ink);direction:ltr"><%= r.ref %></h2>
+      <span style="background:<%= st.color %>;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800">
+        <%= lang === 'ar' ? st.ar : st.en %>
+      </span>
+    </div>
+
+    <div class="form-card" style="max-width:none;margin-bottom:18px">
+      <p style="margin:0 0 6px"><strong><%= T.service %>:</strong>
+        <%= r.service_label ? (lang === 'ar' ? r.service_label.split(' / ')[0] : (r.service_label.split(' / ')[1] || r.service_label)) : '—' %>
+      </p>
+      <p style="margin:0 0 6px"><strong><%= T.date %>:</strong> <%= fmtDate(r.created_at) %></p>
+      <% if (r.deadline) { %>
+        <p style="margin:0"><strong><%= T.deadline %>:</strong> <span style="direction:ltr"><%= r.deadline %></span></p>
+      <% } %>
+    </div>
+
+    <% if (r.total_amount) { %>
+      <div class="form-card" style="max-width:none;margin-bottom:18px">
+        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.account %></h4>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <div><span style="color:var(--muted);font-size:13px"><%= T.account %></span><br>
+            <strong style="font-size:19px"><%= r.total_amount.toLocaleString('en-US') %> <%= site.currency %></strong></div>
+          <div><span style="color:var(--muted);font-size:13px"><%= T.paid %></span><br>
+            <strong style="font-size:19px;color:#3a9d6b"><%= (r.paid_amount || 0).toLocaleString('en-US') %></strong></div>
+          <div><span style="color:var(--muted);font-size:13px"><%= T.remaining %></span><br>
+            <strong style="font-size:19px;color:<%= remaining > 0 ? '#c15450' : '#3a9d6b' %>"><%= remaining.toLocaleString('en-US') %></strong></div>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (r.upload_token) { %>
+      <div class="portal-upload">
+        <div>
+          <h4><%= lang === 'ar' ? 'رفع مستندات' : 'Upload documents' %></h4>
+          <p>
+            <%= lang === 'ar'
+              ? 'يمكنك إضافة مستندات لهذا الطلب في أي وقت — صوّرها بهاتفك أو أرفق ملف PDF.'
+              : 'You can add documents to this request at any time — photograph them or attach a PDF.' %>
+          </p>
+        </div>
+        <a class="btn brass" href="/upload/<%= r.id %>">
+          <%= lang === 'ar' ? 'رفع الآن' : 'Upload now' %>
+        </a>
+      </div>
+    <% } %>
+
+    <% if (legalCase) { %>
+      <div class="form-card portal-case" style="max-width:none;margin-bottom:18px">
+        <h4><%= lang==='ar' ? 'ملف القضية' : 'Legal case' %> · <span class="num"><%= legalCase.file_no %></span></h4>
+        <p><strong><%= lang==='ar'?'الحالة':'Status' %>:</strong> <%= CASE_STATUS[legalCase.status] || legalCase.status %></p>
+        <% if(legalCase.case_number){ %><p><strong><%= lang==='ar'?'رقم القضية':'Case number' %>:</strong> <%= legalCase.case_number %> / <%= legalCase.judicial_year||'' %></p><% } %>
+        <% if(legalCase.court){ %><p><strong><%= lang==='ar'?'المحكمة':'Court' %>:</strong> <%= legalCase.court %> <%= legalCase.circuit||'' %></p><% } %>
+        <% if(legalCase.client_summary){ %><div class="case-client-update"><%= legalCase.client_summary %></div><% } %>
+      </div>
+      <% if(caseHearings.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4><%= lang==='ar'?'الجلسات':'Hearings' %></h4><% caseHearings.forEach(h=>{ %><div class="portal-case-row"><b class="num"><%= h.hearing_on %></b><span><%= h.purpose %></span><small><%= h.decision||h.status %></small></div><% }) %></div><% } %>
+      <% if(caseTasks.length || caseEvents.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4><%= lang==='ar'?'متابعة الأعمال والإجراءات':'Progress' %></h4><% caseTasks.forEach(t=>{ %><div class="portal-case-row"><b><%= t.title %></b><small><%= t.status==='completed'?'✓ تم':(t.due_on||'قيد العمل') %></small></div><% }) %><% caseEvents.forEach(e=>{ %><div class="portal-case-row"><b><%= e.title %></b><span><%= e.details||'' %></span><small><%= e.event_on %></small></div><% }) %></div><% } %>
+    <% } %>
+
+    <% if (requirements.length) { %>
+      <div class="form-card" style="max-width:none;margin-bottom:18px">
+        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.needed %></h4>
+        <% requirements.forEach(rq => { const done = rq.status === 'received'; %>
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0ece2">
+            <span style="width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;font-size:13px;color:#fff;background:<%= done ? '#3a9d6b' : '#d98a3d' %>">
+              <%= done ? '✓' : '!' %>
+            </span>
+            <span style="flex:1;<%= done ? 'text-decoration:line-through;color:#8b9aa1' : '' %>"><%= rq.title %></span>
+            <span style="font-size:12.5px;color:var(--muted)"><%= done ? T.received : T.pending %></span>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (documents.length) { %>
+      <div class="form-card" style="max-width:none">
+        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.files %></h4>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px">
+          <% documents.forEach(d => { %>
+            <div style="border:1px solid #e6dfd1;border-radius:10px;overflow:hidden">
+              <% if (d.kind === 'pdf') { %>
+                <a href="/files/<%= d.files[0] ? d.files[0].id : 0 %>" target="_blank" rel="noopener"
+                   style="display:grid;place-items:center;aspect-ratio:3/4;background:#fbf5f4;color:#c15450;font-weight:800">PDF</a>
+              <% } else if (d.files[0]) { %>
+                <a href="/files/<%= d.files[0].id %>" target="_blank" rel="noopener"
+                   style="display:block;aspect-ratio:3/4;background:#fff center/cover no-repeat url('/files/<%= d.files[0].id %>')"></a>
+              <% } %>
+              <div style="padding:8px 10px">
+                <strong style="font-size:13px;display:block"><%= d.name %></strong>
+                <span style="font-size:12px;color:var(--muted)"><%= d.files.length %> <%= lang === 'ar' ? 'ملف' : 'files' %></span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

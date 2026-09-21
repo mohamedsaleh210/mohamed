@@ -1,0 +1,52 @@
+<%pageTitle='تقييم الموظفين'%><%-include('../partials/admin_head')%><%-include('../partials/admin_nav')%><%-include('../partials/crumbs',{crumbs:[{label:'تقييم الموظفين'}]})%>
+<div class="page-head-row">
+  <div class="page-head"><h1>تقييم الإنجاز والمكافآت</h1><p class="sub">80% تقييم إلكتروني لا يمكن تعديله، و20% تقييم إداري، ثم اعتماد المكافأة أو الإجراء.</p></div>
+  <%if(can('performance.export')){%><a class="btn ghost" href="<%=adminPath%>/performance/export.csv?from=<%=from%>&to=<%=to%>">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/performance/print?from=<%=from%>&to=<%=to%>">PDF / طباعة</a><%}%>
+</div>
+<div class="alert"><span><b>أساس التقييم:</b> الموعد 40%، اكتمال الخطوات 25%، الجودة وعدم إعادة الفتح 20%، التوثيق 10%، وتقييم المسؤول أو العميل 5%. فترات التوقف المعتمدة لا تُحسب تأخيرًا، ولا يتم أي خصم مالي تلقائيًا.</span></div>
+<form class="toolbar" method="get"><label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label><button class="btn brass">عرض الفترة</button></form>
+<div class="performance-list">
+<%staff.forEach((u,index)=>{ const decision=u.review?.decision||'pending'; const decisionLabel=({approved:'معتمد',paid:'تم الصرف/التطبيق',cancelled:'ملغي',pending:'قيد المراجعة'})[decision];%>
+  <details class="performance-card" <%=index===0?'open':''%>>
+    <summary>
+      <div class="performance-person"><b><%=u.display_name%></b><small><%=u.job_title||'موظف'%></small></div>
+      <div class="performance-metric"><small>المطلوب</small><b><%=u.assigned%></b></div>
+      <div class="performance-metric"><small>المنجز</small><b><%=u.completed%></b></div>
+      <div class="performance-metric"><small>الإلكتروني</small><b><%=u.electronicScore%>%</b></div>
+      <div class="performance-metric"><small>الإداري</small><b><%=u.adminScore%>/20</b></div>
+      <div class="score-ring" style="--score:<%=u.finalScore%>"><b><%=u.finalScore%>%</b></div>
+      <span class="btn sm <%=decision==='paid'?'brass':'ghost'%>"><%=decisionLabel%></span>
+    </summary>
+    <div class="performance-body">
+      <div class="performance-kpis">
+        <span><b><%=u.assigned%></b>مطلوب</span><span><b><%=u.completed%></b>منجز</span><span><b><%=u.onTime%></b>في الموعد</span><span><b><%=u.late%></b>بعد الموعد</span><span><b><%=u.overdue%></b>متأخر</span><span><b><%=u.paused%></b>متوقف</span><span><b><%=u.reopened%></b>معاد فتحه</span>
+      </div>
+      <%if(can('performance.manage')){%>
+      <div class="performance-forms">
+        <form method="post" action="<%=adminPath%>/performance/<%=u.id%>/rule">
+          <%-csrfField%><input type="hidden" name="from" value="<%=from%>"><input type="hidden" name="to" value="<%=to%>">
+          <h4>الاتفاق الخاص بالموظف</h4>
+          <label>نسبة الاستحقاق<input type="number" min="0" max="100" name="target_percent" value="<%=u.rule.target_percent%>"></label>
+          <label>مكافأة بلوغ المستهدف<input type="number" min="0" step=".01" name="bonus_amount" value="<%=u.rule.bonus_amount%>"></label>
+          <label>اقتراح خصم لكل عمل متأخر<input type="number" min="0" step=".01" name="deduction_per_overdue" value="<%=u.rule.deduction_per_overdue%>"></label>
+          <label>ملاحظات الاتفاق<textarea name="notes"><%=u.rule.notes||''%></textarea></label>
+          <button class="btn ghost block">حفظ قاعدة التقييم</button>
+        </form>
+        <form method="post" action="<%=adminPath%>/performance/<%=u.id%>/review">
+          <%-csrfField%><input type="hidden" name="from" value="<%=from%>"><input type="hidden" name="to" value="<%=to%>">
+          <h4>التقييم الإداري والاعتماد</h4>
+          <label>التعاون والانضباط والتواصل والمبادرة والدقة — من 20<input type="number" min="0" max="20" step=".5" name="administrative_score" value="<%=u.review?.administrative_score||0%>"></label>
+          <p>المقترح: مكافأة <b><%=u.recommendedBonus%></b> — خصم يحتاج اعتمادًا <b><%=u.recommendedDeduction%></b></p>
+          <label>المكافأة المعتمدة<input type="number" min="0" step=".01" name="approved_bonus" value="<%=u.review?.approved_bonus??u.recommendedBonus%>"></label>
+          <label>الخصم المعتمد<input type="number" min="0" step=".01" name="approved_deduction" value="<%=u.review?.approved_deduction??0%>"></label>
+          <label>القرار<select name="decision"><%[['pending','قيد المراجعة'],['approved','معتمد'],['paid','تم الصرف/تطبيق الخصم'],['cancelled','ملغي']].forEach(x=>{%><option value="<%=x[0]%>" <%=decision===x[0]?'selected':''%>><%=x[1]%></option><%})%></select></label>
+          <label>سبب القرار<textarea name="notes"><%=u.review?.notes||''%></textarea></label>
+          <button class="btn brass block">حفظ واعتماد التقييم</button>
+        </form>
+      </div>
+      <%}else{%><div class="alert"><span>المكافأة المعتمدة: <b><%=u.review?.approved_bonus||0%></b> — الخصم المعتمد: <b><%=u.review?.approved_deduction||0%></b></span></div><%}%>
+    </div>
+  </details>
+<%})%>
+</div>
+<%-include('../partials/admin_foot')%>

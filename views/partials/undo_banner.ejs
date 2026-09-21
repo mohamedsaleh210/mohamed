@@ -1,0 +1,36 @@
+<%
+  // Shown right after a delete. The link stays valid far longer than the
+  // banner does — the recycle bin is the real safety net, this is just the
+  // fast path for "I clicked the wrong row".
+  const undoId = query.undo;
+%>
+<% if (undoId) { %>
+  <div class="alert warn undo-bar">
+    <span>
+      <b>تم الحذف.</b>
+      غلطة؟ ترجّعه من هنا، أو من سلة المحذوفات في أي وقت خلال <%= undoWindowDays %> يوم.
+    </span>
+    <form method="post" action="<%= adminPath %>/trash/<%= undoId %>/restore" class="undo-form">
+      <%- csrfField %>
+      <input type="hidden" name="next" value="<%= path %>">
+      <button class="btn sm" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7v6h6"/><path d="M3.5 13a9 9 0 1 0 2.1-9.4L3 7"/>
+        </svg>
+        تراجع
+      </button>
+    </form>
+  </div>
+<% } %>
+<% if (query.undo_ok) { %>
+  <div class="alert ok"><span>تم استرجاع العنصر.</span></div>
+<% } %>
+<% if (query.undo_err) { %>
+  <div class="alert err">
+    <span>
+      <%= query.undo_err === 'already' ? 'العنصر ده اتسترجع قبل كده.'
+        : query.undo_err === 'missing' ? 'مش لاقيين العنصر ده في سلة المحذوفات.'
+        : 'مقدرناش نسترجع العنصر — يمكن حاجة مرتبطة بيه اتغيّرت.' %>
+    </span>
+  </div>
+<% } %>

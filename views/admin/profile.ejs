@@ -1,0 +1,249 @@
+<% pageTitle = 'بياناتي' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'بياناتي' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>بياناتي</h1>
+    <p class="sub">
+      تقدر تعدّلها في أي وقت. الاسم المختصر والصورة بيظهروا جنب كل تعليق
+      وكل إجراء تعمله.
+    </p>
+  </div>
+  <% if (!force) { %>
+    <a class="btn ghost" href="<%= adminPath %>/account">تغيير كلمة السر</a>
+  <% } %>
+</div>
+
+<% if (force) { %>
+  <div class="alert warn">
+    <span>
+      <b>كمّل بياناتك قبل ما تبدأ.</b>
+      البريد والموبايل هما طريقك الوحيد لاستعادة حسابك لو نسيت كلمة السر،
+      والرقم القومي وتاريخ الميلاد بيوثّقوا مين عمل إيه في ملفات العملاء.
+    </span>
+  </div>
+<% } %>
+
+<% if (saved) { %><div class="alert ok"><span>تم حفظ بياناتك.</span></div><% } %>
+<% if (msg === 'assign_locked') { %>
+  <div class="alert ok"><span>تم قفل التعيين. زمايلك هيشوفوا السبب.</span></div>
+<% } %>
+<% if (msg === 'assign_open') { %>
+  <div class="alert ok"><span>التعيين اتفتح تاني.</span></div>
+<% } %>
+<% if (msg === 'need_lock_reason') { %>
+  <div class="alert err"><span>اكتب سبب — زمايلك محتاجين يعرفوا يستنوا ولا يوزّعوا الشغل.</span></div>
+<% } %>
+
+<% if (error) { %><div class="alert err"><span><%= error %></span></div><% } %>
+
+<div class="panel" style="max-width:640px">
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/account/profile" enctype="multipart/form-data">
+      <%- csrfField %>
+
+      <div class="profile-photo">
+        <div class="photo-preview" id="photoPreview">
+          <% if (me.photo) { %>
+            <img src="<%= adminPath %>/avatar/<%= me.id %>" alt="">
+          <% } else { %>
+            <span><%= (me.display_name || me.username || '؟').charAt(0) %></span>
+          <% } %>
+        </div>
+        <div class="photo-side">
+          <label for="photo" class="btn ghost sm">
+            <%= me.photo ? 'تغيير الصورة' : 'إضافة صورة' %>
+          </label>
+          <input type="file" id="photo" name="photo" accept="image/*" hidden>
+          <div class="help">
+            بتظهر جنب تعليقاتك في ملفات العملاء، فالفريق يعرف مين بيتكلم من نظرة.
+            اختيارية بس مفيدة.
+          </div>
+        </div>
+      </div>
+
+      <div class="field req">
+        <label for="legal_name">الاسم كما هو مدوّن في البطاقة</label>
+        <input type="text" id="legal_name" name="legal_name" required
+               value="<%= me.legal_name || '' %>"
+               placeholder="انسخه من البطاقة بالحرف">
+        <div class="help">
+          اكتبه بالكامل زي ما هو في البطاقة — رباعي أو خماسي أو أطول، حسب اسمك.
+          ده اللي بيتكتب في أي ورقة رسمية باسمك.
+        </div>
+      </div>
+
+      <div class="field req">
+        <label for="display_name">الاسم المختصر</label>
+        <input type="text" id="display_name" name="display_name" required maxlength="30"
+               value="<%= me.display_name && me.display_name !== me.username ? me.display_name : '' %>"
+               placeholder="مثال: خالد سمير">
+        <div class="help">ده اللي زمايلك بيشوفوه جنب تعليقاتك وفي قوائم الطلبات.</div>
+      </div>
+
+      <div class="two-col">
+        <div class="field req">
+          <label for="email">البريد الإلكتروني</label>
+          <input type="email" id="email" name="email" required dir="ltr" style="text-align:left"
+                 value="<%= me.email || '' %>">
+          <div class="help">عليه بيوصل رابط استعادة كلمة السر.</div>
+        </div>
+        <div class="field req">
+          <label for="phone">رقم الموبايل</label>
+          <input type="tel" id="phone" name="phone" required dir="ltr" style="text-align:left"
+                 value="<%= me.phone || '' %>" placeholder="+201000000000">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field req">
+          <label for="national_id">الرقم القومي</label>
+          <input type="text" id="national_id" name="national_id" required dir="ltr"
+                 style="text-align:left" inputmode="numeric" maxlength="14"
+                 value="<%= me.national_id || '' %>" placeholder="١٤ رقم">
+        </div>
+        <div class="field req">
+          <label for="birth_date">تاريخ الميلاد</label>
+          <input type="date" id="birth_date" name="birth_date" required
+                 value="<%= me.birth_date || '' %>">
+        </div>
+      </div>
+
+      <% if (idRequired) { %>
+        <div class="id-card-block">
+          <h3>صورة البطاقة</h3>
+          <p>
+            مطلوبة من كل موظف. الصور دي <b>الأدمن بس هو اللي بيشوفها</b> —
+            زمايلك مش بيوصلوا لها.
+          </p>
+
+          <div class="id-sides">
+            <label class="id-side <%= me.id_front ? 'has' : '' %>">
+              <input type="file" name="id_front" accept="image/*" capture="environment" hidden>
+              <% if (me.id_front) { %>
+                <img src="<%= adminPath %>/account/id-card/<%= me.id %>/front" alt="وجه البطاقة">
+                <span class="id-tag">الوجه ✓</span>
+              <% } else { %>
+                <span class="id-plus">+</span>
+                <span class="id-tag">صوّر الوجه</span>
+              <% } %>
+            </label>
+
+            <label class="id-side <%= me.id_back ? 'has' : '' %>">
+              <input type="file" name="id_back" accept="image/*" capture="environment" hidden>
+              <% if (me.id_back) { %>
+                <img src="<%= adminPath %>/account/id-card/<%= me.id %>/back" alt="ظهر البطاقة">
+                <span class="id-tag">الظهر ✓</span>
+              <% } else { %>
+                <span class="id-plus">+</span>
+                <span class="id-tag">صوّر الظهر</span>
+              <% } %>
+            </label>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn brass" type="submit">حفظ البيانات</button>
+        <% if (!force) { %>
+          <a class="btn ghost" href="<%= adminPath %>/account">كلمة السر</a>
+        <% } %>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Immediate preview, so a wrong picture is obvious before saving.
+  var input = document.getElementById('photo');
+  var preview = document.getElementById('photoPreview');
+  if (input) {
+    input.addEventListener('change', function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      preview.innerHTML = '<img src="' + URL.createObjectURL(f) + '" alt="">';
+    });
+  }
+
+  // Same immediate preview for the ID sides, so a blurry shot is caught here
+  // rather than by whoever needs to read it later.
+  document.querySelectorAll('.id-side input[type=file]').forEach(function (el) {
+    el.addEventListener('change', function () {
+      var f = el.files && el.files[0];
+      if (!f) return;
+      var box = el.closest('.id-side');
+      box.classList.add('has');
+      var img = box.querySelector('img');
+      if (!img) {
+        img = document.createElement('img');
+        box.insertBefore(img, box.firstChild);
+        var plus = box.querySelector('.id-plus');
+        if (plus) plus.remove();
+      }
+      img.src = URL.createObjectURL(f);
+      box.querySelector('.id-tag').textContent = 'جاهزة ✓';
+    });
+  });
+
+  // The national ID is digits only; strip anything else as it is typed.
+  var nid = document.getElementById('national_id');
+  if (nid) {
+    nid.addEventListener('input', function () {
+      nid.value = nid.value.replace(/\D/g, '').slice(0, 14);
+    });
+  }
+</script>
+
+<div class="panel" style="max-width:640px">
+  <div class="panel-head">
+    <h3>التعيين على طلبات جديدة</h3>
+    <% if (me.assign_locked) { %>
+      <span class="chip spacer" style="background:var(--warn-bg);color:#8a6416">مقفول</span>
+    <% } else { %>
+      <span class="chip ok spacer">مفتوح</span>
+    <% } %>
+  </div>
+  <div class="panel-body">
+    <% if (me.assign_locked) { %>
+      <div class="alert warn" style="margin-top:0">
+        <span>
+          <b>مقفول — <%= me.assign_lock_reason %></b><br>
+          <% if (me.assign_lock_until) { %>
+            هيتفتح لوحده يوم <span class="num"><%= me.assign_lock_until %></span>.
+          <% } else { %>
+            مفتوح المدة — لحد ما تفتحه بنفسك.
+          <% } %>
+          <br><span class="help">قفله <%= me.assign_lock_by %></span>
+        </span>
+      </div>
+      <form method="post" action="<%= adminPath %>/account/assign-lock">
+        <%- csrfField %>
+        <button class="btn brass block" type="submit">افتح التعيين تاني</button>
+      </form>
+    <% } else { %>
+      <p class="help" style="margin:0 0 14px">
+        لو مسافر أو في إجازة أو شغلك اتكوّم، اقفل التعيين — زمايلك هيشوفوا
+        السبب ومش هيحطوا عليك طلبات جديدة.
+      </p>
+      <form method="post" action="<%= adminPath %>/account/assign-lock">
+        <%- csrfField %>
+        <input type="hidden" name="lock" value="1">
+        <div class="field req">
+          <label>السبب</label>
+          <input type="text" name="reason" required placeholder="مثال: إجازة سنوية">
+        </div>
+        <div class="field">
+          <label>لحد تاريخ (اختياري)</label>
+          <input type="date" name="until">
+          <div class="help">سيبه فاضي لو مش عارف — تقدر تفتحه بنفسك في أي وقت.</div>
+        </div>
+        <button class="btn ghost block" type="submit">اقفل التعيين</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

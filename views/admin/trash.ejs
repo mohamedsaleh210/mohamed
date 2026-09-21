@@ -1,0 +1,62 @@
+<% pageTitle = 'سلة المحذوفات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'سلة المحذوفات' }] }) %>
+
+<div class="page-head">
+  <h1>سلة المحذوفات</h1>
+  <p class="sub">أي حاجة تتحذف بتقعد هنا <%= windowDays %> يوم وتقدر ترجّعها في أي وقت.</p>
+</div>
+
+<% if (undo_ok) { %><div class="alert ok"><span>تم استرجاع العنصر.</span></div><% } %>
+<% if (undo_err) { %>
+  <div class="alert err">
+    <span>
+      <%= undo_err === 'already' ? 'العنصر ده اتسترجع قبل كده.'
+        : undo_err === 'missing' ? 'مش لاقيين العنصر ده.'
+        : 'مقدرناش نسترجع العنصر — يمكن حاجة مرتبطة بيه اتغيّرت.' %>
+    </span>
+  </div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (items.length) { %>
+      <table class="tbl">
+        <thead><tr><th>النوع</th><th>العنصر</th><th>مين حذفه</th><th>امتى</th><th></th></tr></thead>
+        <tbody>
+          <% items.forEach(it => { %>
+            <tr>
+              <td data-label="النوع"><span class="chip"><%= it.typeLabel %></span></td>
+              <td data-label="العنصر"><strong><%= it.label || '—' %></strong></td>
+              <td data-label="مين حذفه"><%= it.deleted_by || '—' %></td>
+              <td data-label="امتى" style="color:var(--muted);font-size:13px">
+                <%= fmtDateTime(it.deleted_at) %><br>
+                <span style="font-size:12px"><%= timeAgo(it.deleted_at) %></span>
+              </td>
+              <td data-label="" class="row-actions">
+                <% if (it.canRestore) { %>
+                  <form method="post" action="<%= adminPath %>/trash/<%= it.id %>/restore">
+                    <%- csrfField %>
+                    <input type="hidden" name="next" value="<%= adminPath %>/trash">
+                    <button class="btn sm" type="submit">استرجاع</button>
+                  </form>
+                <% } else { %>
+                  <span style="color:var(--muted);font-size:13px">مش قابل للاسترجاع</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">🗑</span>
+        <p>السلة فاضية — مفيش حاجة اتحذفت.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

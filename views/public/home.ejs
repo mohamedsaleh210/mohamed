@@ -1,0 +1,55 @@
+<% pageTitle = lang==='ar' ? 'الرئيسية' : 'Home' %>
+<%- include('../partials/head') %><%- include('../partials/header') %>
+<%
+const homeSectionMap=Object.fromEntries((homepageSections||[]).map(s=>[s.section_key,s]));
+const showHomeSection=key=>!homeSectionMap[key]||!!homeSectionMap[key].visible;
+const homeSectionOrder=key=>homeSectionMap[key]?homeSectionMap[key].sort:999;
+const homeContentMap=Object.fromEntries((homepageContent||[]).map(x=>[x.content_key,x]));
+const hc=(key,fallbackAr='',fallbackEn='')=>{const row=homeContentMap[key];if(!row)return lang==='en'?(fallbackEn||fallbackAr):fallbackAr;return lang==='en'?(row.value_en||row.value_ar||fallbackEn||fallbackAr):(row.value_ar||fallbackAr)};
+%>
+<main class="home-sections">
+<%if(canPublicElement('consultations')&&showHomeSection('consultations')){%><section class="section" style="order:<%=homeSectionOrder('consultations')%>"><div class="wrap"><h2><%=hc('consultations_title','الاستشارات')%></h2><p><%=hc('consultations_description','اختر الخدمة ونوع الاستشارة والمكتب والموعد المناسب.')%></p><a class="btn brass" href="/consultations">استعرض الاستشارات</a> <a class="btn" href="/appointments">احجز موعد</a></div></section><%}%>
+
+<%if(showHomeSection('hero')){%><section class="hero home-hero" style="order:<%=homeSectionOrder('hero')%>">
+  <div class="hero-city" aria-hidden="true"></div>
+  <div class="wrap home-hero-grid">
+    <div class="home-hero-copy">
+      <div class="eyebrow"><%=hc('hero_eyebrow','منصة واحدة لإنجاز أعمالك بثقة','One platform to get business done with confidence')%></div>
+      <h1><%=hc('hero_title','تراخيصك وموافقاتك وعقودك... ونحن نتكفّل بالإجراءات','Your licences, approvals and contracts — handled end to end')%></h1>
+      <p><%=hc('hero_description','خدمات قانونية وإدارية موثوقة للأفراد والشركات، من متابعة واحدة وحتى الإنجاز.','Trusted legal and administrative services for individuals and businesses, from one clear request to completion.')%></p>
+      <div class="hero-cta"><a class="btn brass" href="<%=hc('hero_primary_url','/request','/request')%>"><%=hc('hero_primary_label','ابدأ طلبك الآن','Start your request')%> <b><%=dir==='rtl'?'←':'→'%></b></a><a class="btn light" href="<%=hc('hero_secondary_url','/services','/services')%>"><%=hc('hero_secondary_label','استكشف الخدمات','Explore services')%></a></div>
+      <div class="hero-trust"><span><i>♙</i><b>مكاتب معتمدة</b><small>وشركاء موثوقون</small></span><span><i>◉</i><b>دعم متخصص</b><small>من فريق محترف</small></span><span><i>▣</i><b>بيانات آمنة</b><small>وسرية بالكامل</small></span></div>
+    </div>
+    <div class="product-scene hero-photo-scene" aria-label="خدمات سند القانونية والإدارية">
+      <img class="hero-photo" src="<%=hc('hero_image','/images/sanad-global-hero.png','/images/sanad-global-hero.png')%>" alt="<%=hc('hero_image_alt','متخصص أعمال يستخدم منصة سند في مكتب احترافي','A business professional using Sanad')%>">
+      <div class="scene-badge success">✓<span>خدمات موثوقة<br><small>مقدمون معتمدون</small></span></div>
+      <div class="scene-badge notice">▥<span>متابعة الطلب<br><small>من أي مكان</small></span></div>
+      <div class="scene-badge speed">▥<span>إنجاز أسرع<br><small>متابعة دقيقة</small></span></div>
+      <div class="scene-files"><b>الخدمة القانونية</b><b>خدمات الأعمال</b></div>
+    </div>
+  </div>
+</section><%}%>
+
+<%if(showHomeSection('search')){%><section class="home-search" style="order:<%=homeSectionOrder('search')%>"><div class="wrap"><form action="/services" method="get"><label><span>⌕</span><input type="search" name="q" placeholder="ما الخدمة التي تبحث عنها؟"></label><label class="sector-select"><span>▦</span><select name="page"><option value="">اختر القطاع</option><%pages.forEach(p=>{%><option value="<%=p.slug%>"><%=p.name_ar%></option><%})%></select></label><button class="btn">بحث</button><small>أكثر الخدمات بحثًا: تأسيس شركة · عقد · ترخيص · استشارة</small></form></div></section><%}%>
+
+<%if(showHomeSection('metrics')){%><section class="home-metrics" style="order:<%=homeSectionOrder('metrics')%>"><div class="wrap metric-grid"><%homepageMetrics.forEach(m=>{%><article><i><%=m.icon||'◇'%></i><strong><%=m.value%></strong><span><%=lang==='en'&&m.label_en?m.label_en:m.label_ar%></span></article><%})%></div></section><%}%>
+
+<%if(showHomeSection('audiences')){%><section class="section audience-section" style="order:<%=homeSectionOrder('audiences')%>"><div class="wrap"><div class="section-head"><h2><%=hc('audiences_title','اختر ما يخصك','Choose what fits you')%></h2><p><%=hc('audiences_description','حلول مصممة للأفراد والمكاتب والشركات والقطاعات.','Solutions designed for individuals, offices, companies and sectors.')%></p></div><div class="audience-grid"><%pages.slice(0,3).forEach((p,i)=>{%><a class="audience-card page-card <%=i===1?'featured':''%>" href="/p/<%=p.slug%>" style="--page:<%=p.colour%>"><i><%=i===0?'♙':i===1?'▥':'▦'%></i><div><h3><%=lang==='en'?(p.name_en||p.name_ar):p.name_ar%></h3><p><%=lang==='en'?(p.tagline_en||p.tagline_ar):(p.tagline_ar||'خدمات متكاملة مع متابعة واضحة حتى الإنجاز.')%></p><span><%=p.service_count%> <%=lang==='en'?'services':'خدمة متاحة'%></span><b><%=lang==='en'?'Browse services →':'استعرض الخدمات ←'%></b></div></a><%})%></div><a class="btn ghost all-services" href="/services"><%=lang==='en'?'View all services →':'عرض جميع الخدمات ←'%></a></div></section><%}%>
+
+
+
+<%if(showHomeSection('popular')){%><section class="section popular-section" style="order:<%=homeSectionOrder('popular')%>"><div class="wrap"><div class="section-head"><h2><%=hc('popular_title','خدماتنا الأكثر طلبًا','Our most requested services')%></h2><p><%=hc('popular_description','حلول عملية تغطي أهم الاحتياجات القانونية والإدارية.','Practical solutions for common legal and administrative needs.')%></p></div><div class="popular-grid"><%popularServices.slice(0,6).forEach((s,i)=>{%><article class="popular-card"><i><%=['▥','▤','▧','□','⚖','▱'][i]||'▤'%></i><div><span><%=s.category_name||'خدمة سند'%></span><h3><%=lang==='en'?(s.title_en||s.title_ar):s.title_ar%></h3><p><%=lang==='en'?(s.body_en||s.body_ar):(s.body_ar||'تنفيذ ومتابعة الخدمة حتى اكتمالها.')%></p><a href="/request?service=<%=s.id%>"><%=lang==='en'?'Request now →':'اطلب الآن ←'%></a></div></article><%})%></div><a class="btn ghost" href="/services"><%=lang==='en'?'View all services →':'عرض جميع الخدمات ←'%></a></div></section><%}%>
+
+<%if(showHomeSection('steps')){%><section class="section steps-section" style="order:<%=homeSectionOrder('steps')%>"><div class="wrap"><div class="section-head"><h2>كيف تعمل سند؟</h2><p>خطوات بسيطة وواضحة من اختيار الخدمة حتى استلام النتيجة.</p></div><div class="work-grid"><div class="request-preview"><header><b>متابعة طلبك</b><span>75%</span></header><strong>SND-26-1048</strong><p>تأسيس شركة ذات مسؤولية محدودة</p><div class="preview-progress"><i class="done">✓<small>استلام الطلب</small></i><i class="done">✓<small>مراجعة المستندات</small></i><i class="done">✓<small>تحت الإجراء</small></i><i><small>الإنجاز</small></i></div></div><div class="journey-map compact"><article><i>01</i><h3>اختر الخدمة</h3><p>اقرأ التفاصيل والمتطلبات.</p></article><article><i>02</i><h3>أرسل البيانات</h3><p>ارفع المستندات المطلوبة.</p></article><article><i>03</i><h3>تابع الإجراءات</h3><p>إشعارات ومواعيد واضحة.</p></article><article><i>04</i><h3>استلم النتيجة</h3><p>نتيجة موثقة وتقييم للخدمة.</p></article></div></div></div></section><%}%>
+
+<%if(showHomeSection('why')){%><section class="section why-section" style="order:<%=homeSectionOrder('why')%>"><div class="wrap"><div class="section-head"><h2>لماذا سند؟</h2><p>أكثر من مجرد منصة؛ شريكك في إنجاز معاملاتك.</p></div><div class="why-layout"><div class="home-benefits-dashboard"><header><b>سند</b><span>لوحة المتابعة</span></header><aside><span>الرئيسية</span><span>طلباتي</span><span>الخدمات</span><span>المستندات</span></aside><div class="dash-content"><div class="dash-kpis"><span><small>إجمالي الطلبات</small><b>248</b></span><span><small>قيد التنفيذ</small><b>18</b></span><span><small>المكتملة</small><b>210</b></span></div><strong>معدل إنجاز الطلبات</strong><div class="dash-bars"><i style="height:38%"></i><i style="height:70%"></i><i style="height:54%"></i><i style="height:88%"></i><i style="height:62%"></i><i style="height:78%"></i></div></div></div><div class="why-grid"><article><b>♙</b><div><h3>مسؤول واحد لمتابعة طلبك</h3><p>تعرف من يتابع طلبك وآخر إجراء.</p></div></article><article><b>▤</b><div><h3>حفظ آمن للمستندات</h3><p>ملفاتك مرتبطة بطلبك ومحفوظة.</p></div></article><article><b>◷</b><div><h3>تنبيهات بالمواعيد والتحديثات</h3><p>لا تفوّت إجراءً أو موعدًا مهمًا.</p></div></article><article><b>◉</b><div><h3>دعم فني عند الحاجة</h3><p>تذكرة مرتبطة بحسابك وطلبك.</p></div></article></div><blockquote>“أنت لا ترى طلبًا فقط، بل ترى من يعمل عليه وما الخطوة التالية.”</blockquote></div></div></section><%}%>
+
+
+
+
+
+<%if(showHomeSection('testimonials')||showHomeSection('faq')){%><section class="section social-proof" style="order:<%=Math.min(homeSectionOrder('testimonials'),homeSectionOrder('faq'))%>"><div class="wrap"><%if(showHomeSection('testimonials')){%><div class="proof-grid"><div class="section-head"><h2>آراء عملائنا</h2><p>ثقة تنمو مع كل إنجاز.</p></div><div class="testimonial-grid"><%testimonials.forEach(t=>{%><blockquote><span><%='★'.repeat(t.rating)%></span><p>“<%=lang==='en'&&t.quote_en?t.quote_en:t.quote_ar%>”</p><footer><%=t.anonymous?'عميل سند':(t.customer_name||'عميل سند')%><%=t.office_name?' — '+t.office_name:''%></footer></blockquote><%})%></div></div><%}%><%if(showHomeSection('faq')){%><div class="home-faq"><div class="section-head"><h2>أسئلة شائعة</h2><p>إجابات سريعة عن التسجيل واستخدام الموقع.</p></div><%homepageFaqs.forEach((f,i)=>{%><details class="faq-item" <%=i===0?'open':''%>><summary><%=lang==='en'&&f.question_en?f.question_en:f.question_ar%></summary><p><%=lang==='en'&&f.answer_en?f.answer_en:f.answer_ar%></p></details><%})%><a class="faq-more" href="/faq">عرض جميع الأسئلة ←</a></div><%}%></div></section><%}%>
+
+<%if(showHomeSection('cta')){%><section class="section final-cta" style="order:<%=homeSectionOrder('cta')%>"><div class="wrap"><div class="band"><div><h2>جاهز تنجز معاملتك بخطوات واضحة؟</h2><p>ابدأ الآن أو تواصل مع فريق سند لمساعدتك في اختيار الخدمة.</p></div><div class="hero-cta"><a class="btn brass" href="/request">اطلب خدمتك الآن</a><%if(site.whatsapp){%><a class="btn light" href="<%=waLink(site.whatsapp,'مرحباً، أرغب في معرفة الخدمة المناسبة')%>" target="_blank">تحدث معنا</a><%}%></div></div></div></section><%}%>
+</main>
+<%- include('../partials/footer') %>

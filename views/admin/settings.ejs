@@ -1,0 +1,580 @@
+<% pageTitle = 'الإعدادات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الإعدادات' }] }) %>
+
+<div class="page-head">
+  <h1>الإعدادات</h1>
+  <p class="sub">بيانات الموقع ومفاتيح الخدمات الخارجية.</p>
+</div>
+<div class="btn-row" style="margin-bottom:14px"><a class="btn brass" href="<%=adminPath%>/report-profiles">بيانات المنشأة والهوية المالية</a></div>
+
+<% if (saved) { %><div class="alert ok"><span>تم حفظ الإعدادات.</span></div><% } %>
+
+<nav class="tabs">
+  <a href="<%= adminPath %>/settings?tab=site" class="<%= tab === 'site' ? 'active' : '' %>">الموقع</a>
+  <a href="<%= adminPath %>/settings?tab=staff" class="<%= tab === 'staff' ? 'active' : '' %>">الموظفين</a>
+  <%if(!isPlatformOwner){%><a href="<%=adminPath%>/settings?tab=branches" class="<%=tab==='branches'?'active':''%>">فروع المكتب</a><%}%>
+  <a href="<%= adminPath %>/settings?tab=mail" class="<%= tab === 'mail' ? 'active' : '' %>">الإيميل</a>
+  <a href="<%= adminPath %>/settings?tab=files" class="<%= tab === 'files' ? 'active' : '' %>">الملفات</a>
+  <a href="<%= adminPath %>/settings?tab=backup" class="<%= tab === 'backup' ? 'active' : '' %>">النسخ والاستعادة</a>
+  <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول Google</a>
+  <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول جوجل</a>
+</nav>
+
+<%if(tab==='branches'&&!isPlatformOwner){%>
+  <%if(query.branch_error){%><div class="alert err"><span><%=query.branch_error==='duplicate'?'اسم الفرع موجود بالفعل.':query.branch_error==='main'?'لا يمكن إيقاف الفرع الرئيسي.':'اكتب اسم فرع صحيحًا.'%></span></div><%}%>
+  <div class="two-col"><div class="panel"><div class="panel-head"><h3>فروع المكتب أو الشركة</h3></div><div class="panel-body">
+    <%officeBranches.forEach(b=>{%><div class="report-profile-card"><div><b><%=b.name%></b><br><small><%=b.code||'بدون كود'%> · <%=b.active?'مفعّل':'موقوف'%></small></div><div class="spacer"><%if(b.is_main){%><span class="chip ok">الفرع الرئيسي</span><%}else{%><form method="post" action="<%=adminPath%>/settings/office-branches/<%=b.id%>/toggle"><%-csrfField%><button class="btn ghost sm"><%=b.active?'إيقاف':'تفعيل'%></button></form><%}%></div></div><%})%>
+  </div></div><div class="panel"><div class="panel-head"><h3>إضافة فرع</h3></div><form class="panel-body" method="post" action="<%=adminPath%>/settings/office-branches"><%-csrfField%><div class="field req"><label>اسم الفرع</label><input type="text" name="name" required placeholder="مثال: فرع القاهرة"></div><div class="field"><label>كود الفرع</label><input type="text" name="code" dir="ltr" placeholder="CAI"></div><button class="btn brass">إضافة الفرع</button></form></div></div>
+<%}%>
+
+<!-- ============================================================ backup -->
+<% if (tab === 'backup') { %>
+  <% if (query.restore_ready === '1' || restorePending) { %><div class="alert warn"><span><b>النسخة سليمة والاستعادة مجدولة.</b> أوقف التشغيل بـ Ctrl+C ثم شغّل <span class="num">npm start</span> لتطبيقها. سيحتفظ النظام تلقائيًا بنسخة البيانات الحالية قبل الاستبدال.</span></div><% } %>
+  <% if (query.backup_error) { %><div class="alert err"><span><%=query.backup_error==='confirm'?'اكتب كلمة «استعادة» للتأكيد.':query.backup_error==='reason'?'اكتب سببًا واضحًا للاستعادة.':query.backup_error==='file'?'اختر ملف ZIP أولًا.':'رُفضت النسخة: الملف غير صالح أو قاعدة البيانات غير سليمة أو توجد استعادة مجدولة.'%></span></div><% } %>
+  <div class="two-col">
+    <div class="panel"><div class="panel-head"><h3>نسخة المكتب وملفات الشركات</h3></div><div class="panel-body"><p>تشمل قاعدة المكتب والعملاء والشركات والفروع والطلبات والإعدادات ومحتوى الموقع وجميع المستندات والمرفقات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/office">تنزيل نسخة المكتب كاملة</a></div></div>
+    <%if(isPlatformOwner){%><div class="panel"><div class="panel-head"><h3>نسخة منصة سند كاملة</h3></div><div class="panel-body"><p>تشمل قاعدة مالك سند وطلبات الاشتراك والباقات، وقاعدة المكتب الرئيسية، وجميع قواعد وملفات المكاتب والشركات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/full">تنزيل النسخة الكاملة للمنصة</a></div></div><%}%>
+  </div>
+  <div class="panel"><div class="panel-head"><h3>استيراد واستعادة نسخة احتياطية</h3></div><div class="panel-body">
+    <div class="alert warn"><span>الاستعادة تستبدل البيانات عند التشغيل التالي. قبل الاستبدال يحتفظ النظام بالبيانات الحالية داخل مجلد <span class="num">backups/pre-restore-...</span>.</span></div>
+    <form method="post" action="<%=adminPath%>/settings/restore" enctype="multipart/form-data"><%-csrfField%>
+      <div class="field req"><label>ملف النسخة الاحتياطية ZIP</label><input type="file" name="backup_file" accept=".zip,application/zip" required></div>
+      <div class="field req"><label>سبب الاستعادة</label><textarea name="reason" required placeholder="مثال: استعادة نسخة ما قبل تحديث البيانات"></textarea></div>
+      <div class="field req"><label>تأكيد العملية</label><input type="text" name="confirm" required placeholder="اكتب: استعادة"></div>
+      <button class="btn brass">فحص النسخة وجدولة الاستعادة</button>
+    </form>
+  </div></div>
+<% } %>
+
+<!-- ============================================================ site -->
+<% if (tab === 'site') { %>
+  <div class="panel">
+    <div class="panel-head"><h3>بيانات الموقع</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/settings">
+        <%- csrfField %>
+        <input type="hidden" name="_tab" value="site">
+
+        <div class="two-col">
+          <div class="field">
+            <label>اسم الموقع (عربي)</label>
+            <input type="text" name="site_name_ar" value="<%= s.site_name_ar %>">
+          </div>
+          <div class="field">
+            <label>Site name (English)</label>
+            <input type="text" name="site_name_en" dir="ltr" style="text-align:left" value="<%= s.site_name_en %>">
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label>العبارة التعريفية (عربي)</label>
+            <input type="text" name="tagline_ar" value="<%= s.tagline_ar %>">
+          </div>
+          <div class="field">
+            <label>Tagline (English)</label>
+            <input type="text" name="tagline_en" dir="ltr" style="text-align:left" value="<%= s.tagline_en %>">
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label>رقم الواتساب</label>
+            <input type="text" name="whatsapp" dir="ltr" style="text-align:left"
+                   value="<%= s.whatsapp %>" placeholder="+201000000000">
+            <div class="help">بمفتاح الدولة. بيستخدم في الزرار العايم وكل لينكات «تواصل معنا». سيبه فاضي عشان يختفي.</div>
+          </div>
+          <div class="field">
+            <label>العملة</label>
+            <input type="text" name="currency" value="<%= s.currency %>" placeholder="EGP">
+            <div class="help">بتظهر جنب المبالغ.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>دومين الموقع</label>
+          <input type="text" name="site_domain" dir="ltr" style="text-align:left"
+                 value="<%= s.site_domain %>" placeholder="https://sanad-law.com">
+          <div class="help">
+            <b>مهم:</b> اللينكات اللي جوّه الإيميلات (تأكيد الحساب، رفع الملفات) بتتبني من الدومين ده.
+            من غيره الإيميلات هتوصل بلينكات مكسورة.
+          </div>
+        </div>
+
+        <button class="btn brass" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ staff -->
+<% if (tab === 'staff') { %>
+  <div class="panel">
+    <div class="panel-head"><h3>بيانات الموظفين المطلوبة</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/settings/staff">
+        <%- csrfField %>
+
+        <label class="check">
+          <input type="checkbox" name="staff_id_required" value="1"
+                 <%= staffIdRequired ? 'checked' : '' %>>
+          <span class="txt">
+            اطلب صورة البطاقة من كل موظف
+            <small>
+              وجه وظهر. الموظف مش هيقدر يشتغل قبل ما يرفعها.
+              الصور دي الأدمن بس هو اللي بيشوفها.
+            </small>
+          </span>
+        </label>
+
+        <div class="alert info" style="margin-top:14px">
+          <span>
+            الاسم الرسمي والمختصر والبريد والموبايل والرقم القومي وتاريخ الميلاد
+            <b>مطلوبين دايماً</b> ومش بيتلغوا — من غير البريد الموظف مش هيقدر
+            يستعيد حسابه لو نسي كلمة السر.
+          </span>
+        </div>
+
+        <button class="btn brass" type="submit" style="margin-top:12px">حفظ</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ google -->
+<% if (tab === 'google') { %>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>الدخول بحساب Google</h3>
+      <span class="chip spacer <%= googleOn ? 'ok' : 'off' %>">
+        <%= googleOn ? 'مفعّل' : 'مش مفعّل' %>
+      </span>
+    </div>
+    <div class="panel-body">
+
+      <div class="alert info">
+        <span>
+          <b>للعملاء بس.</b>
+          الموظفين بيدخلوا باسم مستخدم وكلمة سر — حساباتهم بتتعمل من المكتب
+          ومربوطة بهوية اتوثّقت، ومينفعش حساب Google يفتحها.
+        </span>
+      </div>
+
+      <details class="staff-upload" style="margin-bottom:18px">
+        <summary class="btn ghost sm">إزاي أجيب البيانات دي؟</summary>
+        <ol class="inner" style="margin-top:12px;padding-inline-start:22px;line-height:2">
+          <li>افتح <span class="num">console.cloud.google.com</span> واعمل مشروع جديد.</li>
+          <li>من <b>APIs &amp; Services ← OAuth consent screen</b>، اختار <b>External</b>
+              واكتب اسم المكتب وإيميل التواصل.</li>
+          <li>من <b>Credentials ← Create Credentials ← OAuth client ID</b>،
+              اختار <b>Web application</b>.</li>
+          <li>في <b>Authorized redirect URIs</b> حط اللينك ده بالظبط:
+            <div class="copy-line">
+              <input type="text" readonly class="num" value="<%= googleRedirect %>"
+                     onclick="this.select()">
+            </div>
+          </li>
+          <li>انسخ <b>Client ID</b> و<b>Client secret</b> وحطهم تحت.</li>
+        </ol>
+        <div class="alert warn" style="margin-top:10px">
+          <span>
+            اللينك لازم يطابق اللي فوق حرف بحرف. وهو مبني من الدومين اللي في
+            <b>الإعدادات ← الموقع</b> — فلو الدومين اتغيّر، حدّثه في Google كمان.
+          </span>
+        </div>
+      </details>
+
+      <form method="post" action="<%= adminPath %>/settings/google">
+        <%- csrfField %>
+
+        <div class="field">
+          <label for="gid">Client ID</label>
+          <input type="text" id="gid" name="google_client_id" dir="ltr" style="text-align:left"
+                 value="<%= googleClientId %>"
+                 placeholder="1234567890-abc.apps.googleusercontent.com">
+        </div>
+
+        <div class="field">
+          <label for="gsecret">Client secret</label>
+          <input type="password" id="gsecret" name="google_client_secret" dir="ltr"
+                 style="text-align:left" autocomplete="new-password"
+                 placeholder="<%= googleSecretSet ? 'محفوظ — سيبه فاضي لو مش هتغيّره' : 'GOCSPX-…' %>">
+          <div class="help">
+            <%= googleSecretSet
+              ? 'محفوظ عندنا ومش بيتعرض. سيب الخانة فاضية لو مش عايز تغيّره.'
+              : 'مطلوب لتفعيل الدخول بحساب Google.' %>
+          </div>
+        </div>
+
+        <% if (googleSecretSet) { %>
+          <label class="check">
+            <input type="checkbox" name="clear_secret" value="1">
+            <span class="txt">
+              امسح المفتاح المحفوظ
+              <small>هيوقّف الدخول بحساب Google لحد ما تحط واحد جديد.</small>
+            </span>
+          </label>
+        <% } %>
+
+        <button class="btn brass" type="submit" style="margin-top:12px">حفظ</button>
+      </form>
+
+      <% if (googleOn) { %>
+        <div class="alert ok" style="margin-top:16px">
+          <span>
+            شغّال. العميل هيلاقي زرار <b>«المتابعة بحساب Google»</b> في صفحتي
+            الدخول والتسجيل. ولو كان عنده حساب بنفس البريد، الاتنين بيتربطوا
+            في ملف واحد.
+          </span>
+        </div>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ files -->
+<% if (tab === 'files') { %>
+  <% if (purged !== null) { %>
+    <div class="alert ok">
+      <span>اتحذف <b><%= purged %></b> ملف — وفّرنا <b><%= freed %></b>.</span>
+    </div>
+  <% } %>
+  <% if (query.err === 'confirm') { %>
+    <div class="alert err"><span>اكتب كلمة «احذف» بالظبط عشان يتنفّذ.</span></div>
+  <% } %>
+
+  <div class="stat-grid">
+    <div class="stat icon-stat">
+      <i class="stat-ico ic-info">▣</i>
+      <div><span class="k">المساحة المستخدمة</span>
+      <span class="v"><%= humanSize(storage.bytes) %></span>
+      <span class="sub-k"><%= storage.files %> ملف</span></div>
+    </div>
+    <% if (storage.purgedFiles) { %>
+      <div class="stat icon-stat">
+        <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)">🗑</i>
+        <div><span class="k">ملفات اتحذفت قبل كده</span>
+        <span class="v"><%= storage.purgedFiles %></span>
+        <span class="sub-k">سجلها لسه محفوظ</span></div>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="alert info">
+    <span>
+      <b>الحذف بيشيل الصورة بس، مش السجل.</b>
+      اسم المستند ومين رفعه وامتى بيفضلوا محفوظين — اللي بيتمسح هو الصورة أو
+      ملف الـ PDF نفسه. ينفع بس للطلبات المكتملة أو الملغاة، وبعد
+      <b><%= purgeWindow %> يوم</b> على الأقل من إقفالها.
+    </span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>ملفات قابلة للحذف</h3>
+      <span class="chip spacer">
+        <%= purgeCandidates.totalFiles %> ملف · <%= humanSize(purgeCandidates.totalBytes) %>
+      </span>
+    </div>
+    <div class="panel-body">
+      <form method="get" action="<%= adminPath %>/settings" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <input type="hidden" name="tab" value="files">
+        <label style="font-size:14px;color:var(--muted)">
+          الطلبات المقفولة من أكتر من
+          <input type="number" name="days" min="<%= purgeWindow %>" step="30"
+                 value="<%= purgeCandidates.window %>"
+                 style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+          يوم
+        </label>
+        <button class="btn ghost sm" type="submit">عرض</button>
+      </form>
+
+      <% if (purgeCandidates.requests.length) { %>
+        <form method="post" action="<%= adminPath %>/settings/purge-files">
+          <%- csrfField %>
+          <input type="hidden" name="days" value="<%= purgeCandidates.window %>">
+
+          <table class="tbl">
+            <thead>
+              <tr><th></th><th>الطلب</th><th>العميل</th><th>اتقفل</th><th>ملفات</th><th>الحجم</th></tr>
+            </thead>
+            <tbody>
+              <% purgeCandidates.requests.forEach(r => { %>
+                <tr>
+                  <td data-label="">
+                    <input type="checkbox" name="request_ids" value="<%= r.request_id %>"
+                           style="width:20px;height:20px;accent-color:var(--danger)">
+                  </td>
+                  <td data-label="الطلب">
+                    <a class="num" href="<%= adminPath %>/requests/<%= r.request_id %>"><%= r.ref %></a>
+                  </td>
+                  <td data-label="العميل"><%= r.name %></td>
+                  <td data-label="اتقفل"><span class="num"><%= r.closed_at %></span></td>
+                  <td data-label="ملفات"><%= r.files %></td>
+                  <td data-label="الحجم"><%= humanSize(r.bytes) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+
+          <div class="alert warn" style="margin-top:16px">
+            <span>
+              <b>الحذف نهائي ومفيش تراجع.</b>
+              سيب الاختيارات فاضية عشان تحذف الكل، أو علّم اللي عايزه.
+              اكتب كلمة <b>احذف</b> للتأكيد.
+            </span>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            <div class="field req">
+            <label>سبب المسح</label>
+            <input type="text" name="reason" required
+                   placeholder="مثال: تنظيف دوري بعد سنة من الإقفال · أو: توفير مساحة">
+            <div class="help">
+              بيتسجّل ويوصل للأدمن — عشان لو عميل سأل عن مستنده بعد شهور،
+              يبان إيه اللي حصل ومين قرّره.
+            </div>
+          </div>
+
+          <input type="text" name="confirm" required placeholder="اكتب: احذف"
+                   style="flex:1;min-width:160px;padding:11px 13px;border:1.5px solid var(--danger);border-radius:10px;font:inherit;font-size:16px;min-height:46px">
+            <button class="btn danger" type="submit">تنفيذ الحذف</button>
+          </div>
+        </form>
+      <% } else { %>
+        <div class="empty">
+          <span class="big">✓</span>
+          <p>مفيش ملفات وصلت للمدة دي. مفيش حاجة تتحذف دلوقتي.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ mail -->
+<% if (tab === 'mail') { %>
+  <% if (mailLive) { %>
+    <div class="alert ok">
+      <span><b>الإيميل شغّال.</b> المزوّد: <%= mailProvider %>. الرسايل بتتبعت فعلياً للعملاء.</span>
+    </div>
+  <% } else { %>
+    <div class="alert warn">
+      <span>
+        <b>الإيميل في وضع التجربة (Outbox).</b>
+        النظام شغّال بالكامل، بس بدل ما الرسالة تتبعت بتتكتب كملف HTML في:
+        <code class="ltr" style="display:inline-block;background:#fff;padding:2px 7px;border-radius:5px;margin-top:4px"><%= outboxPath %></code>
+        <br><strong>مش محتاج تفتح الملفات بإيدك</strong> — كل رسالة في الجدول تحت
+        عليها زرار «افتح الرسالة» بيوريك إياها زي ما العميل هيشوفها بالظبط،
+        وجواها اللينكات شغالة.
+        <br><b>أول ما تحط مفتاح المزوّد وإيميل المُرسِل، بيتحوّل للإرسال الحقيقي لوحده.</b>
+      </span>
+    </div>
+  <% } %>
+
+  <% if (testResult === 'sent') { %>
+    <div class="alert ok"><span>تم إرسال الرسالة التجريبية فعلياً. اتأكد إنها وصلت.</span></div>
+  <% } else if (testResult === 'outbox') { %>
+    <div class="alert info"><span>الرسالة اتكتبت في مجلد الـ Outbox. افتحها وشوفها.</span></div>
+  <% } else if (testResult === 'failed') { %>
+    <div class="alert err"><span><b>الإرسال فشل.</b> <%= testError %></span></div>
+  <% } else if (testResult === 'noaddr') { %>
+    <div class="alert err"><span>اكتب إيميل تبعت له.</span></div>
+  <% } %>
+
+  <% if (mailFailed) { %>
+    <div class="alert err"><span><b><%= mailFailed %> رسالة فشلت.</b> شوف السجل تحت.</span></div>
+  <% } %>
+
+  <div class="panel">
+    <div class="panel-head"><h3>مزوّد الإيميل</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/settings">
+        <%- csrfField %>
+        <input type="hidden" name="_tab" value="mail">
+
+        <div class="field">
+          <label>المزوّد</label>
+          <select name="mail_provider">
+            <option value="resend" <%= s.mail_provider === 'resend' ? 'selected' : '' %>>Resend</option>
+            <option value="brevo" <%= s.mail_provider === 'brevo' ? 'selected' : '' %>>Brevo</option>
+            <option value="smtp" <%= s.mail_provider === 'smtp' ? 'selected' : '' %>>SMTP عادي</option>
+          </select>
+          <div class="help">Resend هو المقترح: توثيق الدومين بيتعمل في دقايق والرسايل بتوصل Inbox مش Spam.</div>
+        </div>
+
+        <div class="field">
+          <label>مفتاح الـ API</label>
+          <input type="password" name="mail_api_key" autocomplete="new-password"
+                 placeholder="<%= s.mail_api_key_set ? 'محفوظ — سيبه فاضي لو مش هتغيّره' : '' %>"
+                 dir="ltr" style="text-align:left" autocomplete="off" placeholder="re_xxxxxxxxxxxx">
+          <div class="help">بيتخزّن في قاعدة البيانات ومش بيتسجّل في سجل النشاط.</div>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label>اسم المُرسِل</label>
+            <input type="text" name="mail_from_name" value="<%= s.mail_from_name %>" placeholder="سند">
+          </div>
+          <div class="field">
+            <label>إيميل المُرسِل</label>
+            <input type="email" name="mail_from_email" dir="ltr" style="text-align:left"
+                   value="<%= s.mail_from_email %>" placeholder="no-reply@sanad-law.com">
+            <div class="help">لازم يكون على الدومين الموثّق.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>إيميل الرد (Reply-to)</label>
+          <input type="email" name="mail_reply_to" dir="ltr" style="text-align:left"
+                 value="<%= s.mail_reply_to %>" placeholder="info@sanad-law.com">
+          <div class="help">لما العميل يضغط «رد» على أي إيميل، الرسالة توصل هنا.</div>
+        </div>
+
+        <div class="field">
+          <label>إيميلات المكتب — إشعار الطلبات الجديدة</label>
+          <input type="text" name="office_emails" dir="ltr" style="text-align:left"
+                 value="<%= s.office_emails %>" placeholder="info@sanad-law.com, adam@sanad-law.com">
+          <div class="help">افصل بينهم بفاصلة. دول بس اللي هيوصلهم إشعار بكل طلب جديد.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--line);padding-top:10px;margin-top:6px">
+          <input type="hidden" name="_has_notify_email_enabled" value="1">
+          <input type="hidden" name="_has_scope_services_by_page" value="1">
+          <label class="check">
+            <input type="checkbox" name="scope_services_by_page" value="1"
+                   <%= s.scope_services_by_page ? 'checked' : '' %>>
+            <span class="txt">
+              اعرض خدمات المجال اللي جاي منه العميل بس
+              <small>
+                لما العميل يدخل من «شركات» ويطلب خدمة، بيشوف خدمات الشركات فقط
+                — مش الكتالوج كله. وفيه لينك «عرض كل الخدمات» لو محتاج.
+                <b>اقفلها</b> لو خدماتك قليلة والعميل ينفع يشوفها كلها.
+              </small>
+            </span>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="notify_email_enabled" value="1" <%= s.notify_email_enabled ? 'checked' : '' %>>
+            <span class="txt">
+              إشعارات الإيميل للموظفين
+              <small>مقفولة افتراضياً. لو فتحتها، الموظفين هياخدوا إيميل مع الإشعارات المهمة جوّه النظام.</small>
+            </span>
+          </label>
+        </div>
+
+        <button class="btn brass" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>جرّب الإرسال</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/settings/test-email" style="display:flex;gap:8px;flex-wrap:wrap">
+        <%- csrfField %>
+        <input name="to" type="email" required placeholder="اكتب إيميلك هنا" dir="ltr"
+               style="flex:1;min-width:200px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;min-height:46px;text-align:left">
+        <button class="btn" type="submit">إرسال رسالة تجريبية</button>
+      </form>
+      <div class="help" style="margin-top:8px">
+        بتشتغل في الحالتين — لو المفاتيح موجودة بتتبعت فعلاً، ولو لأ بتتكتب في مجلد الـ Outbox.
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>سجل الرسائل</h3>
+      <span class="chip spacer"><%= mailLog.length %></span>
+    </div>
+    <div class="panel-body flush">
+      <% if (mailLog.length) { %>
+        <table class="tbl">
+          <thead><tr><th>الوقت</th><th>النوع</th><th>لمين</th><th>الحالة</th><th></th></tr></thead>
+          <tbody>
+            <% const tplAr = {
+                 request_received:'استلام الطلب', verify_email:'تأكيد الإيميل',
+                 requirement_added:'مطلوب مستندات', request_completed:'اكتمال الطلب',
+                 office_new_request:'إشعار المكتب', test:'رسالة تجريبية' }; %>
+            <% mailLog.forEach(m => { %>
+              <tr>
+                <td data-label="الوقت" style="color:var(--muted);font-size:13px"><%= fmtDateTime(m.created_at) %></td>
+                <td data-label="النوع"><span class="chip"><%= tplAr[m.template] || m.template %></span></td>
+                <td data-label="لمين"><span class="num" style="font-size:13px"><%= m.to_email %></span></td>
+                <td data-label="الحالة">
+                  <% if (m.status === 'sent' && m.outbox_file) { %>
+                    <span class="chip">اتكتبت في Outbox</span>
+                  <% } else if (m.status === 'sent') { %>
+                    <span class="chip ok">اتبعتت</span>
+                  <% } else if (m.status === 'failed') { %>
+                    <span class="chip danger"
+                          title="<%= m.error || '' %>">فشلت</span>
+                  <% } else { %>
+                    <span class="chip off">في الطابور</span>
+                  <% } %>
+                </td>
+                <td data-label="" class="row-actions">
+                  <% if (m.outbox_file) { %>
+                    <a class="btn ghost sm" target="_blank" rel="noopener"
+                       href="<%= adminPath %>/settings/mail/<%= m.id %>/view">افتح الرسالة</a>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty" style="padding:24px"><p>مفيش رسائل اتبعتت لسه.</p></div>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ google -->
+<% if (tab === 'google') { %>
+  <div class="alert info">
+    <span>
+      زرار «دخول بجوجل» هيفضل مخفي عن العملاء لحد ما تحط المفتاحين دول.
+      تجيبهم من Google Cloud Console ← APIs &amp; Services ← Credentials ← OAuth client ID.
+    </span>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>دخول العملاء بحساب جوجل</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/settings">
+        <%- csrfField %>
+        <input type="hidden" name="_tab" value="google">
+
+        <div class="field">
+          <label>Client ID</label>
+          <input type="text" name="google_client_id" dir="ltr" style="text-align:left"
+                 value="<%= s.google_client_id %>" autocomplete="off"
+                 placeholder="xxxxxxxx.apps.googleusercontent.com">
+        </div>
+
+        <div class="field">
+          <label>Client Secret</label>
+          <input type="password" name="google_client_secret" dir="ltr" style="text-align:left"
+                 value="<%= s.google_client_secret %>" autocomplete="off">
+        </div>
+
+        <div class="alert warn" style="font-size:13.5px">
+          <span>
+            <b>في إعدادات جوجل حط الـ Redirect URI ده:</b><br>
+            <code class="ltr" style="display:inline-block;margin-top:4px;background:#fff;padding:4px 8px;border-radius:6px">
+              <%= (s.site_domain || 'https://دومينك') %>/auth/google/callback
+            </code>
+          </span>
+        </div>
+
+        <button class="btn brass" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

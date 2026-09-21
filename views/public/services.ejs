@@ -1,0 +1,92 @@
+<% pageTitle = lang === 'ar' ? 'خدماتنا' : 'Our services' %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<% const ar = lang === 'ar'; %>
+
+<section class="section">
+  <div class="wrap">
+
+    <nav class="crumbs">
+      <a href="/"><%= ar ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= ar ? 'خدماتنا' : 'Our services' %></strong>
+    </nav>
+
+    <div class="section-head" style="text-align:start">
+      <h2><%= ar ? 'إنت جاي بخصوص إيه؟' : 'What are you here about?' %></h2>
+      <p>
+        <%= ar
+          ? 'اختر المجال اللي يخصك، وهتلاقي جواه كل الخدمات المتعلقة بيه.'
+          : 'Pick the area that applies to you and you will find everything related to it inside.' %>
+      </p>
+    </div>
+
+    <form class="services-search" action="/services" method="get" role="search">
+      <label>
+        <span><%= ar ? 'ابحث باسم الخدمة أو وصفها' : 'Search by service name or description' %></span>
+        <input type="search" name="q" value="<%=q||''%>" placeholder="<%=ar?'مثال: تأسيس شركة أو عقد':'Example: company formation or contract'%>">
+      </label>
+      <label>
+        <span><%= ar ? 'القطاع' : 'Area' %></span>
+        <select name="page">
+          <option value=""><%=ar?'كل القطاعات':'All areas'%></option>
+          <% pages.forEach(p => { %><option value="<%=p.slug%>" <%=selectedPage===p.slug?'selected':''%>><%=ar?p.name_ar:(p.name_en||p.name_ar)%></option><% }) %>
+        </select>
+      </label>
+      <button class="btn brass" type="submit"><%=ar?'بحث':'Search'%></button>
+    </form>
+
+    <% if(q){ %>
+      <section class="service-results" aria-live="polite">
+        <div class="results-head"><h3><%=ar?'نتائج البحث':'Search results'%></h3><span><%=searchResults.length%> <%=ar?'نتيجة':'results'%></span></div>
+        <% if(searchResults.length){ %><div class="service-result-grid">
+          <% searchResults.forEach(s => { %><article class="service-result-card">
+            <small><%=ar?(s.page_name_ar||s.category_name_ar):(s.page_name_en||s.page_name_ar||s.category_name_en)%></small>
+            <h3><%=ar?s.title_ar:(s.title_en||s.title_ar)%></h3>
+            <p><%=ar?(s.body_ar||''):(s.body_en||s.body_ar||'')%></p>
+            <a href="/request?service=<%=s.id%>"><%=ar?'اطلب الخدمة ←':'Request service →'%></a>
+          </article><% }) %>
+        </div><% }else{ %><div class="empty-state"><p><%=ar?'لم نجد خدمة مطابقة. جرّب عبارة أقصر أو اختر كل القطاعات.':'No matching service was found. Try a shorter phrase or all areas.'%></p></div><% } %>
+      </section>
+    <% } %>
+
+    <% if (!q && pages.length) { %>
+      <div class="page-grid">
+        <% pages.forEach(p => { %>
+          <a class="page-card" href="/p/<%= p.slug %>" style="--page: <%= p.colour %>">
+            <span class="pc-bar"></span>
+            <h3><%= ar ? p.name_ar : p.name_en %></h3>
+            <% const tag = ar ? p.tagline_ar : (p.tagline_en || p.tagline_ar); %>
+            <% if (tag) { %><p><%= tag %></p><% } %>
+            <span class="pc-go">
+              <%= p.service_count %> <%= ar ? 'خدمة' : 'services' %>
+              <%= dir === 'rtl' ? '←' : '→' %>
+            </span>
+          </a>
+        <% }) %>
+      </div>
+    <% } else if(!q) { %>
+      <div class="empty-state">
+        <p><%= ar ? 'لسه بنجهّز الخدمات.' : 'Services are being prepared.' %></p>
+        <a class="btn brass" href="/contact"><%= ar ? 'اتصل بنا' : 'Contact us' %></a>
+      </div>
+    <% } %>
+
+    <div class="not-found-note">
+      <h3><%= ar ? 'مش لاقي اللي بتدور عليه؟' : "Can't find what you need?" %></h3>
+      <p>
+        <%= ar
+          ? 'اكتب طلبك وابحث في كل الخدمات مباشرة، أو كلّمنا وهنوجّهك.'
+          : 'Search every service from the request form, or talk to us and we will point you.' %>
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn brass" href="/request"><%= t.hero_cta %></a>
+        <a class="btn ghost" href="/contact"><%= ar ? 'اتصل بنا' : 'Contact us' %></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

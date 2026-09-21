@@ -1,0 +1,188 @@
+<% pageTitle = 'بيانات التواصل' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'بيانات التواصل' }] }) %>
+
+<%
+  const okMsgs = {
+    added: 'تم إضافة البيان.',
+    saved: 'تم الحفظ.',
+    deleted: 'تم الحذف.',
+    hours_saved: 'تم حفظ المواعيد والعنوان.',
+  };
+%>
+
+<div class="page-head">
+  <h1>بيانات التواصل</h1>
+  <p class="sub">دي اللي بتظهر للعملاء في صفحة «اتصل بنا» وفي أسفل الموقع.</p>
+</div>
+
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (err === 'bad_value') { %>
+  <div class="alert err"><span>البيان مش صحيح — راجع الرقم أو البريد.</span></div>
+<% } %>
+<%- include('../partials/undo_banner') %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>أرقام وإيميلات المكتب</h3>
+    <span class="chip spacer"><%= contacts.filter(c => c.active).length %> ظاهر</span>
+  </div>
+  <div class="panel-body flush">
+    <% if (contacts.length) { %>
+      <ul class="contact-list">
+        <% contacts.forEach(c => { %>
+          <li class="<%= c.active ? '' : 'off' %>">
+            <span class="contact-icon"><%= kinds[c.kind] ? kinds[c.kind].icon : '•' %></span>
+            <span class="contact-body">
+              <b><%= c.label || c.kindLabel %></b>
+              <span class="num"><%= c.value %></span>
+              <% if (c.note) { %><small><%= c.note %></small><% } %>
+            </span>
+            <span class="contact-tags">
+              <% if (c.primary_one) { %><span class="chip brass">أساسي</span><% } %>
+              <% if (!c.active) { %><span class="chip off">مخفي</span><% } %>
+            </span>
+            <span class="sort-actions">
+              <button class="btn ghost sm" type="button" data-edit-contact="<%= c.id %>">تعديل</button>
+              <form method="post" action="<%= adminPath %>/contacts/<%= c.id %>/delete"
+                    data-confirm="تحذف «<%= c.value %>»؟">
+                <%- csrfField %>
+                <button class="btn danger sm" type="submit">حذف</button>
+              </form>
+            </span>
+          </li>
+          <li class="edit-box" hidden id="contact-<%= c.id %>">
+            <form method="post" action="<%= adminPath %>/contacts/<%= c.id %>/edit" style="width:100%">
+              <%- csrfField %>
+              <div class="two-col">
+                <div class="field">
+                  <label>الاسم الظاهر</label>
+                  <input type="text" name="label" value="<%= c.label || '' %>">
+                </div>
+                <div class="field req">
+                  <label><%= c.kindLabel %></label>
+                  <input type="text" name="value" value="<%= c.value %>" required dir="ltr"
+                         style="text-align:left">
+                </div>
+              </div>
+              <div class="field">
+                <label>ملاحظة للعميل</label>
+                <input type="text" name="note" value="<%= c.note || '' %>"
+                       placeholder="مثال: للاستفسارات العاجلة">
+              </div>
+              <label class="check">
+                <input type="checkbox" name="active" value="1" <%= c.active ? 'checked' : '' %>>
+                <span class="txt">ظاهر للعملاء</span>
+              </label>
+              <label class="check">
+                <input type="checkbox" name="primary_one" value="1" <%= c.primary_one ? 'checked' : '' %>>
+                <span class="txt">
+                  أساسي
+                  <small>الواتساب الأساسي هو اللي بيشتغل عليه الزرار العايم في الموقع.</small>
+                </span>
+              </label>
+              <div class="btn-row">
+                <button class="btn brass sm" type="submit">حفظ</button>
+                <button class="btn ghost sm" type="button" data-close-contact="<%= c.id %>">إلغاء</button>
+              </div>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty"><p>مفيش بيانات تواصل لسه.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<div class="two-col wide">
+  <div class="panel">
+    <div class="panel-head"><h3>إضافة بيان جديد</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/contacts/new">
+        <%- csrfField %>
+        <div class="two-col">
+          <div class="field req">
+            <label>النوع</label>
+            <select name="kind" required>
+              <% Object.entries(kinds).forEach(([key, k]) => { %>
+                <option value="<%= key %>"><%= k.icon %> <%= k.ar %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label>الاسم الظاهر</label>
+            <input type="text" name="label" placeholder="مثال: خط الاستقبال">
+          </div>
+        </div>
+        <div class="field req">
+          <label>البيان</label>
+          <input type="text" name="value" required dir="ltr" style="text-align:left"
+                 placeholder="+201000000000 أو name@sanad.com.eg">
+        </div>
+        <div class="field">
+          <label>ملاحظة (اختياري)</label>
+          <input type="text" name="note" placeholder="مثال: من ٩ لـ ٥">
+        </div>
+        <label class="check">
+          <input type="checkbox" name="primary_one" value="1">
+          <span class="txt">أساسي</span>
+        </label>
+        <button class="btn brass" type="submit" style="margin-top:10px">إضافة</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>المواعيد والعنوان</h3></div>
+    <div class="panel-body">
+      <form method="post" action="<%= adminPath %>/contacts/hours">
+        <%- csrfField %>
+        <div class="field">
+          <label>مواعيد العمل (عربي)</label>
+          <input type="text" name="office_hours_ar" value="<%= hours.ar %>">
+        </div>
+        <div class="field">
+          <label>مواعيد العمل (إنجليزي)</label>
+          <input type="text" name="office_hours_en" value="<%= hours.en %>" dir="ltr"
+                 style="text-align:left">
+        </div>
+        <div class="field">
+          <label>عنوان المكتب (عربي)</label>
+          <input type="text" name="office_address_ar" value="<%= address.ar %>">
+        </div>
+        <div class="field">
+          <label>عنوان المكتب (إنجليزي)</label>
+          <input type="text" name="office_address_en" value="<%= address.en %>" dir="ltr"
+                 style="text-align:left">
+        </div>
+        <div class="field">
+          <label>لينك الخريطة</label>
+          <input type="url" name="office_map_url" value="<%= address.map %>" dir="ltr"
+                 style="text-align:left" placeholder="https://maps.google.com/…">
+          <div class="help">لينك https بس.</div>
+        </div>
+        <button class="btn brass" type="submit">حفظ</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    var open = e.target.closest('[data-edit-contact]');
+    if (open) {
+      var box = document.getElementById('contact-' + open.getAttribute('data-edit-contact'));
+      if (box) box.hidden = !box.hidden;
+    }
+    var close = e.target.closest('[data-close-contact]');
+    if (close) {
+      var b = document.getElementById('contact-' + close.getAttribute('data-close-contact'));
+      if (b) b.hidden = true;
+    }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

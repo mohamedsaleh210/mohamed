@@ -1,0 +1,245 @@
+<% pageTitle = account ? account.full_name : (guest ? guest.name : 'ملف العميل') %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الطلبات', href: adminPath + '/requests' }, { label: account ? account.full_name : (guest ? guest.name : 'ملف العميل') }] }) %>
+
+<%
+  const name = account ? account.full_name : (guest ? guest.name : '—');
+  const phone = account ? account.phone : (guest ? guest.phone : '');
+  const email = account ? account.email : (guest ? guest.email : '');
+  const relLabel = { self:'صاحب الطلب', guardian:'ولي أمر', agent:'وكيل', relative:'قريب', other:'أخرى' };
+  const done = requests.filter(r => r.status === 'completed').length;
+  const cancelled = requests.filter(r => r.status === 'cancelled').length;
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1><%= name %></h1>
+    <p class="sub">
+      <span class="num"><%= phone %></span>
+      <% if (email) { %> · <span class="num"><%= email %></span><% } %>
+      · <%= account ? 'عنده حساب على الموقع' : 'طلبات بدون حساب' %>
+    </p>
+  </div>
+  <div class="btn-row">
+    <% if (can('clients.edit')) { %>
+      <a class="btn ghost" href="#edit-client" onclick="document.getElementById('edit-client').open=true">✎ تعديل بيانات العميل</a>
+    <% } %>
+    <a class="btn brass" href="<%= adminPath %>/requests/new<%= account ? '?client=' + account.id : '?phone=' + encodeURIComponent(phone) %>">
+      + طلب جديد له
+    </a>
+  </div>
+</div>
+
+<% if (msg === 'need_delete_reason') { %>
+  <div class="alert err"><span>اكتب سبب الحذف — السجل لازم يقول ليه حصل.</span></div>
+<% } %>
+<% if (msg === 'confirm_mismatch') { %>
+  <div class="alert err">
+    <span>الموبايل اللي كتبته مش مطابق. اتأكد إنك واقف على العميل الصح.</span>
+  </div>
+<% } %>
+<% if (msg === 'client_saved') { %><div class="alert ok"><span>تم حفظ بيانات العميل وتحديث طلباته المرتبطة.</span></div><% } %>
+<% if (msg === 'bad_client_data') { %><div class="alert err"><span>راجع الاسم ورقم الموبايل والبريد الإلكتروني.</span></div><% } %>
+<% if (msg === 'email_exists') { %><div class="alert err"><span>البريد الإلكتروني مستخدم في حساب عميل آخر.</span></div><% } %>
+
+<% if (can('clients.edit')) { %>
+  <details class="panel client-edit-panel" id="edit-client">
+    <summary class="panel-head"><h3>تعديل بيانات العميل</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary>
+    <form method="post" action="<%= adminPath %>/clients/<%= account ? account.id : encodeURIComponent(phone) %>/update" class="panel-body legal-form">
+      <%- csrfField %>
+      <div class="field req"><label>الاسم</label><input type="text" name="full_name" required value="<%= name %>"></div>
+      <div class="field req"><label>رقم الموبايل</label><input type="text" name="phone" required dir="ltr" value="<%= phone %>"></div>
+      <div class="field"><label>البريد الإلكتروني</label><input type="email" name="email" dir="ltr" value="<%= email || '' %>"></div>
+      <div class="field"><label>صفته بالنسبة للطلب</label><select name="relation" id="clientRelation"><% const currentRelation=account?account.relation:((requests[0]&&requests[0].relation)||'self'); Object.entries(relLabel).forEach(([k,v])=>{ %><option value="<%= k %>" <%= currentRelation===k?'selected':'' %>><%= v %></option><% }) %></select></div>
+      <div class="field full"><label>اسم صاحب الطلب عند اختلافه</label><input type="text" name="beneficiary_name" value="<%= account?(account.beneficiary_name||''):((requests[0]&&requests[0].beneficiary_name)||'') %>"></div>
+      <button class="btn brass full" type="submit">حفظ التعديلات</button>
+    </form>
+  </details>
+<% } %>
+
+<div class="stat-grid">
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-brass">▤</i>
+    <div><span class="k">كل الطلبات</span>
+    <span class="v"><%= requests.length %></span></div>
+  </div>
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-warn">◔</i>
+    <div><span class="k">مفتوحة</span>
+    <span class="v" style="color:var(--brass-deep)"><%= open.length %></span></div>
+  </div>
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-ok">✓</i>
+    <div><span class="k">مكتملة</span>
+    <span class="v" style="color:var(--ok)"><%= done %></span></div>
+  </div>
+  <% if (cancelled) { %>
+    <div class="stat icon-stat">
+      <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)">✕</i>
+      <div><span class="k">ملغاة</span>
+      <span class="v" style="color:var(--muted)"><%= cancelled %></span></div>
+    </div>
+  <% } %>
+  <% if (showMoney && totals) { %>
+    <div class="stat icon-stat">
+      <i class="stat-ico ic-info">▤</i>
+      <div><span class="k">إجمالي الأتعاب</span>
+      <span class="v num"><%= totals.billed.toLocaleString('en-US') %></span></div>
+    </div>
+    <div class="stat icon-stat <%= totals.billed - totals.paid > 0 ? 'warn' : '' %>">
+      <i class="stat-ico ic-warn">%</i>
+      <div><span class="k">المتبقي عليه</span>
+      <span class="v num"><%= (totals.billed - totals.paid).toLocaleString('en-US') %></span></div>
+    </div>
+  <% } %>
+</div>
+
+<% if (repeated.length) { %>
+  <div class="alert warn">
+    <span>
+      <b>خدمات اتطلبت أكتر من مرة.</b>
+      مش بالضرورة غلط — العميل ممكن يكون عنده أكتر من عقار — بس راجعها قبل ما تبدأ:
+      <% repeated.forEach(rp => { %>
+        <br>
+        <b><%= rp.label %></b> — <%= rp.count %> طلبات<%
+          %><% if (rp.openCount > 1) { %>، <b style="color:var(--danger)"><%= rp.openCount %> منهم لسه مفتوحين</b><% } %>
+      <% }) %>
+    </span>
+  </div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>كل طلباته</h3>
+    <span class="chip spacer"><%= requests.length %></span>
+  </div>
+  <div class="panel-body flush">
+    <% if (requests.length) { %>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>الرقم</th><th>الخدمة</th><th>الحالة</th>
+            <th>المحامي</th><th>التاريخ</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% requests.forEach(r => {
+               const st = STATUS[r.status] || { ar: r.status, color: '#888' }; %>
+            <tr>
+              <td data-label="الرقم">
+                <a href="<%= adminPath %>/requests/<%= r.id %>" class="num"
+                   style="font-weight:800;color:var(--brass-deep)"><%= r.ref %></a>
+                <% if (r.source === 'office') { %><span class="chip">من المكتب</span><% } %>
+              </td>
+              <td data-label="الخدمة">
+                <%= r.service_label ? r.service_label.split(' / ')[0] : '—' %>
+                <% if (r.title) { %>
+                  <br><span style="font-size:12.5px;color:var(--muted)"><%= r.title %></span>
+                <% } %>
+                <% if (r.relation && r.relation !== 'self') { %>
+                  <br><span class="chip"><%= relLabel[r.relation] || r.relation %><%
+                    %><% if (r.beneficiary_name) { %>: <%= r.beneficiary_name %><% } %></span>
+                <% } %>
+              </td>
+              <td data-label="الحالة">
+                <span class="badge" style="background:<%= st.color %>"><%= st.ar %></span>
+                <% if (r.overdue) { %><br><span class="flag late">متأخر</span><% } %>
+                <% if (r.pending_count) { %>
+                  <br><span class="flag" style="background:var(--warn-bg);color:#8a6416">
+                    مطلوب منه <%= r.pending_count %>
+                  </span>
+                <% } %>
+              </td>
+              <td data-label="المحامي"><%= r.lawyers || '—' %></td>
+              <td data-label="التاريخ" style="color:var(--muted);font-size:13px">
+                <%= fmtDate(r.created_at) %>
+                <% if (r.deadline) { %>
+                  <br><span style="font-size:12px">تسليم: <span class="num"><%= r.deadline %></span></span>
+                <% } %>
+              </td>
+              <td data-label="" class="row-actions">
+                <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= r.id %>">فتح</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty"><p>مفيش طلبات.</p></div>
+    <% } %>
+    <% if (truncated) { %>
+      <div class="alert info" style="margin:14px">
+        <span>
+          بنعرض أحدث <%= maxRows %> طلب. لو محتاج الباقي، ابحث برقم موبايله
+          في <a href="<%= adminPath %>/requests" style="text-decoration:underline">صفحة الطلبات</a>.
+        </span>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (account) { %>
+  <div class="panel">
+    <div class="panel-head"><h3>بيانات الحساب</h3></div>
+    <div class="panel-body flush">
+      <table class="tbl">
+        <tr><td data-label="الاسم">الاسم</td><td><%= account.full_name %></td></tr>
+        <tr><td data-label="الموبايل">الموبايل</td><td><span class="num"><%= account.phone %></span></td></tr>
+        <tr><td data-label="الإيميل">الإيميل</td><td><span class="num"><%= account.email %></span></td></tr>
+        <tr><td data-label="التسجيل">تاريخ التسجيل</td><td><%= fmtDate(account.created_at) %></td></tr>
+      </table>
+    </div>
+  </div>
+<% } else { %>
+  <div class="alert info">
+    <span>
+      العميل ده <b>معملش حساب على الموقع</b>. الطلبات دي متجمّعة برقم الموبايل.
+      أول ما يسجّل بنفس الإيميل، طلباته بتترتبط بحسابه تلقائياً.
+    </span>
+  </div>
+<% } %>
+
+<% if (can('clients.erase')) { %>
+  <div class="panel" style="border-color:#f0c9c6">
+    <div class="panel-head" style="background:var(--danger-bg)">
+      <h3 style="color:#8f2f2b">حذف العميل نهائياً</h3>
+    </div>
+    <div class="panel-body">
+      <div class="alert warn" style="margin-top:0">
+        <span>
+          <b>ده بيمسح فعلاً، ومفيش تراجع.</b>
+          هيتشال حساب العميل و<b><%= requests.length %></b> طلب،
+          وكل التعليقات والمستندات والدفعات والمصاريف —
+          <b>والصور من على السيرفر كمان</b>.
+          <br><br>
+          لو الغرض إنك توقف الحساب بس، مش تمسح بياناته، سيب الحساب زي ما هو
+          وألغي طلباته — السجل بيفضل مقروء كده.
+        </span>
+      </div>
+
+      <form method="post"
+            action="<%= adminPath %>/clients/<%= account ? account.id : encodeURIComponent(phone) %>/delete">
+        <%- csrfField %>
+        <div class="field req">
+          <label>سبب الحذف</label>
+          <input type="text" name="reason" required
+                 placeholder="مثال: العميل طلب حذف بياناته · أو: الحساب اتعمل بالغلط">
+          <div class="help">بيتسجّل في سجل النشاط — من غير بيانات العميل.</div>
+        </div>
+        <div class="field req">
+          <label>اكتب موبايل العميل للتأكيد</label>
+          <input type="text" name="confirm_phone" required dir="ltr" style="text-align:left"
+                 autocomplete="off" placeholder="<%= phone %>">
+          <div class="help">
+            عشان نتأكد إنك واقف على العميل الصح — مش checkbox بتتدوس بالغلط.
+          </div>
+        </div>
+        <button class="btn danger" type="submit">حذف العميل وكل طلباته</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

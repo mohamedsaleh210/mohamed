@@ -1,0 +1,97 @@
+<% pageTitle = T.myRequests %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+
+    <nav class="crumbs">
+      <a href="/"><%= lang === 'ar' ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= T.title %></strong>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px">
+      <h2 style="margin:0;color:var(--ink)"><%= T.myRequests %></h2>
+      <span style="color:var(--muted);font-size:14px"><%= clientUser ? clientUser.full_name : '' %></span>
+      <form method="post" action="/portal/logout" style="margin-inline-start:auto">
+        <%- csrfField %>
+        <button class="btn ghost sm" type="submit"><%= T.logout %></button>
+      </form>
+    </div>
+
+    <% if (linked) { %>
+      <div class="notice-ok"><%= T.linked %></div>
+    <% } %>
+    <% if (resent) { %>
+      <div class="notice-ok"><%= lang === 'ar' ? 'تم إرسال رسالة التأكيد مرة أخرى.' : 'Confirmation email sent again.' %></div>
+    <% } %>
+    <% if (query.welcome === '1') { %>
+      <div class="notice-ok"><%= T.googleWelcome %></div>
+    <% } %>
+    <% if (query.linked_google === '1') { %>
+      <div class="notice-ok"><%= T.googleLinked %></div>
+    <% } %>
+    <% if (mailLive && clientUser && !clientUser.email_verified) { %>
+      <div class="notice-warn" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="flex:1;min-width:200px">
+          <%= mailLive
+            ? (lang === 'ar' ? 'أكّد بريدك الإلكتروني لاستكمال تفعيل حسابك.' : 'Confirm your email address to finish setting up your account.')
+            : T.unverified %>
+        </span>
+        <% if (mailLive) { %>
+          <form method="post" action="/portal/resend-verification">
+            <%- csrfField %>
+            <button class="btn ghost sm" type="submit">
+              <%= lang === 'ar' ? 'إعادة الإرسال' : 'Resend' %>
+            </button>
+          </form>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (requests.length) { %>
+      <div class="req-list">
+        <% requests.forEach(r => {
+             const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
+             const svc = r.service_label
+               ? (lang === 'ar' ? r.service_label.split(' / ')[0] : (r.service_label.split(' / ')[1] || r.service_label))
+               : '—'; %>
+          <a class="req-card" href="/portal/requests/<%= r.id %>">
+            <div class="req-top">
+              <span class="req-ref"><%= r.ref %></span>
+              <span class="req-status" style="background:<%= st.color %>"><%= lang === 'ar' ? st.ar : st.en %></span>
+            </div>
+
+            <h3 class="req-title"><%= svc %></h3>
+
+            <div class="req-meta">
+              <span><%= T.date %>: <%= fmtDate(r.created_at) %></span>
+              <% if (r.deadline) { %>
+                <span><%= T.deadline %>: <b class="ltr"><%= r.deadline %></b></span>
+              <% } %>
+            </div>
+
+            <% if (r.pending_count) { %>
+              <div class="req-need">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                </svg>
+                <%= T.needed %>: <%= r.pending_count %>
+              </div>
+            <% } %>
+
+            <span class="req-go"><%= lang === 'ar' ? 'التفاصيل والمستندات ←' : 'Details & documents →' %></span>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="form-card" style="text-align:center">
+        <p style="color:var(--muted)"><%= T.none %></p>
+        <a class="btn brass" href="/request"><%= t.hero_cta %></a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

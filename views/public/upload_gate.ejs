@@ -1,0 +1,71 @@
+<% pageTitle = lang === 'ar' ? 'المطلوب منك' : 'What we need from you' %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<% const ar = lang === 'ar'; %>
+
+<section class="section">
+  <div class="wrap" style="max-width:600px">
+
+    <nav class="crumbs">
+      <a href="/"><%= ar ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong><%= ar ? 'المطلوب منك' : 'What we need' %></strong>
+    </nav>
+
+    <div class="gate-head">
+      <span class="req-ref"><%= r.ref %></span>
+      <h1><%= ar ? 'المكتب طلب منك مستندات' : 'The office has requested documents' %></h1>
+    </div>
+
+    <div class="gate-list">
+      <% requirements.forEach(q => { %>
+        <div class="gate-item">
+          <span class="gate-dot"></span>
+          <span><%= q.title %></span>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="gate-card">
+      <h3><%= ar ? 'سجّل حسابك أولاً — دقيقة واحدة' : 'Create an account first — one minute' %></h3>
+      <p>
+        <%= ar
+          ? 'لأن المستندات دي مطلوبة تحديداً لطلبك، نحتاج أن ترفعها من حساب باسمك. الحساب يضمن أن أوراقك تصل لملفك الصحيح، ويعرض لك ما تبقّى منها أولاً بأول، ويمنع أي خلط بين طلباتك.'
+          : 'Because these documents were requested for your specific case, we need them uploaded from an account in your name. It guarantees your papers reach the right file, shows you what is still outstanding, and prevents any mix-up between your requests.' %>
+      </p>
+
+      <div class="gate-actions">
+        <a class="btn brass" href="/portal/register?email=<%= encodeURIComponent(r.email || '') %>&next=<%= encodeURIComponent('/upload/' + r.id + (token ? '?t=' + token : '')) %>">
+          <%= ar ? 'إنشاء حساب' : 'Create an account' %>
+        </a>
+        <a class="btn ghost" href="/portal/login?next=<%= encodeURIComponent('/upload/' + r.id + (token ? '?t=' + token : '')) %>">
+          <%= ar ? 'لديّ حساب بالفعل' : 'I already have an account' %>
+        </a>
+      </div>
+
+      <p class="gate-note">
+        <%= ar
+          ? 'التسجيل يحتاج بريدك الإلكتروني ورقم هاتفك فقط.'
+          : 'Signing up needs only your email and phone number.' %>
+      </p>
+    </div>
+
+    <% if (site.whatsapp) { %>
+      <div class="gate-alt">
+        <p>
+          <%= ar
+            ? 'تفضّل الإرسال على واتساب؟ لا مشكلة — أرسلها مع ذكر رقم الطلب.'
+            : 'Prefer WhatsApp? No problem — send them mentioning your reference number.' %>
+        </p>
+        <a class="btn wa" target="_blank" rel="noopener noreferrer"
+           href="<%= waLink(site.whatsapp, (ar ? 'مرحباً، بخصوص طلبي رقم ' : 'Hello, regarding my request ') + r.ref) %>">
+          <%= ar ? 'الإرسال على واتساب' : 'Send on WhatsApp' %>
+        </a>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

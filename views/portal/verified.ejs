@@ -1,0 +1,25 @@
+<% pageTitle = ok ? (lang === 'ar' ? 'تم التأكيد' : 'Confirmed') : (lang === 'ar' ? 'رابط غير صالح' : 'Invalid link') %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="form-card" style="max-width:440px;text-align:center">
+      <div style="font-size:46px;margin-bottom:10px"><%= ok ? '\u2705' : '\u26A0\uFE0F' %></div>
+      <h2 style="color:var(--ink);margin:0 0 10px">
+        <%= ok ? (lang === 'ar' ? 'تم تأكيد بريدك الإلكتروني' : 'Your email is confirmed')
+               : (lang === 'ar' ? 'الرابط غير صالح' : 'This link is not valid') %>
+      </h2>
+      <p style="color:var(--muted);margin:0 0 20px;font-size:14.5px">
+        <%= ok
+          ? (lang === 'ar' ? 'تم بنجاح. يمكنك الآن متابعة طلباتك ورفع مستنداتك في أي وقت.'
+                           : 'All set. You can now track your requests and upload documents any time.')
+          : (lang === 'ar' ? 'ربما استُخدم من قبل أو انتهت صلاحيته. سجّل الدخول واطلب رسالة تأكيد جديدة.'
+                           : 'It may have already been used or expired. Sign in and request a new confirmation email.') %>
+      </p>
+      <a class="btn brass block" href="/portal"><%= lang === 'ar' ? 'طلباتي' : 'My requests' %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

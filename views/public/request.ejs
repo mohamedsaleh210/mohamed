@@ -1,0 +1,411 @@
+<% pageTitle = t.request_title %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head" style="text-align:center">
+      <div class="eyebrow"><%= lang==='ar' ? 'اطلب خدمة' : 'Request' %></div>
+      <h2><%= t.request_title %></h2>
+      <p style="margin-inline:auto"><%= t.hero_sub %></p>
+    </div>
+
+    <div class="form-card">
+      <% if (!clientUser) { %>
+        <div class="form-hint">
+          <%= lang === 'ar' ? 'لديك حساب لدينا؟' : 'Already have an account?' %>
+          <a href="/portal/login"><%= lang === 'ar' ? 'تسجيل الدخول' : 'Sign in' %></a>
+          <%= lang === 'ar' ? 'ليُربط طلبك بحسابك مباشرة.' : 'so this request links to your account.' %>
+        </div>
+      <% } %>
+      <% if (error) { %><div class="form-alert"><%= error %></div><% } %>
+      <form method="post" action="/request" id="requestForm">
+        <%- csrfField %>
+        <div class="field">
+          <label for="name"><%= t.form_name %> *</label>
+          <input type="text" id="name" name="name" required value="<%= clientUser ? clientUser.full_name : '' %>"
+                 placeholder="<%= lang === 'ar' ? 'اكتب اسمك' : 'Your full name' %>">
+        </div>
+        <div class="field">
+          <label for="phone"><%= t.form_phone %> *</label>
+          <input type="text" id="phone" name="phone" required inputmode="tel" placeholder="<%= lang==='ar'?'مثال: 00201000000000':'e.g. 00201000000000' %>">
+        </div>
+        <div class="field">
+          <label for="email"><%= lang === 'ar' ? 'البريد الإلكتروني' : 'Email' %> *</label>
+          <input id="email" name="email" type="email" required dir="ltr"
+                 value="<%= clientUser ? clientUser.email : '' %>"
+                 placeholder="<%= lang === 'ar' ? 'لنرسل إليك رقم الطلب' : 'So we can send your reference number' %>">
+        </div>
+        <div class="field">
+          <label for="serviceSearch"><%= t.form_service %></label>
+
+          <%
+            /*
+             * Choosing is optional.
+             *
+             * Clients describe a problem far more often than they name a
+             * service: the work is compound, the official name is not what
+             * anyone calls it, or they simply do not know what they need. So
+             * the description sits in the open beside the list rather than
+             * behind an "other" entry at the bottom of a long scroll — which
+             * is a dead end nobody reaches.
+             */
+          %>
+
+          <div class="svc-picker" id="svcPicker">
+            <div class="svc-bar">
+              <input type="search" id="serviceSearch" autocomplete="off"
+                     placeholder="<%= lang === 'ar' ? 'ابحث باسم الخدمة… مثال: كهرباء' : 'Search by service name…' %>">
+
+              <div class="svc-chips" id="svcChips" hidden>
+                <span class="svc-chips-label" id="svcChipsLabel"></span>
+                <span class="svc-chips-list" id="svcChipsList"></span>
+              </div>
+
+              <button type="button" class="svc-describe" id="svcDescribe">
+                <span class="sd-icon">✎</span>
+                <span>
+                  <b><%= lang === 'ar' ? 'مش لاقي اللي محتاجه؟' : "Can't find what you need?" %></b>
+                  <small><%= lang === 'ar'
+                    ? 'اوصف طلبك بكلامك — حتى لو مش عارف اسم الخدمة.'
+                    : 'Describe it in your own words — even if you do not know the service name.' %></small>
+                </span>
+              </button>
+            </div>
+
+            <% if (activePage) { %>
+              <p class="svc-scope">
+                <%= lang === 'ar' ? 'بتعرض خدمات' : 'Showing services in' %>
+                <b><%= lang === 'ar' ? activePage.name_ar : activePage.name_en %></b>
+                <% if (scopedOut > 0) { %>
+                  ·
+                  <a href="/request?all=1"><%= lang === 'ar'
+                    ? 'عرض كل الخدمات (' + scopedOut + ' كمان)'
+                    : 'Show all services (' + scopedOut + ' more)' %></a>
+                <% } %>
+              </p>
+            <% } %>
+
+            <div class="svc-groups" id="svcGroups">
+              <% groups.forEach(g => { %>
+                <div class="svc-group" data-group>
+                  <div class="svc-group-title"><%= pick(g.category, 'name') %></div>
+                  <% g.items.forEach(s => { %>
+                    <button type="button" class="svc-option" data-id="<%= s.id %>"
+                            data-name="<%= pick(s, 'title') %>"
+                            aria-pressed="false"
+                            data-search="<%= (pick(s, 'title') + ' ' + pick(g.category, 'name')).toLowerCase() %>">
+                      <span class="svc-tick" aria-hidden="true"></span>
+                      <span class="svc-label"><%= pick(s, 'title') %></span>
+                    </button>
+                  <% }) %>
+                </div>
+              <% }) %>
+            </div>
+
+            <p class="svc-empty" id="svcEmpty" hidden>
+              <%= lang === 'ar'
+                ? 'مفيش خدمة بالاسم ده — اوصف طلبك تحت وهنتواصل معاك.'
+                : 'No service by that name — describe your request below and we will get back to you.' %>
+            </p>
+          </div>
+
+          <input type="hidden" name="service_ids" id="serviceIds"
+                 value="<%= chosen ? chosen.id : '' %>">
+
+          <div class="field-help">
+            <%= lang === 'ar'
+              ? 'اختيار الخدمة اختياري — إن لم تجدها، اكتب ما تحتاجه بالتفصيل بالأسفل.'
+              : 'Choosing a service is optional — if you cannot find it, describe what you need below.' %>
+          </div>
+        </div>
+
+        <div class="field" id="messageField">
+          <label for="message">
+            <span id="messageLabel"><%= t.form_msg %></span>
+            <span class="req-mark" id="messageRequired" hidden>*</span>
+          </label>
+          <textarea id="message" name="message"
+                    placeholder="<%= lang === 'ar'
+                      ? 'اشرح اللي محتاجه بالتفصيل — لو مش عارف اسم الخدمة، احكي المشكلة عادي.'
+                      : 'Describe what you need. If you do not know the service name, just describe the problem.' %>"></textarea>
+          <div class="help" id="messageHelp">
+            <%= lang === 'ar'
+              ? 'كل ما تشرح أكتر، كل ما رجعنا لك أسرع وبمعلومة أدق.'
+              : 'The more you tell us, the faster and more precise our reply.' %>
+          </div>
+        </div>
+        <button class="btn brass block" type="submit"><%= t.form_submit %></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  var picker   = document.getElementById('svcPicker');
+  var groupsEl = document.getElementById('svcGroups');
+  var search   = document.getElementById('serviceSearch');
+  var empty    = document.getElementById('svcEmpty');
+  var hidden   = document.getElementById('serviceIds');
+  var chips    = document.getElementById('svcChips');
+  var chipsList= document.getElementById('svcChipsList');
+  var chipsLbl = document.getElementById('svcChipsLabel');
+  var describe = document.getElementById('svcDescribe');
+  var message  = document.getElementById('message');
+  var msgReq   = document.getElementById('messageRequired');
+  var msgLabel = document.getElementById('messageLabel');
+  var form     = document.getElementById('requestForm') || (picker && picker.closest('form'));
+
+  if (!picker || !groupsEl || !hidden) return;
+
+  var AR = document.documentElement.lang === 'ar';
+  var selected = [];
+
+  /* ------------------------------------------------------------ selection */
+
+  /*
+   * Selecting never closes the list and never moves the page.
+   *
+   * The old picker hid itself on the first choice, which threw the reader back
+   * to the top of the form — so choosing a second service meant reopening,
+   * finding your place, and scrolling again. Here the row simply ticks.
+   */
+  function render() {
+    hidden.value = selected.map(function (s) { return s.id; }).join(',');
+
+    groupsEl.querySelectorAll('.svc-option').forEach(function (opt) {
+      var on = selected.some(function (s) { return s.id === opt.getAttribute('data-id'); });
+      opt.classList.toggle('on', on);
+      opt.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+
+    chips.hidden = selected.length === 0;
+    chipsLbl.textContent = AR
+      ? 'اخترت ' + selected.length + (selected.length === 1 ? ' خدمة' : ' خدمات')
+      : selected.length + ' selected';
+
+    chipsList.textContent = '';
+    selected.forEach(function (s) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'svc-chip';
+      chip.setAttribute('data-remove', s.id);
+      chip.innerHTML = '<span>' + s.name.replace(/</g, '&lt;') + '</span><i aria-hidden="true">×</i>';
+      chip.setAttribute('aria-label', (AR ? 'شيل ' : 'Remove ') + s.name);
+      chipsList.appendChild(chip);
+    });
+
+    // With nothing chosen the description is the request, so it is required.
+    var needsText = selected.length === 0;
+    if (msgReq) msgReq.hidden = !needsText;
+    if (message) message.required = needsText;
+    if (msgLabel) {
+      msgLabel.textContent = needsText
+        ? (AR ? 'اشرح اللي محتاجه' : 'Describe what you need')
+        : (AR ? 'تفاصيل إضافية' : 'Anything else we should know');
+    }
+
+    save();
+  }
+
+  groupsEl.addEventListener('click', function (e) {
+    var opt = e.target.closest('.svc-option');
+    if (!opt) return;
+
+    var id = opt.getAttribute('data-id');
+    var at = selected.findIndex(function (s) { return s.id === id; });
+
+    if (at >= 0) {
+      selected.splice(at, 1);
+    } else {
+      selected.push({ id: id, name: opt.getAttribute('data-name') });
+      flash(opt);
+    }
+
+    render();
+  });
+
+  /*
+   * A brief "added" beside the row itself.
+   *
+   * On a short screen the selection box can sit just above the visible area, so
+   * the count changes where nobody is looking. This confirms at the point of
+   * the tap and then gets out of the way.
+   */
+  function flash(opt) {
+    var old = opt.querySelector('.svc-flash');
+    if (old) old.remove();
+
+    var tag = document.createElement('span');
+    tag.className = 'svc-flash';
+    tag.textContent = AR ? 'اتضافت' : 'Added';
+    opt.appendChild(tag);
+
+    setTimeout(function () { tag.classList.add('out'); }, 1200);
+    setTimeout(function () { if (tag.parentNode) tag.remove(); }, 1600);
+  }
+
+  chipsList.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-remove]');
+    if (!chip) return;
+    var id = chip.getAttribute('data-remove');
+    selected = selected.filter(function (s) { return s.id !== id; });
+    render();
+  });
+
+  /* --------------------------------------------------------------- search */
+
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      var any = false;
+
+      groupsEl.querySelectorAll('[data-group]').forEach(function (group) {
+        var shown = 0;
+        group.querySelectorAll('.svc-option').forEach(function (opt) {
+          var hit = !q || opt.getAttribute('data-search').indexOf(q) !== -1;
+          opt.hidden = !hit;
+          if (hit) shown += 1;
+        });
+        group.hidden = shown === 0;
+        if (shown) any = true;
+      });
+
+      empty.hidden = any;
+      save();
+    });
+  }
+
+  /* ------------------------------------------------------- describe instead */
+
+  if (describe && message) {
+    describe.addEventListener('click', function () {
+      message.focus();
+      message.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  }
+
+  /* ----------------------------------------------------------- saved draft */
+
+  /*
+   * A half-filled form survives a closed tab.
+   *
+   * Someone gathering document numbers will leave and come back, and losing
+   * what they typed is the point at which they give up. Cleared on submit so a
+   * shared computer does not hand the next person a stranger's details.
+   */
+  var KEY = 'sanad.request.draft.v1';
+
+  function save() {
+    if (!form) return;
+    try {
+      var data = {};
+      form.querySelectorAll('input, textarea, select').forEach(function (el) {
+        if (!el.name || el.type === 'hidden' && el.name === '_csrf') return;
+        if (el.type === 'file' || el.type === 'password') return;
+        if (el.type === 'checkbox' || el.type === 'radio') data[el.name] = el.checked;
+        else data[el.name] = el.value;
+      });
+
+      localStorage.setItem(KEY, JSON.stringify({
+        at: Date.now(),
+        data: data,
+        selected: selected,
+        search: search ? search.value : '',
+        scroll: window.scrollY
+      }));
+    } catch (_) { /* private mode, or the quota is full */ }
+  }
+
+  function restore() {
+    var raw;
+    try { raw = localStorage.getItem(KEY); } catch (_) { return; }
+    if (!raw) return;
+
+    var saved;
+    try { saved = JSON.parse(raw); } catch (_) { return; }
+
+    // A draft older than a week is not a draft, it is a stranger's leftovers.
+    if (!saved || Date.now() - saved.at > 7 * 24 * 60 * 60 * 1000) {
+      try { localStorage.removeItem(KEY); } catch (_) {}
+      return;
+    }
+
+    if (form && saved.data) {
+      Object.keys(saved.data).forEach(function (name) {
+        var el = form.querySelector('[name="' + name + '"]');
+        if (!el || el.name === '_csrf' || el.name === 'service_ids') return;
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = !!saved.data[name];
+        else el.value = saved.data[name];
+      });
+    }
+
+    if (Array.isArray(saved.selected)) {
+      // Only services still on this page: the catalogue may have changed, or
+      // the visitor may have switched to a different one.
+      selected = saved.selected.filter(function (s) {
+        return groupsEl.querySelector('.svc-option[data-id="' + s.id + '"]');
+      });
+    }
+
+    if (search && saved.search) {
+      search.value = saved.search;
+      search.dispatchEvent(new Event('input'));
+    }
+
+    render();
+
+    if (saved.scroll > 40) {
+      // After layout, so the position is the one that was actually saved.
+      requestAnimationFrame(function () {
+        window.scrollTo({ top: saved.scroll, behavior: 'auto' });
+        notifyRestored();
+      });
+    }
+  }
+
+  function notifyRestored() {
+    if (document.getElementById('draftNote')) return;
+    var note = document.createElement('div');
+    note.id = 'draftNote';
+    note.className = 'draft-note';
+    note.innerHTML =
+      '<span>' + (AR ? 'رجّعنا لك اللي كتبته قبل كده.' : 'We restored what you had typed.') +
+      '</span><button type="button">' + (AR ? 'ابدأ من جديد' : 'Start over') + '</button>';
+
+    note.querySelector('button').addEventListener('click', function () {
+      try { localStorage.removeItem(KEY); } catch (_) {}
+      window.location.href = window.location.pathname + window.location.search;
+    });
+
+    picker.parentNode.insertBefore(note, picker);
+  }
+
+  if (form) {
+    form.addEventListener('input', save);
+    form.addEventListener('submit', function () {
+      try { localStorage.removeItem(KEY); } catch (_) {}
+    });
+  }
+
+  var scrollTimer = null;
+  window.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(save, 400);
+  }, { passive: true });
+
+  /* ------------------------------------------------------------- start up */
+
+  <% if (chosen) { %>
+    selected = [{ id: '<%= chosen.id %>', name: '<%= pick(chosen, "title").replace(/'/g, "") %>' }];
+  <% } %>
+
+  render();
+  restore();
+})();
+</script>
+
+<%- include('../partials/footer') %>

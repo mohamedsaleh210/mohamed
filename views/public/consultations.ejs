@@ -1,0 +1,31 @@
+<% pageTitle = t.consult_title %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow"><%= lang==='ar' ? 'قبل أي خطوة' : 'Before any step' %></div>
+      <h2><%= t.consult_title %></h2>
+      <p><%= lang==='ar' ? 'استشارات قانونية أونلاين — احجز وتكلّم مع المختص قبل ما تبدأ.' : 'Online legal consultations — book and talk to a specialist before you begin.' %></p>
+    </div>
+
+    <div style="max-width:760px">
+    <a class="btn brass" href="/appointments?kind=consultation">حجز استشارة</a>
+    <% if (!services.length) { %>
+      <p style="color:var(--muted)"><%= t.empty %></p>
+    <% } services.forEach(s => { %>
+      <div class="consult-row">
+        <span class="ic">⚖︎</span>
+        <div class="body">
+          <h4><%= pick(s,'title') %></h4>
+          <p><%= pick(s,'body') %></p>
+        </div>
+        <a class="btn sm brass" href="/request?service=<%= s.id %>"><%= t.request_this %></a>
+      </div>
+    <% }) %>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

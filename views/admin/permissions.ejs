@@ -1,0 +1,99 @@
+<% pageTitle = 'صلاحيات ' + (person.display_name || person.username) %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', {
+  crumbs: [
+    { label: 'الموظفين', href: adminPath + '/users' },
+    { label: person.display_name || person.username }
+  ]
+}) %>
+
+<%
+  const roleAr = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي', accountant: 'محاسب' };
+  const groups = {};
+  rows.forEach(r => (groups[r.group] = groups[r.group] || { label: r.groupLabel, items: [] }).items.push(r));
+  const added = rows.filter(r => r.override === true).length;
+  const removed = rows.filter(r => r.override === false).length;
+%>
+
+<div class="page-head">
+  <h1>صلاحيات <%= person.display_name || person.username %></h1>
+  <p class="sub">
+    <span class="chip"><%= roleAr[person.role] || person.role %></span>
+    <% if (added || removed) { %>
+      · <%= added %> مضافة · <%= removed %> مشيلة
+    <% } else { %>
+      · على الافتراضي بالكامل
+    <% } %>
+  </p>
+</div>
+
+<% if (msg === 'saved') { %><div class="alert ok"><span>تم حفظ الصلاحيات.</span></div><% } %>
+<% if (msg === 'admin_unlimited') { %>
+  <div class="alert info"><span>الأدمن صلاحياته مفتوحة ومش بتتحدد.</span></div>
+<% } %>
+
+<% if (isAdmin) { %>
+  <div class="alert warn">
+    <span>
+      <b>الأدمن مالوش قائمة صلاحيات.</b>
+      لازم يفضل فيه حد يقدر يصلّح أي إعداد غلط — واللي بيصلّح مينفعش يتقفل
+      بره النظام بإعداد. لو عايز تحدّ حد، خليه مشرف وظبّط صلاحياته من هنا.
+    </span>
+  </div>
+<% } else { %>
+  <div class="alert info">
+    <span>
+      الصلاحية اللي جاية من الدور مكتوب جنبها <b>«من الدور»</b>.
+      لو شيلتها أو ضفت واحدة، بتتسجّل كاستثناء على الموظف ده وحده —
+      وتغيير صلاحيات الدور مستقبلاً بيوصل لكل حد ماعداه.
+    </span>
+  </div>
+
+  <form method="post" action="<%= adminPath %>/users/<%= person.id %>/permissions">
+    <%- csrfField %>
+
+    <% Object.values(groups).forEach(group => { %>
+      <div class="panel <%= Object.keys(groups)[0] && group.items[0] && group.items[0].group === 'erase' ? 'danger-panel' : '' %>">
+        <div class="panel-head">
+          <h3><%= group.label %></h3>
+          <% if (group.items[0] && group.items[0].group === 'erase') { %>
+            <span class="chip danger">مفيش تراجع</span>
+          <% } %>
+          <span class="chip spacer">
+            <%= group.items.filter(i => i.effective).length %> من <%= group.items.length %>
+          </span>
+        </div>
+        <div class="panel-body flush">
+          <ul class="perm-list">
+            <% group.items.forEach(item => { %>
+              <li class="<%= item.override === true ? 'added' : item.override === false ? 'removed' : '' %>">
+                <label class="perm-row">
+                  <input type="checkbox" name="permission" value="<%= item.key %>"
+                         <%= item.effective ? 'checked' : '' %>>
+                  <span class="perm-body">
+                    <b><%= item.label %></b>
+                    <% if (item.note) { %><small><%= item.note %></small><% } %>
+                  </span>
+                  <span class="perm-tags">
+                    <% if (item.byRole) { %><span class="chip">من الدور</span><% } %>
+                    <% if (item.override === true) { %><span class="chip ok">مضافة</span><% } %>
+                    <% if (item.override === false) { %><span class="chip off">مشيلة</span><% } %>
+                  </span>
+                </label>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% }) %>
+
+    <div class="btn-row">
+      <button class="btn brass" type="submit">حفظ الصلاحيات</button>
+      <a class="btn ghost" href="<%= adminPath %>/users">رجوع</a>
+    </div>
+  </form>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

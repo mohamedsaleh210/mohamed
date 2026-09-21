@@ -1,0 +1,1423 @@
+<% pageTitle = reqRow.ref %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الطلبات', href: adminPath + '/requests' }, { label: reqRow.ref }] }) %>
+
+<%
+  const st = STATUS[reqRow.status] || { ar: reqRow.status, color: '#888' };
+  const today = new Date().toISOString().slice(0, 10);
+  const overdue = reqRow.deadline && reqRow.deadline < today && !['completed','cancelled'].includes(reqRow.status);
+  const dueToday = reqRow.deadline === today && !['completed','cancelled'].includes(reqRow.status);
+  const relLabel = { self: 'صاحب الطلب', guardian: 'ولي أمر', agent: 'وكيل', relative: 'قريب', other: 'أخرى' };
+  const doneTodos = todos.filter(t => t.done).length;
+  const avClass = { lawyer: 'lawyer', supervisor: 'supervisor', admin: '' };
+  const canModerate = ['admin', 'supervisor'].includes(user.role);
+  const okMsgs = {
+    assigned: 'تم تعيين الموظف وإرسال الإشعار.',
+    todo_deleted: null,
+    created: 'تم فتح الطلب. لو كتبت إيميل، وصله رقم الطلب ولينك رفع المستندات.',
+    title_saved: 'تم حفظ العنوان.',
+    critical_saved: 'تم حفظ الأولوية.',
+    payment_added: 'تم تسجيل الدفعة.',
+    payment_voided: 'تم إلغاء الدفعة.',
+    discount_saved: 'تم حفظ الخصم.',
+    destination_added: 'تم إضافة الجهة.',
+    expense_added: 'تم تسجيل المصروف.',
+    expense_voided: 'تم إلغاء المصروف.',
+    writeoff_saved: 'تم تسجيل الدين المعدوم. المبلغ خرج من المتبقي على العملاء.',
+    writeoff_cleared: 'رجع المبلغ للمتبقي على العملاء.',
+    unassigned: 'تم إلغاء تعيين الموظف.',
+    already: 'الموظف معيّن على الطلب بالفعل.',
+    deadline: 'تم حفظ الموعد.',
+    renewal_dates: 'تم حفظ مواعيد الإصدار والانتهاء والتجديد.',
+    req_added: 'تم إضافة المطلوب من العميل.',
+    bad_custody_balance: null,
+  };
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1 class="num" style="display:inline-block"><%= reqRow.ref %></h1>
+    <button class="btn ghost sm copy-ref" type="button" data-copy="<%= reqRow.ref %>">نسخ الرقم</button>
+    <button class="btn ghost sm" type="button" id="shareBtn">مشاركة مع زميل</button>
+    <span class="badge" style="background:<%= st.color %>;vertical-align:middle;margin-inline-start:8px"><%= st.ar %></span>
+    <% if (overdue) { %><span class="flag late">متأخر</span><% } %>
+    <% if (dueToday) { %><span class="flag soon">التسليم النهاردة</span><% } %>
+    <% if (reqRow.archived_at) { %><span class="chip off">مؤرشف</span><% } %>
+    <div class="req-title-line">
+      <span id="reqTitleText"><%= reqRow.title || 'بدون عنوان' %></span>
+      <button class="btn ghost sm" type="button" id="editTitleBtn">تعديل العنوان</button>
+    </div>
+
+    <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/title"
+          id="titleForm" hidden style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      <%- csrfField %>
+      <input type="text" name="title" value="<%= reqRow.title || '' %>"
+             placeholder="مثال: ترخيص فيلا الشيخ زايد — قطعة ٤٧"
+             style="flex:1;min-width:200px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+      <button class="btn brass sm" type="submit">حفظ</button>
+      <button class="btn ghost sm" type="button" id="cancelTitleBtn">إلغاء</button>
+    </form>
+
+    <p class="sub">
+      وصل <%= fmtDateTime(reqRow.created_at) %>
+      <% if (reqRow.source === 'office' && reqRow.opened_by) { %>
+        · فتحه <%= reqRow.opened_by %> من المكتب
+      <% } %>
+    </p>
+  </div>
+  <div class="btn-row">
+    <% if (legalCase) { %>
+      <a class="btn brass" href="<%= adminPath %>/cases/<%= legalCase.id %>">فتح ملف القضية</a>
+    <% } else if (can('cases.create')) { %>
+      <details class="case-create"><summary class="btn brass">تحويل إلى قضية</summary>
+        <form method="post" action="<%= adminPath %>/cases/from-request/<%= reqRow.id %>"><%- csrfField %>
+          <input type="text" name="title" value="<%= reqRow.title || reqRow.service_label || '' %>" required>
+          <select name="category_id"><option value="">اختر تصنيف القضية</option><% caseCategories.forEach(x=>{ %><option value="<%= x.id %>"><%= x.name %></option><% }) %></select>
+          <button class="btn">إنشاء الملف</button>
+        </form>
+      </details>
+    <% } %>
+    <% if(can('requests.export')) { %><a class="btn ghost" href="<%= adminPath %>/requests/<%= reqRow.id %>/print" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      تحميل PDF
+    </a><% } %>
+  </div>
+</div>
+
+<div class="share-box" id="shareBox" hidden>
+  <p class="help" style="margin:0 0 8px">
+    اللينك ده بيفتح الطلب لأي زميل عنده حساب. مش بيفتح لحد بره المكتب.
+  </p>
+  <div class="share-row">
+    <input type="text" id="shareLink" readonly class="num"
+           value="<%= (site.domain ? site.domain.replace(/\/+$/, '') : '') %><%= adminPath %>/requests/<%= reqRow.id %>">
+    <button class="btn brass sm" type="button" id="shareCopy">نسخ اللينك</button>
+    <a class="btn wa sm" id="shareWa" target="_blank" rel="noopener noreferrer">واتساب</a>
+  </div>
+</div>
+
+<%- include('../partials/undo_banner') %>
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if(msg==='bad_custody_balance'){ %><div class="alert err"><span>رصيد العهدة غير كافٍ أو العهدة لا تخص الموظف الحالي.</span></div><% } %>
+
+<div class="two-col wide">
+  <!-- ==================================================== left column -->
+  <div>
+    <!-- client -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>العميل</h3>
+        <% if (clientAccount) { %><span class="chip ok spacer">عنده حساب</span>
+        <% } else { %><span class="chip spacer">طلب بدون تسجيل</span><% } %>
+      </div>
+      <div class="panel-body">
+        <table class="tbl" style="border:0">
+          <tbody>
+            <tr>
+              <td data-label="" style="width:130px;color:var(--muted);border:0">الاسم</td>
+              <td data-label="الاسم" style="border:0">
+                <a href="<%= adminPath %>/clients/<%= reqRow.client_id || encodeURIComponent(reqRow.phone) %>"
+                   style="font-weight:800;color:var(--brass-deep)"><%= reqRow.name %></a>
+                <span class="chip"><%= relLabel[reqRow.relation] || 'صاحب الطلب' %></span>
+              </td>
+            </tr>
+            <% if (reqRow.beneficiary_name) { %>
+              <tr>
+                <td data-label="" style="color:var(--muted);border:0">صاحب الطلب</td>
+                <td data-label="صاحب الطلب" style="border:0"><strong><%= reqRow.beneficiary_name %></strong></td>
+              </tr>
+            <% } %>
+            <tr>
+              <td data-label="" style="color:var(--muted);border:0">الموبايل</td>
+              <td data-label="الموبايل" style="border:0">
+                <span class="num"><%= reqRow.phone %></span>
+                <button class="btn sm ghost" type="button" data-copy="<%= reqRow.phone %>">نسخ</button>
+                <a class="btn sm ghost" target="_blank" rel="noopener noreferrer"
+                   href="<%= waLink(reqRow.phone, 'مرحباً ' + reqRow.name + '، بخصوص طلبكم رقم ' + reqRow.ref) %>">واتساب</a>
+              </td>
+            </tr>
+            <% if (reqRow.email) { %>
+              <tr>
+                <td data-label="" style="color:var(--muted);border:0">الإيميل</td>
+                <td data-label="الإيميل" style="border:0"><a class="num" href="mailto:<%= reqRow.email %>"><%= reqRow.email %></a></td>
+              </tr>
+            <% } %>
+            <tr>
+              <td data-label="" style="color:var(--muted);border:0">الخدمة</td>
+              <td data-label="الخدمة" style="border:0"><%= reqRow.service_label || '—' %></td>
+            </tr>
+            <tr>
+              <td data-label="" style="color:var(--muted);border:0;vertical-align:top">تفاصيل الطلب</td>
+              <td data-label="التفاصيل" style="border:0;white-space:pre-wrap"><%= reqRow.message || '—' %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <% if (siblings.length) { %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>طلبات تانية لنفس العميل</h3>
+          <span class="chip spacer"><%= siblings.length %></span>
+          <a class="btn ghost sm"
+             href="<%= adminPath %>/clients/<%= reqRow.client_id || encodeURIComponent(reqRow.phone) %>">
+            ملف العميل
+          </a>
+        </div>
+        <div class="panel-body flush">
+          <ul class="sibling-list">
+            <% siblings.forEach(sb => {
+                 const sst = STATUS[sb.status] || { ar: sb.status, color: '#888' }; %>
+              <li>
+                <a href="<%= adminPath %>/requests/<%= sb.id %>">
+                  <span class="ref num"><%= sb.ref %></span>
+                  <span class="sb-title">
+                    <%= sb.title || (sb.service_label ? sb.service_label.split(' / ')[0] : '—') %>
+                  </span>
+                  <span class="badge" style="background:<%= sst.color %>"><%= sst.ar %></span>
+                  <span class="sb-date"><%= fmtDate(sb.created_at) %></span>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- documents -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>ملفات العميل</h3>
+        <span class="chip spacer"><%= documents.length %> مستند</span>
+      </div>
+      <div class="panel-body">
+        <% if (reqRow.files_purged_at) { %>
+          <div class="alert warn" style="margin-bottom:12px">
+            <span><%= reqRow.files_purged_note %></span>
+          </div>
+        <% } %>
+
+        <% if (documents.length) { %>
+          <div class="doc-grid">
+            <% documents.forEach(d => { %>
+              <div class="doc-card">
+                <% if (d.kind === 'pdf') { %>
+                  <a class="pdf" href="/files/<%= d.files[0] ? d.files[0].id : 0 %>" target="_blank" rel="noopener">PDF</a>
+                <% } else { %>
+                  <div class="thumbs">
+                    <% d.files.slice(0, 2).forEach(f => { %>
+                      <a href="/files/<%= f.id %>" target="_blank" rel="noopener"
+                         style="background-image:url('/files/<%= f.id %>')">
+                        <span class="side"><%= f.side === 'back' ? 'ظهر' : 'وجه' %></span>
+                      </a>
+                    <% }) %>
+                  </div>
+                <% } %>
+                <div class="meta">
+                  <b><%= d.name %></b>
+                  <span>
+                    <%= d.kind === 'pdf' ? 'ملف PDF' : d.files.length + ' صورة' %>
+                    · <%= d.source === 'client' ? 'رفعه العميل' : 'أرفقه ' + (d.uploaded_by || 'المكتب') %>
+                    <% if (d.internal) { %><span class="chip off">داخلي</span><% } %>
+                  </span>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0 0 14px">مفيش ملفات لسه.</p>
+        <% } %>
+
+        <details class="staff-upload">
+          <summary class="btn ghost sm">+ أرفق ملف من المكتب</summary>
+          <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/documents"
+                enctype="multipart/form-data" class="edit-box" style="margin-top:12px">
+            <%- csrfField %>
+            <div class="field">
+              <label>اسم المستند</label>
+              <input type="text" name="name" required placeholder="مثال: إيصال سداد رسوم الحي">
+            </div>
+            <div class="field">
+              <label>الملفات</label>
+              <input type="file" name="files" multiple accept="image/*,application/pdf" required>
+              <div class="help">صور أو PDF · حتى ١٠ ملفات · ١٥ ميجا للملف</div>
+            </div>
+            <div class="field">
+              <label>ملاحظة (اختياري)</label>
+              <input type="text" name="note">
+            </div>
+            <label class="check">
+              <input type="checkbox" name="internal" value="1">
+              <span class="txt">
+                مستند داخلي
+                <small>شيل العلامة لو عايز العميل يشوفه في صفحته.</small>
+              </span>
+            </label>
+            <button class="btn brass sm" type="submit">رفع</button>
+          </form>
+        </details>
+      </div>
+    </div>
+
+    <!-- comments -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>التعليقات والتوثيق</h3>
+        <span class="chip spacer">مش بتظهر للعميل</span>
+      </div>
+      <div class="panel-body">
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/comments"
+              style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <%- csrfField %>
+          <input type="text" name="body" placeholder="اكتب تعليق…" required
+                 style="flex:1;min-width:180px;padding:11px 15px;border:1.5px solid var(--line);border-radius:22px;font:inherit;font-size:16px;min-height:46px">
+          <button class="btn" type="submit">إرسال</button>
+        </form>
+
+        <% if (thread.length) { %>
+          <% thread.forEach(c => { %>
+            <div class="comment" id="c<%= c.id %>">
+              <span class="av <%= avClass[c.author_role] || '' %>">
+                <% if (c.author_photo) { %>
+                  <img src="<%= adminPath %>/account/avatar/<%= c.author_id %>" alt="">
+                <% } else { %><%= (c.author_label || '؟').charAt(0) %><% } %>
+              </span>
+              <div class="cbody">
+                <div class="bubble <%= c.deleted_at ? 'struck' : '' %>">
+                  <div class="nm">
+                    <%= c.author_label %>
+                    <span class="role">· <%= { admin:'أدمن', supervisor:'مشرف', lawyer:'محامي' }[c.author_role] || '' %></span>
+                  </div>
+                  <div class="tx"><%= c.body %></div>
+                  <% if (c.deleted_at) { %>
+                    <span class="cmt-struck-note">مشطوب بواسطة <%= c.deleted_by %></span>
+                  <% } %>
+                </div>
+                <div class="cmeta">
+                  <span><%= timeAgo(c.created_at) %></span>
+                  <% if (!c.deleted_at) { %>
+                    <button type="button" data-reply="<%= c.id %>">رد</button>
+                  <% } %>
+                  <% if (c.author_id === user.id || canModerate) { %>
+                    <form method="post" style="display:inline"
+                          action="<%= adminPath %>/requests/<%= reqRow.id %>/comments/<%= c.id %>/<%= c.deleted_at ? 'restore' : 'delete' %>"
+                          <%= c.deleted_at ? '' : 'data-confirm="تشطب التعليق ده؟ نصه هيفضل ظاهر بخط في نصه."' %>>
+                      <%- csrfField %>
+                      <button type="submit"><%= c.deleted_at ? 'رجّعه' : 'شطب' %></button>
+                    </form>
+                  <% } %>
+                </div>
+
+                <% if (c.replies.length) { %>
+                  <div class="replies">
+                    <% c.replies.forEach(rep => { %>
+                      <div class="comment" id="c<%= rep.id %>">
+                        <span class="av <%= avClass[rep.author_role] || '' %>" style="width:30px;height:30px;font-size:12px">
+                          <% if (rep.author_photo) { %>
+                            <img src="<%= adminPath %>/account/avatar/<%= rep.author_id %>" alt="">
+                          <% } else { %><%= (rep.author_label || '؟').charAt(0) %><% } %>
+                        </span>
+                        <div class="cbody">
+                          <div class="bubble <%= rep.deleted_at ? 'struck' : '' %>">
+                            <div class="nm">
+                              <%= rep.author_label %>
+                              <span class="role">· <%= { admin:'أدمن', supervisor:'مشرف', lawyer:'محامي' }[rep.author_role] || '' %></span>
+                            </div>
+                            <div class="tx"><%= rep.body %></div>
+                            <% if (rep.deleted_at) { %>
+                              <span class="cmt-struck-note">مشطوب بواسطة <%= rep.deleted_by %></span>
+                            <% } %>
+                          </div>
+                          <div class="cmeta">
+                            <span><%= timeAgo(rep.created_at) %></span>
+                            <% if (!rep.deleted_at) { %>
+                              <button type="button" data-reply="<%= c.id %>" data-mention="<%= rep.author_label %>">رد</button>
+                            <% } %>
+                            <% if (rep.author_id === user.id || canModerate) { %>
+                              <form method="post" style="display:inline"
+                                    action="<%= adminPath %>/requests/<%= reqRow.id %>/comments/<%= rep.id %>/<%= rep.deleted_at ? 'restore' : 'delete' %>"
+                                    <%= rep.deleted_at ? '' : 'data-confirm="تشطب الرد ده؟"' %>>
+                                <%- csrfField %>
+                                <button type="submit"><%= rep.deleted_at ? 'رجّعه' : 'شطب' %></button>
+                              </form>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                <% } %>
+
+                <form class="reply-form" id="rf<%= c.id %>" method="post"
+                      action="<%= adminPath %>/requests/<%= reqRow.id %>/comments">
+                  <%- csrfField %>
+                  <input type="hidden" name="parent_id" value="<%= c.id %>">
+                  <input type="text" name="body" placeholder="اكتب رد…" required>
+                  <button class="btn sm" type="submit">رد</button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0">مفيش تعليقات لسه. أول تعليق بيبدأ التوثيق.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- audit trail -->
+    <div class="panel">
+      <div class="panel-head"><h3>سجل الطلب</h3></div>
+      <div class="panel-body">
+        <% if (trail.length) { %>
+          <ul class="timeline">
+            <% trail.forEach(a => { %>
+              <li>
+                <span class="who"><%= (a.user_label || '؟').charAt(0) %></span>
+                <div class="what">
+                  <div class="m"><%= a.details || a.action %></div>
+                  <div class="meta"><%= a.user_label %> · <%= fmtDateTime(a.created_at) %></div>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0">مفيش تعديلات مسجّلة.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== right column -->
+  <div>
+    <div class="panel action-picker-panel">
+      <div class="panel-head"><h3>إجراءات الطلب</h3></div>
+      <div class="panel-body">
+        <div class="field"><label for="requestActionPicker">اختر الإجراء المطلوب</label>
+          <select id="requestActionPicker">
+            <option value="">— اختر إجراء —</option>
+            <option value="إدارة الطلب">تغيير حالة الطلب</option>
+            <% if (showMoney) { %><option value="الأتعاب">إدارة الأتعاب</option><option value="الدفعات">تسجيل دفعة أو خصم</option><% } %>
+            <option value="الأولوية">تحديد أولوية الطلب</option>
+            <option value="الخدمات المطلوبة">إدارة الخدمات المطلوبة</option>
+            <% if (showExpenses) { %><option value="مصاريف الطلب">تسجيل مصروف</option><% } %>
+            <option value="جهات خارجية">إضافة جهة خارجية</option>
+            <option value="طلب خاص">إضافة طلب خاص</option>
+            <option value="موعد التسليم">تحديد موعد التسليم</option>
+            <option value="فريق الطلب">تعيين موظف أو عضو فريق</option>
+            <option value="المطلوب من العميل">إضافة مطلوب من العميل</option>
+            <option value="خطوات التنفيذ">إضافة خطوة تنفيذ</option>
+          </select>
+          <div class="help">سيظهر نموذج الإجراء الذي تختاره فقط، وتظل البيانات المسجلة محفوظة كما هي.</div>
+        </div>
+      </div>
+    </div>
+    <!-- status + money -->
+    <div class="panel">
+      <div class="panel-head"><h3>إدارة الطلب</h3></div>
+      <div class="panel-body">
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/update">
+          <%- csrfField %>
+          <div class="field">
+            <label for="status">الحالة</label>
+            <select id="status" name="status">
+              <% Object.keys(STATUS).forEach(k => { %>
+                <option value="<%= k %>" <%= reqRow.status === k ? 'selected' : '' %>><%= STATUS[k].ar %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="field"><label>ملخص الإجراء والنتيجة النهائية <small>مطلوب عند الإغلاق</small></label><textarea name="completion_summary" placeholder="ما الذي تم إنجازه وما الذي سُلّم للعميل؟"><%=reqRow.completion_summary||''%></textarea><div class="help">لن يُغلق الطلب قبل إكمال الخطوات ووجود مستند نهائي وكتابة الملخص.</div></div><div class="field"><label>تقييم المسؤول أو العميل عند الإغلاق</label><select name="completion_rating"><%[5,4,3,2,1].forEach(n=>{%><option value="<%=n%>" <%=Number(reqRow.completion_rating||5)===n?'selected':''%>><%=n%> / 5</option><%})%></select></div>
+
+          <button class="btn brass block" type="submit">حفظ</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel"><div class="panel-head"><h3>إيقاف احتساب المدة</h3><span class="chip spacer"><%=timePauses.length%></span></div><div class="panel-body"><form method="post" enctype="multipart/form-data" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses"><%-csrfField%><label>سبب التوقف<select name="reason"><option value="awaiting_documents">بانتظار مستندات العميل</option><option value="awaiting_payment">بانتظار سداد العميل</option><option value="government">بانتظار جهة حكومية</option><option value="manager_approval">بانتظار اعتماد المسؤول</option><option value="administrative">متوقف بقرار إداري</option></select></label><label>الملاحظة والتوثيق<textarea name="note" required></textarea></label><label>إثبات (اختياري)<input type="file" name="proof" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn ghost">طلب إيقاف المدة</button></form><%if(timePauses.length){%><ul class="timeline"><%timePauses.forEach(p=>{%><li><div class="what"><b><%=({awaiting_documents:'بانتظار مستندات العميل',awaiting_payment:'بانتظار السداد',government:'بانتظار جهة حكومية',manager_approval:'بانتظار اعتماد المسؤول',administrative:'قرار إداري'})[p.reason]%></b><p><%=p.note%></p><small><%=p.status==='pending'?'بانتظار الاعتماد':p.status==='approved'?'المدة متوقفة':'تم استئناف المدة'%></small><%if(p.proof_path){%> · <a href="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/proof" target="_blank">عرض الإثبات</a><%}%></div><%if(p.status==='pending'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/approve"><%-csrfField%><button class="btn sm">اعتماد</button></form><%}%><%if(p.status==='approved'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/resume"><%-csrfField%><button class="btn sm brass">استئناف</button></form><%}%></li><%})%></ul><%}%></div></div>
+
+    <!-- fees -->
+    <% if (showMoney) {
+         const total = fees.reduce((n, f) => n + f.amount, 0);
+         const remaining = total - (reqRow.paid_amount || 0); %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>الأتعاب</h3>
+          <span class="chip spacer"><%= fees.length %> بند</span>
+        </div>
+        <div class="panel-body">
+          <% if (fees.length) { %>
+            <ul class="fee-list">
+              <% fees.forEach(f => { %>
+                <li>
+                  <span class="fl">
+                    <span class="fl-label"><%= f.label %></span>
+                    <span class="fl-by"><%= f.created_by %></span>
+                  </span>
+                  <span class="fl-amt num"><%= f.amount.toLocaleString('en-US') %></span>
+                  <span class="fl-acts">
+                    <button class="btn ghost sm" type="button" data-edit-fee="<%= f.id %>">تعديل</button>
+                    <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/fees/<%= f.id %>/delete"
+                          data-confirm="تحذف بند «<%= f.label %>»؟">
+                      <%- csrfField %>
+                      <button class="btn danger sm" type="submit">حذف</button>
+                    </form>
+                  </span>
+                </li>
+                <li class="fee-edit" hidden id="fee-edit-<%= f.id %>">
+                  <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/fees/<%= f.id %>/edit">
+                    <%- csrfField %>
+                    <input type="text" name="label" value="<%= f.label %>" required placeholder="مقابل إيه">
+                    <input name="amount" type="number" step="0.01" value="<%= f.amount %>" required>
+                    <button class="btn brass sm" type="submit">حفظ</button>
+                    <button class="btn ghost sm" type="button" data-close-fee="<%= f.id %>">إلغاء</button>
+                  </form>
+                </li>
+              <% }) %>
+            </ul>
+
+            <div class="pay-totals">
+              <div><span>إجمالي الأتعاب</span><b class="num"><%= total.toLocaleString('en-US') %></b></div>
+              <% if (balance && balance.discount > 0) { %>
+                <div><span>الخصم</span><b class="num" style="color:var(--warn)">- <%= balance.discount.toLocaleString('en-US') %></b></div>
+              <% } %>
+              <% if (balance && balance.writtenOff > 0) { %>
+                <div><span>دين معدوم</span><b class="num" style="color:var(--danger)">- <%= balance.writtenOff.toLocaleString('en-US') %></b></div>
+              <% } %>
+              <% if (balance && (balance.discount > 0 || balance.writtenOff > 0)) { %>
+                <div><span>المستحق فعلياً</span><b class="num"><%= balance.due.toLocaleString('en-US') %></b></div>
+              <% } %>
+              <div class="settled"><span>المُحصَّل</span><b class="num"><%= (balance ? balance.paid : 0).toLocaleString('en-US') %></b></div>
+              <div class="<%= balance && balance.remaining > 0 ? 'owing' : 'settled' %>">
+                <span><%= balance && balance.remaining > 0 ? 'المتبقي' : 'الحالة' %></span>
+                <b class="num">
+                  <% if (balance && balance.remaining > 0) { %>
+                    <%= balance.remaining.toLocaleString('en-US') %> <small><%= site.currency %></small>
+                  <% } else if (balance && balance.overpaid) { %>
+                    زيادة <%= Math.abs(balance.remaining).toLocaleString('en-US') %>
+                  <% } else { %>مسدّد بالكامل ✓<% } %>
+                </b>
+              </div>
+            </div>
+          <% } else { %>
+            <p style="color:var(--muted);margin:0 0 12px;font-size:13.5px">
+              مفيش بنود أتعاب. اكتب كل بند لوحده — «كذا مقابل كذا» — والإجمالي بيتحسب لوحده.
+            </p>
+          <% } %>
+
+          <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/fees" class="fee-add">
+            <%- csrfField %>
+            <input type="text" name="label" placeholder="مقابل إيه؟ مثال: رسوم الحي" required>
+            <input name="amount" type="number" step="0.01" placeholder="المبلغ" required>
+            <button class="btn sm" type="submit">إضافة بند</button>
+          </form>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- urgency -->
+    <div class="panel <%= reqRow.is_critical ? 'panel-urgent' : '' %>">
+      <div class="panel-head">
+        <h3><%= reqRow.is_critical ? '🔴 طلب عاجل' : 'الأولوية' %></h3>
+      </div>
+      <div class="panel-body">
+        <% if (reqRow.is_critical) { %>
+          <p class="urgent-reason"><%= reqRow.critical_reason %></p>
+          <p class="help" style="margin:0 0 14px">
+            علّمه <%= reqRow.critical_by %> · <%= fmtDateTime(reqRow.critical_at) %>
+          </p>
+          <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/critical">
+            <%- csrfField %>
+            <button class="btn ghost block sm" type="submit">شيل علامة العاجل</button>
+          </form>
+        <% } else { %>
+          <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/critical">
+            <%- csrfField %>
+            <input type="hidden" name="is_critical" value="1">
+            <div class="field" style="margin-bottom:10px">
+              <label for="criticalReason">السبب</label>
+              <textarea id="criticalReason" name="critical_reason" style="min-height:70px"
+                        placeholder="مثال: العميل مسافر يوم ١٤ ولازم الورق يخلص قبلها"></textarea>
+              <div class="help">
+                السبب مطلوب — من غيره العلامة بتتحط على كل حاجة وتفقد معناها.
+              </div>
+            </div>
+            <button class="btn danger block sm" type="submit">علّمه كعاجل</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- payments -->
+    <% if (showMoney) { %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>الدفعات</h3>
+          <span class="chip spacer"><%= payments.filter(p => !p.voided_at).length %></span>
+        </div>
+        <div class="panel-body">
+          <% if (payments.length) { %>
+            <ul class="pay-list">
+              <% payments.forEach(p => { %>
+                <li class="<%= p.voided_at ? 'voided' : '' %>">
+                  <span class="pay-amount num"><%= p.amount.toLocaleString('en-US') %></span>
+                  <span class="pay-meta">
+                    <%= p.methodLabel %> · <span class="num"><%= p.paid_on %></span>
+                    <% if (p.reference) { %><br>رقم العملية: <span class="num"><%= p.reference %></span><% } %>
+                    <% if (p.note) { %><br><%= p.note %><% } %>
+                    <br>سجّلها <%= p.recorded_by %>
+                    <% if (p.voided_at) { %>
+                      <br><span style="color:var(--danger)">ملغاة — <%= p.void_reason %> (<%= p.voided_by %>)</span>
+                    <% } %>
+                  </span>
+                  <span class="sort-actions">
+                    <% if (p.receipt_file) { %>
+                      <a class="btn ghost sm" target="_blank" rel="noopener"
+                         href="<%= adminPath %>/revenue/receipt/<%= p.id %>">الإيصال</a>
+                    <% } %>
+                    <% if (!p.voided_at) { %>
+                      <button class="btn danger sm" type="button" data-void="<%= p.id %>">إلغاء</button>
+                    <% } %>
+                  </span>
+                </li>
+                <% if (!p.voided_at) { %>
+                  <li class="edit-box" hidden id="void-<%= p.id %>" style="border:0">
+                    <form method="post" action="<%= adminPath %>/revenue/<%= p.id %>/void"
+                          style="display:flex;gap:8px;flex-wrap:wrap;width:100%">
+                      <%- csrfField %>
+                      <input type="text" name="reason" required placeholder="سبب الإلغاء"
+                             style="flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+                      <button class="btn danger sm" type="submit">تأكيد الإلغاء</button>
+                      <button class="btn ghost sm" type="button" data-close-void="<%= p.id %>">تراجع</button>
+                    </form>
+                  </li>
+                <% } %>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p style="color:var(--muted);margin:0 0 14px;font-size:13.5px">مفيش دفعات لسه.</p>
+          <% } %>
+
+          <details class="staff-upload">
+            <summary class="btn brass sm block">+ تسجيل دفعة</summary>
+            <form method="post" action="<%= adminPath %>/revenue/request/<%= reqRow.id %>"
+                  enctype="multipart/form-data" class="edit-box" style="margin-top:12px">
+              <%- csrfField %>
+              <div class="two-col">
+                <div class="field req">
+                  <label>المبلغ</label>
+                  <input type="number" name="amount" step="0.01" min="0.01" required
+                         value="<%= balance && balance.remaining > 0 ? balance.remaining : '' %>">
+                </div>
+                <div class="field req">
+                  <label>التاريخ</label>
+                  <input type="date" name="paid_on" required value="<%= today %>">
+                </div>
+              </div>
+              <div class="field req">
+                <label>طريقة الدفع</label>
+                <select name="method" required id="payMethod">
+                  <% paymentMethods.forEach(m => { %>
+                    <option value="<%= m.key %>" data-ref="<%= m.needsReference ? '1' : '0' %>">
+                      <%= m.icon %> <%= m.ar %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="field" id="refField">
+                <label>رقم العملية / المرجع</label>
+                <input type="text" name="reference" dir="ltr" style="text-align:left"
+                       placeholder="رقم التحويل أو الإيصال">
+              </div>
+              <div class="field">
+                <label>صورة الإيصال</label>
+                <input type="file" name="receipt" accept="image/*,application/pdf">
+                <div class="help">اختياري — بس بيحسم أي خلاف على دفعة بعدين.</div>
+              </div>
+              <div class="field">
+                <label>ملاحظة</label>
+                <input type="text" name="note">
+              </div>
+              <button class="btn brass block" type="submit">حفظ الدفعة</button>
+            </form>
+          </details>
+
+          <% if (balance && balance.writtenOff > 0) { %>
+            <div class="writeoff-note">
+              <b>دين معدوم: <span class="num"><%= balance.writtenOff.toLocaleString('en-US') %></span></b>
+              <span><%= balance.writeOffReason %></span>
+              <span class="help">
+                <%= reqRow.write_off_by %> · <%= fmtDate(reqRow.write_off_at) %>
+              </span>
+              <form method="post" action="<%= adminPath %>/revenue/request/<%= reqRow.id %>/write-off">
+                <%- csrfField %>
+                <input type="hidden" name="clear" value="1">
+                <button class="btn ghost sm" type="submit">تراجع</button>
+              </form>
+            </div>
+          <% } else if (balance && balance.remaining > 0) { %>
+            <details class="staff-upload" style="margin-top:12px">
+              <summary class="btn ghost sm block">إعدام الدين</summary>
+              <form method="post" action="<%= adminPath %>/revenue/request/<%= reqRow.id %>/write-off"
+                    class="edit-box" style="margin-top:12px">
+                <%- csrfField %>
+                <div class="alert warn" style="margin-top:0">
+                  <span>
+                    للمبالغ اللي مش هتتحصّل. المبلغ بيخرج من «المتبقي على العملاء»
+                    بس بيفضل مسجّل على الطلب — مش بيتمسح.
+                  </span>
+                </div>
+                <div class="field">
+                  <label>المبلغ</label>
+                  <input type="number" name="amount" step="0.01" min="0.01"
+                         max="<%= balance.remaining %>" value="<%= balance.remaining %>">
+                  <div class="help">الأقصى: <span class="num"><%= balance.remaining.toLocaleString('en-US') %></span></div>
+                </div>
+                <div class="field req">
+                  <label>السبب</label>
+                  <input type="text" name="reason" required
+                         placeholder="مثال: العميل مش بيرد من ٦ شهور والمبلغ صغير">
+                </div>
+                <button class="btn danger block sm" type="submit">تأكيد الإعدام</button>
+              </form>
+            </details>
+          <% } %>
+
+          <details class="staff-upload" style="margin-top:12px">
+            <summary class="btn ghost sm block">
+              <%= reqRow.discount > 0 ? 'تعديل الخصم' : '+ إضافة خصم' %>
+            </summary>
+            <form method="post" action="<%= adminPath %>/revenue/request/<%= reqRow.id %>/discount"
+                  class="edit-box" style="margin-top:12px">
+              <%- csrfField %>
+              <div class="field">
+                <label>قيمة الخصم</label>
+                <input type="number" name="discount" step="0.01" min="0"
+                       value="<%= reqRow.discount || '' %>">
+              </div>
+              <div class="field">
+                <label>السبب</label>
+                <input type="text" name="discount_reason" value="<%= reqRow.discount_reason || '' %>"
+                       placeholder="مثال: عميل قديم">
+              </div>
+              <button class="btn ghost block sm" type="submit">حفظ</button>
+            </form>
+          </details>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- what was asked for -->
+    <% if (requestServices.length > 1 || reqRow.is_custom) { %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><%= reqRow.is_custom ? 'العميل وصف طلبه' : 'الخدمات المطلوبة' %></h3>
+          <% if (requestServices.length) { %>
+            <span class="chip spacer"><%= requestServices.length %></span>
+          <% } %>
+        </div>
+        <div class="panel-body">
+          <% if (reqRow.is_custom) { %>
+            <div class="alert info" style="margin-top:0">
+              <span>
+                العميل مااختارش خدمة من القائمة — وصف اللي محتاجه بكلامه.
+                اقرا الرسالة وحدّد الخدمة المناسبة، أو غيّر عنوان الطلب.
+              </span>
+            </div>
+          <% } %>
+          <% if (requestServices.length) { %>
+            <ul class="svc-tags">
+              <% requestServices.forEach(rs => { %>
+                <li class="<%= rs.active === 0 ? 'gone' : '' %>">
+                  <%= rs.label ? rs.label.split(' / ')[0] : 'خدمة' %>
+                  <% if (rs.active === 0) { %><small>(مش مفعّلة)</small><% } %>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- expenses -->
+    <% if (showExpenses) { %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>مصاريف الطلب</h3>
+          <% if (expenseTotals && expenseTotals.total > 0) { %>
+            <span class="chip spacer num"><%= expenseTotals.total.toLocaleString('en-US') %></span>
+          <% } %>
+        </div>
+        <div class="panel-body">
+          <% if (expenses.length) { %>
+            <ul class="pay-list">
+              <% expenses.forEach(e => { %>
+                <li class="<%= e.voided_at ? 'voided' : '' %>">
+                  <span class="pay-amount num" style="color:var(--danger)">
+                    <%= e.amount.toLocaleString('en-US') %>
+                  </span>
+                  <span class="pay-meta">
+                    <%= e.reason %>
+                    <br><%= e.categoryLabel %> · <span class="num"><%= e.spent_on %></span>
+                    · <%= e.on_client ? 'على العميل' : 'على المكتب' %>
+                    <br>صرفه <%= e.paid_by %>
+                    <% if(e.custody_id){ %> · <span class="chip brass">من العهدة</span><% } else { %> · <span class="chip">من ماله</span><% } %>
+                    <% if (e.reimbursed_at) { %>
+                      · <span style="color:var(--ok)">اتصرف له ✓</span>
+                    <% } else if (!e.voided_at) { %>
+                      · <span style="color:var(--warn)">لسه مستحق</span>
+                    <% } %>
+                    <% if (e.voided_at) { %>
+                      <br><span style="color:var(--danger)">ملغي — <%= e.void_reason %></span>
+                    <% } %>
+                  </span>
+                  <span class="sort-actions">
+                    <% if (e.receipt_file) { %>
+                      <a class="btn ghost sm" target="_blank" rel="noopener"
+                         href="<%= adminPath %>/expenses/receipt/<%= e.id %>">الإيصال</a>
+                    <% } %>
+                    <% if (!e.voided_at && (e.paid_by_id === user.id || can('expenses.manage'))) { %>
+                      <button class="btn danger sm" type="button" data-void-exp="<%= e.id %>">إلغاء</button>
+                    <% } %>
+                  </span>
+                </li>
+                <% if (!e.voided_at) { %>
+                  <li class="edit-box" hidden id="void-exp-<%= e.id %>" style="border:0">
+                    <form method="post" action="<%= adminPath %>/expenses/<%= e.id %>/void"
+                          style="display:flex;gap:8px;flex-wrap:wrap;width:100%">
+                      <%- csrfField %>
+                      <input type="hidden" name="next" value="<%= adminPath %>/requests/<%= reqRow.id %>">
+                      <input type="text" name="reason" required placeholder="سبب الإلغاء"
+                             style="flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+                      <button class="btn danger sm" type="submit">تأكيد</button>
+                      <button class="btn ghost sm" type="button" data-close-exp="<%= e.id %>">تراجع</button>
+                    </form>
+                  </li>
+                <% } %>
+              <% }) %>
+            </ul>
+
+            <% if (expenseTotals) { %>
+              <div class="pay-totals">
+                <div><span>على المكتب</span><b class="num"><%= expenseTotals.office.toLocaleString('en-US') %></b></div>
+                <div><span>على العميل</span><b class="num"><%= expenseTotals.onClient.toLocaleString('en-US') %></b></div>
+                <% if (expenseTotals.owedToStaff > 0) { %>
+                  <div class="owing">
+                    <span>مستحق للموظفين</span>
+                    <b class="num"><%= expenseTotals.owedToStaff.toLocaleString('en-US') %></b>
+                  </div>
+                <% } %>
+                <% if (showMoney && balance) { %>
+                  <div class="<%= balance.paid - expenseTotals.office > 0 ? 'settled' : 'owing' %>">
+                    <span>صافي الطلب</span>
+                    <b class="num"><%= (balance.paid - expenseTotals.office).toLocaleString('en-US') %></b>
+                  </div>
+                <% } %>
+              </div>
+            <% } %>
+          <% } else { %>
+            <p style="color:var(--muted);margin:0 0 14px;font-size:13.5px">مفيش مصاريف على الطلب ده.</p>
+          <% } %>
+
+          <% if (can('expenses.add')) { %>
+            <details class="staff-upload">
+              <summary class="btn ghost sm block">+ تسجيل مصروف</summary>
+              <form method="post" action="<%= adminPath %>/expenses/request/<%= reqRow.id %>"
+                    enctype="multipart/form-data" class="edit-box" style="margin-top:12px">
+                <%- csrfField %>
+                <div class="two-col">
+                  <div class="field req">
+                    <label>المبلغ</label>
+                    <input type="number" name="amount" step="0.01" min="0.01" required>
+                  </div>
+                  <div class="field req">
+                    <label>التاريخ</label>
+                    <input type="date" name="spent_on" required value="<%= today %>">
+                  </div>
+                </div>
+                <div class="field req">
+                  <label>على إيه بالظبط؟</label>
+                  <input type="text" name="reason" required
+                         placeholder="مثال: رسوم استخراج مستخرج رسمي من الشهر العقاري">
+                </div>
+                <div class="field">
+                  <label>النوع</label>
+                  <select name="category">
+                    <% Object.entries(expenseCategories).forEach(([key, c]) => { %>
+                      <option value="<%= key %>"><%= c.icon %> <%= c.ar %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>مصدر المبلغ</label>
+                  <select name="custody_id">
+                    <option value="">دفعته من مالي — مستحق لي</option>
+                    <% availableCustodies.forEach(c => { %><option value="<%= c.id %>">من عهدة: <%= c.purpose %> — متبقي <%= c.remaining.toLocaleString('en-US') %></option><% }) %>
+                  </select>
+                  <div class="help">اختيار عهدة يخصم المصروف من رصيدها ولا يسجله كدين مستحق للموظف.</div>
+                </div>
+                <label class="check">
+                  <input type="checkbox" name="on_client" value="1">
+                  <span class="txt">
+                    على العميل
+                    <small>يعني الأتعاب مغطياه — مش هينقص من صافي المكتب.</small>
+                  </span>
+                </label>
+                <div class="field">
+                  <label>صورة الإيصال</label>
+                  <input type="file" name="receipt" accept="image/*,application/pdf">
+                </div>
+                <button class="btn brass block" type="submit">حفظ المصروف</button>
+              </form>
+            </details>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- destinations -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>جهات خارجية</h3>
+        <span class="chip spacer">
+          <%= requestDestinations.filter(d => d.status === 'pending').length %> معلّق
+        </span>
+      </div>
+      <div class="panel-body">
+        <% if (requestDestinations.length) { %>
+          <ul class="dest-list" style="margin-bottom:14px">
+            <% requestDestinations.forEach(d => { %>
+              <li style="padding:9px 0;<%= d.status !== 'pending' ? 'opacity:.6' : '' %>">
+                <span class="dot" style="background:<%= d.colour %>"></span>
+                <span class="dest-name">
+                  <%= d.destination %>
+                  <% if (d.task) { %><br><span style="font-size:12.5px;color:var(--muted)"><%= d.task %></span><% } %>
+                  <% if (d.status !== 'pending') { %>
+                    <br><span style="font-size:12px;color:var(--ok)">
+                      ✓ <%= d.done_by %> · <span class="num"><%= d.done_on %></span>
+                    </span>
+                  <% } %>
+                </span>
+                <form method="post" action="<%= adminPath %>/errands/item/<%= d.id %>/done">
+                  <%- csrfField %>
+                  <input type="hidden" name="next" value="<%= adminPath %>/requests/<%= reqRow.id %>">
+                  <button class="btn ghost sm" type="submit">
+                    <%= d.status === 'pending' ? 'تم' : 'رجّعه' %>
+                  </button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0 0 12px;font-size:13.5px">
+            الطلب ده مش محتاج حاجة من أي جهة خارجية.
+          </p>
+        <% } %>
+
+        <% if (allDestinations.length) { %>
+          <form method="post" action="<%= adminPath %>/errands/request/<%= reqRow.id %>/add">
+            <%- csrfField %>
+            <div class="field" style="margin-bottom:8px">
+              <select name="destination_id" required>
+                <% allDestinations.forEach(d => { %>
+                  <option value="<%= d.id %>"><%= d.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <input type="text" name="task" placeholder="المطلوب من الجهة دي">
+            </div>
+            <button class="btn ghost block sm" type="submit">إضافة جهة</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- special request -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>طلب خاص</h3>
+        <span class="chip spacer">داخلي</span>
+      </div>
+      <div class="panel-body">
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/special">
+          <%- csrfField %>
+          <div class="field" style="margin-bottom:10px">
+            <textarea name="special_request" style="min-height:90px"
+                      placeholder="أي حاجة العميل طلبها بره الخدمة الأساسية — اكتبها هنا بحرية."><%= reqRow.special_request || '' %></textarea>
+            <div class="help">لو العميل عايز أكتر من حاجة، اكتبها هنا وحوّلها خطوات تنفيذ تحت.</div>
+          </div>
+          <button class="btn ghost block sm" type="submit">حفظ</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- deadline -->
+    <div class="panel">
+      <div class="panel-head"><h3>موعد التسليم</h3></div>
+      <div class="panel-body">
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/deadline">
+          <%- csrfField %>
+          <div class="field" style="margin-bottom:10px">
+            <input type="date" name="deadline" value="<%= reqRow.deadline || '' %>">
+            <div class="help">ده الموعد اللي اتقال للعميل. أي تعديل بيتسجّل باسمك في سجل الطلب.</div>
+          </div>
+          <button class="btn ghost block" type="submit">حفظ الموعد</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>الإصدار والانتهاء والتجديد</h3></div>
+      <form class="panel-body" method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/renewal-dates"><%-csrfField%>
+        <div class="field"><label>تاريخ الإصدار</label><input type="date" name="issued_on" value="<%=reqRow.issued_on||''%>"></div>
+        <div class="field"><label>تاريخ الانتهاء</label><input type="date" name="expires_on" value="<%=reqRow.expires_on||''%>"></div>
+        <div class="field"><label>موعد التجديد</label><input type="date" name="renewal_on" value="<%=reqRow.renewal_on||''%>"></div>
+        <button class="btn ghost block">حفظ المواعيد</button>
+      </form>
+    </div>
+
+    <!-- assignees -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>فريق الطلب</h3>
+        <span class="chip spacer"><%= assignees.length %></span>
+      </div>
+      <div class="panel-body">
+        <% if (assignees.length) { %>
+          <div class="assignees" style="margin-bottom:14px">
+            <% assignees.forEach(a => { %>
+              <span class="assignee">
+                <%= a.display_name %>
+                <% if (mayUnassign) { %>
+                  <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/unassign" style="display:inline"
+                        data-confirm="تشيل <%= a.display_name %> من الطلب؟ مش هيقدر يشوفه تاني.">
+                    <%- csrfField %>
+                    <input type="hidden" name="user_id" value="<%= a.user_id %>">
+                    <button class="x" type="submit" aria-label="شيل">&times;</button>
+                  </form>
+                <% } %>
+              </span>
+            <% }) %>
+          </div>
+          <p class="help" style="margin:0 0 12px">
+            <% assignees.forEach(a => { %>
+              <span style="display:block"><%= a.display_name %> — عيّنه <%= a.assigned_by %> · <%= fmtDate(a.created_at) %></span>
+            <% }) %>
+          </p>
+          <%if(mayAssign&&assignees.length>1){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/contributions"><%-csrfField%><p><b>نسبة مساهمة كل موظف في التقييم</b> — يجب أن يكون الإجمالي 100%</p><%assignees.forEach(a=>{%><label style="display:flex;align-items:center;gap:8px"><span style="flex:1"><%=a.display_name%></span><input type="hidden" name="user_ids" value="<%=a.user_id%>"><input type="number" min="0" max="100" step="1" name="contribution" value="<%=a.contribution_percent||Math.round(100/assignees.length)%>" style="width:90px">%</label><%})%><button class="btn ghost block">حفظ نسب المساهمة</button></form><%}%>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0 0 12px">لم يتم تعيين موظفين على الطلب بعد.</p>
+        <% } %>
+
+        <% if (mayAssign) { %>
+          <% const free = lawyers.filter(l => !assignees.some(a => a.user_id === l.id)); %>
+          <% if (free.length) { %>
+            <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/assign" style="display:flex;gap:8px">
+              <%- csrfField %>
+              <select name="user_id" required style="flex:1;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;min-height:44px">
+                <% const roleName={admin:'أدمن',supervisor:'مشرف',lawyer:'محامي',accountant:'محاسب'}; free.forEach(l => { %><option value="<%= l.id %>"><%= l.display_name %> — <%= roleName[l.role]||l.role %><%= l.assign_locked?' (موقوف عن التعيين)':'' %></option><% }) %>
+              </select>
+              <button class="btn sm" type="submit">تعيين</button>
+            </form>
+          <% } else if (lawyers.length) { %>
+            <p style="color:var(--muted);margin:0;font-size:13.5px">كل الموظفين النشطين معيّنون على الطلب.</p>
+          <% } else { %>
+            <p style="color:var(--muted);margin:0;font-size:13.5px">لا توجد حسابات موظفين نشطة.</p>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- requirements -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>المطلوب من العميل</h3>
+        <span class="chip brass spacer">العميل بيشوفها</span>
+      </div>
+      <div class="panel-body">
+        <% if (requirements.length) { %>
+          <ul class="checklist" style="margin-bottom:12px">
+            <% requirements.forEach(rq => { %>
+              <li class="<%= rq.status === 'received' ? 'done' : '' %>">
+                <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/requirements/<%= rq.id %>/toggle">
+                  <%- csrfField %>
+                  <button class="tick <%= rq.status === 'received' ? 'on' : '' %>" type="submit"
+                          aria-label="<%= rq.status === 'received' ? 'رجّع لمطلوب' : 'علّم كمستلَم' %>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  </button>
+                </form>
+                <span class="txt">
+                  <span class="t"><%= rq.title %></span>
+                  <span class="m">
+                    طلبه <%= rq.created_by %>
+                    <% if (rq.status === 'received') { %>· استلمه <%= rq.received_by %><% } %>
+                  </span>
+                </span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0 0 12px;font-size:13.5px">مفيش مطلوب من العميل دلوقتي.</p>
+        <% } %>
+
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/requirements" style="display:flex;gap:8px">
+          <%- csrfField %>
+          <input type="text" name="title" placeholder="مثال: صورة بطاقة الرقم القومي" required
+                 style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;min-height:44px">
+          <button class="btn sm" type="submit">إضافة</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- todos -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>خطوات التنفيذ</h3>
+        <span class="chip spacer">داخلي</span>
+      </div>
+      <div class="panel-body">
+        <% if (todos.length) { %>
+          <div style="margin-bottom:12px">
+            <div class="progress"><i style="width:<%= Math.round(doneTodos / todos.length * 100) %>%"></i></div>
+            <div class="help" style="margin-top:5px"><%= doneTodos %> من <%= todos.length %> خطوة</div>
+          </div>
+
+          <ul class="sortable checklist" data-reorder-url="<%= adminPath %>/requests/<%= reqRow.id %>/todos/reorder">
+            <% todos.forEach(t => { %>
+              <li class="sort-item todo-row <%= t.done ? 'done' : '' %>" data-id="<%= t.id %>">
+                <span class="grip" aria-hidden="true" title="اسحب للترتيب">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                </span>
+                <span class="move-btns">
+                  <button type="button" data-move="up" aria-label="فوق">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+                  </button>
+                  <button type="button" data-move="down" aria-label="تحت">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                </span>
+
+                <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/todos/<%= t.id %>/toggle" style="flex:none">
+                  <%- csrfField %>
+                  <input type="hidden" name="done_on" class="todo-date-input" value="<%= today %>">
+                  <button class="tick <%= t.done ? 'on' : '' %>" type="submit" aria-label="تغيير الحالة">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  </button>
+                </form>
+
+                <span class="txt">
+                  <span class="t"><%= t.title %></span>
+                  <span class="m">
+                    <%= t.created_by %>
+                    <% if (t.done) { %>
+                      · خلّصها <%= t.done_by %>
+                      <% if (t.done_on) { %>
+                        · <button type="button" class="todo-date" data-todo="<%= t.id %>"><%= t.done_on %></button>
+                      <% } %>
+                    <% } %>
+                  </span>
+                </span>
+
+                <span class="sort-actions">
+                  <button class="btn ghost sm" type="button" data-edit-todo="<%= t.id %>">تعديل</button>
+                  <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/todos/<%= t.id %>/delete">
+                    <%- csrfField %>
+                    <button class="btn danger sm" type="submit">حذف</button>
+                  </form>
+                </span>
+              </li>
+              <li style="padding:0" data-no-drag>
+                <div class="edit-box" hidden id="todo-date-<%= t.id %>">
+                  <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/todos/<%= t.id %>/date"
+                        style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <%- csrfField %>
+                    <label style="font-size:13.5px;font-weight:700;color:var(--ink)">اتنفذت في</label>
+                    <input type="date" name="done_on" value="<%= t.done_on || today %>" required
+                           style="padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:16px;min-height:42px">
+                    <button class="btn ghost sm" type="button" data-set-date="<%= t.id %>" data-day="0">النهاردة</button>
+                    <button class="btn ghost sm" type="button" data-set-date="<%= t.id %>" data-day="-1">امبارح</button>
+                    <button class="btn brass sm" type="submit">حفظ</button>
+                    <button class="btn ghost sm" type="button" data-close-date="<%= t.id %>">إلغاء</button>
+                  </form>
+                </div>
+                <div class="edit-box" hidden id="todo-edit-<%= t.id %>">
+                  <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/todos/<%= t.id %>/edit"
+                        style="display:flex;gap:8px;flex-wrap:wrap">
+                    <%- csrfField %>
+                    <input type="text" name="title" value="<%= t.title %>" required
+                           style="flex:1;min-width:160px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;min-height:44px">
+                    <button class="btn brass sm" type="submit">حفظ</button>
+                    <button class="btn ghost sm" type="button" data-close-todo="<%= t.id %>">إلغاء</button>
+                  </form>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p style="color:var(--muted);margin:0 0 12px;font-size:13.5px">مفيش خطوات لسه.</p>
+        <% } %>
+
+        <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/todos" style="display:flex;gap:8px">
+          <%- csrfField %>
+          <input type="text" name="title" placeholder="خطوة جديدة…" required
+                 style="flex:1;min-width:0;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-size:16px;min-height:44px">
+          <button class="btn sm" type="submit">إضافة</button>
+        </form>
+      </div>
+    </div>
+
+    <% if (mayArchive) { %>
+      <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/archive"
+            data-confirm="<%= reqRow.archived_at ? 'ترجّع الطلب من الأرشيف؟' : 'تأرشف الطلب؟ هيختفي من القائمة الأساسية وتقدر ترجّعه أي وقت.' %>">
+        <%- csrfField %>
+        <button class="btn ghost block" type="submit">
+          <%= reqRow.archived_at ? 'رجّع من الأرشيف' : 'أرشفة الطلب' %>
+        </button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  // Reply boxes: replying to a reply pre-fills an @mention so the thread stays
+  // two levels deep without losing who was being answered.
+  // Completion dates: a quick "today / yesterday" pair covers almost every
+  // case, with a date field for the rest.
+  document.addEventListener('click', function (e) {
+    var open = e.target.closest('.todo-date');
+    if (open) {
+      var box = document.getElementById('todo-date-' + open.getAttribute('data-todo'));
+      if (box) box.hidden = !box.hidden;
+    }
+    var close = e.target.closest('[data-close-date]');
+    if (close) {
+      var b = document.getElementById('todo-date-' + close.getAttribute('data-close-date'));
+      if (b) b.hidden = true;
+    }
+    var quick = e.target.closest('[data-set-date]');
+    if (quick) {
+      var form = quick.closest('form');
+      var d = new Date();
+      d.setDate(d.getDate() + Number(quick.getAttribute('data-day')));
+      form.querySelector('input[type=date]').value = d.toISOString().slice(0, 10);
+    }
+  });
+
+  // Copy buttons: the reference is dictated over the phone many times a day.
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    var value = btn.getAttribute('data-copy');
+    var done = function () {
+      var old = btn.textContent;
+      btn.textContent = 'اتنسخ ✓';
+      setTimeout(function () { btn.textContent = old; }, 1600);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(value).then(done, done);
+    else {
+      var t = document.createElement('textarea');
+      t.value = value; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } catch (err) {}
+      document.body.removeChild(t); done();
+    }
+  });
+
+  // Void confirmation, and hiding the reference field for methods that have no
+  // transaction number (cash).
+  document.addEventListener('click', function (e) {
+    var v = e.target.closest('[data-void]');
+    if (v) {
+      var box = document.getElementById('void-' + v.getAttribute('data-void'));
+      if (box) { box.hidden = !box.hidden; if (!box.hidden) box.querySelector('input').focus(); }
+    }
+    var cv = e.target.closest('[data-close-void]');
+    if (cv) {
+      var b = document.getElementById('void-' + cv.getAttribute('data-close-void'));
+      if (b) b.hidden = true;
+    }
+  });
+
+  var payMethod = document.getElementById('payMethod');
+  var refField = document.getElementById('refField');
+  if (payMethod && refField) {
+    var syncRef = function () {
+      var opt = payMethod.options[payMethod.selectedIndex];
+      refField.hidden = opt.getAttribute('data-ref') !== '1';
+    };
+    payMethod.addEventListener('change', syncRef);
+    syncRef();
+  }
+
+  // Share: the absolute URL is built in the browser so it is correct whether
+  // the office is on the live domain or a staging one.
+  var shareBtn = document.getElementById('shareBtn');
+  var shareBox = document.getElementById('shareBox');
+  var shareLink = document.getElementById('shareLink');
+
+  if (shareBtn && shareBox && shareLink) {
+    var absolute = window.location.origin + window.location.pathname;
+    shareLink.value = absolute;
+
+    var wa = document.getElementById('shareWa');
+    if (wa) {
+      var text = '<%= reqRow.ref %> — <%= (reqRow.title || reqRow.name).replace(/'/g, "") %>';
+      wa.href = 'https://wa.me/?text=' + encodeURIComponent(text + '\n' + absolute);
+    }
+
+    shareBtn.addEventListener('click', function () {
+      shareBox.hidden = !shareBox.hidden;
+      if (!shareBox.hidden) { shareLink.focus(); shareLink.select(); }
+    });
+
+    document.getElementById('shareCopy').addEventListener('click', function () {
+      var btn = this;
+      var done = function () {
+        btn.textContent = 'اتنسخ ✓';
+        setTimeout(function () { btn.textContent = 'نسخ اللينك'; }, 1600);
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(shareLink.value).then(done, done);
+      else { shareLink.select(); try { document.execCommand('copy'); } catch (e) {} done(); }
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var v = e.target.closest('[data-void-exp]');
+    if (v) {
+      var box = document.getElementById('void-exp-' + v.getAttribute('data-void-exp'));
+      if (box) { box.hidden = !box.hidden; if (!box.hidden) box.querySelector('input[type=text]').focus(); }
+    }
+    var c = e.target.closest('[data-close-exp]');
+    if (c) {
+      var b = document.getElementById('void-exp-' + c.getAttribute('data-close-exp'));
+      if (b) b.hidden = true;
+    }
+  });
+
+  var titleBtn = document.getElementById('editTitleBtn');
+  var titleForm = document.getElementById('titleForm');
+  var titleLine = document.querySelector('.req-title-line');
+  if (titleBtn && titleForm) {
+    titleBtn.addEventListener('click', function () {
+      titleForm.hidden = false;
+      titleLine.hidden = true;
+      titleForm.querySelector('input').focus();
+    });
+    document.getElementById('cancelTitleBtn').addEventListener('click', function () {
+      titleForm.hidden = true;
+      titleLine.hidden = false;
+    });
+  }
+
+  // The operational column used to show every form at once. Keep the existing
+  // forms and their validation intact, but reveal only the action selected by
+  // the employee. The hash remembers the choice after a save/redirect.
+  (function () {
+    var picker = document.getElementById('requestActionPicker');
+    if (!picker) return;
+    var host = picker.closest('.action-picker-panel').parentElement;
+    var panels = Array.from(host.children).filter(function (p) {
+      if (!p.classList || !p.classList.contains('panel') || p.classList.contains('action-picker-panel')) return false;
+      var h = p.querySelector(':scope > .panel-head h3');
+      if (!h) return false;
+      var t = h.textContent.trim().replace(/^🔴\s*/, '');
+      return ['إدارة الطلب','الأتعاب','الأولوية','طلب عاجل','الدفعات','الخدمات المطلوبة','العميل وصف طلبه','مصاريف الطلب','جهات خارجية','طلب خاص','موعد التسليم','فريق الطلب','المطلوب من العميل','خطوات التنفيذ'].includes(t);
+    });
+    function key(panel) {
+      var t = panel.querySelector(':scope > .panel-head h3').textContent.trim().replace(/^🔴\s*/, '');
+      if (t === 'طلب عاجل') return 'الأولوية';
+      if (t === 'العميل وصف طلبه') return 'الخدمات المطلوبة';
+      return t;
+    }
+    function show(value) {
+      panels.forEach(function (p) { p.hidden = key(p) !== value; });
+      if (value) location.hash = 'action-' + encodeURIComponent(value);
+    }
+    var saved = location.hash.indexOf('#action-') === 0 ? decodeURIComponent(location.hash.slice(8)) : '';
+    if (Array.from(picker.options).some(function(o){return o.value===saved;})) picker.value=saved;
+    show(picker.value);
+    picker.addEventListener('change', function () { show(this.value); if(this.value){var p=panels.find(function(x){return key(x)===picker.value;}); if(p)p.scrollIntoView({behavior:'smooth',block:'start'});} });
+  })();
+
+  document.addEventListener('click', function (e) {
+    var ef = e.target.closest('[data-edit-fee]');
+    if (ef) {
+      var fb = document.getElementById('fee-edit-' + ef.getAttribute('data-edit-fee'));
+      if (fb) { fb.hidden = !fb.hidden; if (!fb.hidden) fb.querySelector('input').focus(); }
+    }
+    var cf = e.target.closest('[data-close-fee]');
+    if (cf) {
+      var fx = document.getElementById('fee-edit-' + cf.getAttribute('data-close-fee'));
+      if (fx) fx.hidden = true;
+    }
+    var et = e.target.closest('[data-edit-todo]');
+    if (et) {
+      var box = document.getElementById('todo-edit-' + et.getAttribute('data-edit-todo'));
+      if (box) { box.hidden = !box.hidden; if (!box.hidden) box.querySelector('input').focus(); }
+    }
+    var ct = e.target.closest('[data-close-todo]');
+    if (ct) {
+      var cb = document.getElementById('todo-edit-' + ct.getAttribute('data-close-todo'));
+      if (cb) cb.hidden = true;
+    }
+    var b = e.target.closest('[data-reply]');
+    if (!b) return;
+    var form = document.getElementById('rf' + b.getAttribute('data-reply'));
+    if (!form) return;
+    form.classList.add('open');
+    var input = form.querySelector('input[name=body]');
+    var mention = b.getAttribute('data-mention');
+    if (mention && !input.value) input.value = '@' + mention + ' ';
+    input.focus();
+  });
+</script>
+
+<% if (reqRow.archived_at && can('requests.erase')) { %>
+  <div class="panel" style="border-color:#f0c9c6">
+    <div class="panel-head" style="background:var(--danger-bg)">
+      <h3 style="color:#8f2f2b">حذف الطلب نهائياً</h3>
+    </div>
+    <div class="panel-body">
+      <div class="alert warn" style="margin-top:0">
+        <span>
+          <b>ده بيمسح فعلاً، ومفيش تراجع ولا سلة محذوفات.</b>
+          <br><br>
+          هيتشال الطلب وكل تعليقاته ومستنداته وخطواته
+          <% if (showMoney && balance && balance.paid > 0) { %>
+            — <b>وتحصيله (<span class="num"><%= balance.paid.toLocaleString('en-US') %></span>)
+            هينزل من أرقام الإيرادات</b>
+          <% } %>
+          — <b>والصور من على السيرفر كمان</b>.
+          <br><br>
+          استخدمها للطلبات اللي مكانش المفروض تتسجّل: عميل رجعت له فلوسه،
+          أو رقم اتحط على الطلب الغلط، أو تسجيل مكرر.
+          <b>لو الطلب حقيقي واتلغى بس</b>، سيبه في الأرشيف —
+          الأرقام بتفضل مقروءة كده.
+        </span>
+      </div>
+
+      <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/erase">
+        <%- csrfField %>
+        <div class="field req">
+          <label>سبب الحذف</label>
+          <input type="text" name="reason" required
+                 placeholder="مثال: العميل رجعت له فلوسه بالكامل · أو: تسجيل مكرر">
+          <div class="help">بيتسجّل في سجل النشاط — عشان مراجعة الإيرادات بعدين تفهم.</div>
+        </div>
+        <div class="field req">
+          <label>اكتب رقم الطلب للتأكيد</label>
+          <input type="text" name="confirm_ref" required dir="ltr" style="text-align:left"
+                 autocomplete="off" placeholder="<%= reqRow.ref %>">
+          <div class="help">عشان تتأكد إنك واقف على الطلب الصح.</div>
+        </div>
+        <button class="btn danger" type="submit">حذف الطلب نهائياً</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

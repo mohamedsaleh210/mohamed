@@ -1,0 +1,24 @@
+SANAD v16.5.0 RESPONSIVE HARDENING — VERIFICATION SUMMARY
+
+PASS  JavaScript syntax (all project .js files excluding node_modules)
+PASS  EJS delimiter balance
+PASS  Responsive CSS primitives
+PASS  Chromium responsive fixture checks at 320,360,375,390,393,414,430,768,1024,1366
+PASS  Chromium checks in RTL and LTR
+PASS  No document-level horizontal overflow in tested fixtures
+PASS  Public mobile drawer within viewport
+PASS  Admin mobile drawer within viewport
+PASS  Gerwani tenant DB SHA-256 unchanged
+PASS  Core operational table row counts unchanged
+PASS  Intentional demo marketing visibility cleanup only
+
+ENVIRONMENT LIMITATION
+NOT RUN: full npm test suite, because native dependency better-sqlite3 did not complete installation in the build environment. This is not recorded as a test pass.
+
+KNOWN STRUCTURAL FOLLOW-UPS
+- office_branch_id visibility isolation by role
+- central appointments booking flow
+- production tenant reverse-proxy routing
+- richer consultation entity/model
+- employee/branch booking availability
+- complete pagination/audit coverage in legacy modules

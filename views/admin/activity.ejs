@@ -1,0 +1,56 @@
+<% pageTitle = 'سجل النشاط' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'سجل النشاط' }] }) %>
+
+<div class="page-head">
+  <h1>سجل النشاط</h1>
+  <p class="sub">كل تعديل في النظام، ومين عمله وامتى.</p>
+</div>
+
+<form class="toolbar" method="get" action="<%= adminPath %>/activity">
+  <select name="action" aria-label="نوع النشاط">
+    <option value="">كل الأنواع</option>
+    <option value="request" <%= action === 'request' ? 'selected' : '' %>>الطلبات</option>
+    <option value="category" <%= action === 'category' ? 'selected' : '' %>>الأقسام</option>
+    <option value="service" <%= action === 'service' ? 'selected' : '' %>>الخدمات</option>
+    <option value="social" <%= action === 'social' ? 'selected' : '' %>>حسابات التواصل</option>
+    <option value="user" <%= action === 'user' ? 'selected' : '' %>>الموظفين</option>
+    <option value="settings" <%= action === 'settings' ? 'selected' : '' %>>الإعدادات</option>
+    <option value="auth" <%= action === 'auth' ? 'selected' : '' %>>الدخول والخروج</option>
+  </select>
+  <button class="btn sm" type="submit">تصفية</button>
+  <% if (action) { %><a class="btn ghost sm" href="<%= adminPath %>/activity">مسح</a><% } %>
+</form>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (entries.length) { %>
+      <table class="tbl">
+        <thead><tr><th>مين</th><th>عمل إيه</th><th>على إيه</th><th>IP والموقع</th><th>امتى</th></tr></thead>
+        <tbody>
+          <% entries.forEach(a => { %>
+            <tr>
+              <td data-label="مين"><strong><%= a.user_label || '—' %></strong></td>
+              <td data-label="عمل إيه"><%= a.details || a.action %></td>
+              <td data-label="على إيه">
+                <% if (a.entity_type === 'request' && a.entity_id) { %>
+                  <a class="ref num" href="<%= adminPath %>/requests/<%= a.entity_id %>"><%= a.entity_label || a.entity_id %></a>
+                <% } else if (a.entity_label) { %>
+                  <span class="chip"><%= a.entity_label %></span>
+                <% } else { %>—<% } %>
+              </td>
+              <td data-label="IP والموقع"><span class="num"><%= a.ip || '—' %></span><% if(a.latitude!=null&&a.longitude!=null){ %><br><a class="location-link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=<%=a.latitude%>,<%=a.longitude%>">📍 فتح موقع تنفيذ الإجراء</a><% } %></td>
+              <td data-label="امتى" style="color:var(--muted);font-size:13px"><%= fmtDateTime(a.created_at) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty"><span class="big">🕓</span><p>مفيش نشاط مسجّل بالتصفية دي.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

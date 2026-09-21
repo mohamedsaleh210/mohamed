@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>دخول الإدارة — سند</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin">
+
+<div class="login-page">
+  <div class="login-card">
+    <span class="seal"><span>س</span></span>
+    <h1>لوحة إدارة سند</h1>
+    <p class="sub">سجّل الدخول لمتابعة الطلبات</p>
+
+    <% if (error) { %>
+      <div class="alert err"><span><%= error %></span></div>
+    <% } %>
+    <% if (msg === 'disabled') { %>
+      <div class="alert warn"><span>الحساب اتوقف. كلّم الأدمن.</span></div>
+    <% } %>
+    <% if (msg === 'reset_done') { %>
+      <div class="alert ok"><span>تم تغيير كلمة المرور. سجّل دخولك بيها دلوقتي.</span></div>
+    <% } %>
+
+    <form method="post" action="<%= adminPath %>/login" id="staffLoginForm">
+      <%- csrfField %>
+      <input type="hidden" name="latitude" id="loginLatitude">
+      <input type="hidden" name="longitude" id="loginLongitude">
+      <input type="hidden" name="location_accuracy" id="loginAccuracy">
+      <input type="hidden" name="location_status" id="loginLocationStatus" value="not_requested">
+      <div class="field">
+        <label for="username">اسم المستخدم</label>
+        <input id="username" name="username" type="text" required autocomplete="username"
+               autocapitalize="none" spellcheck="false" dir="ltr" style="text-align:left">
+      </div>
+      <div class="field">
+        <label for="password">كلمة السر</label>
+        <input id="password" name="password" type="password" required
+               autocomplete="current-password" dir="ltr" style="text-align:left">
+      </div>
+      <button class="btn brass block" type="submit" id="loginButton">دخول</button>
+      <div class="help" style="text-align:center;margin-top:10px">سيطلب المتصفح السماح بتحديد موقع الدخول لتوثيقه في سجل الأمان.</div>
+    </form>
+
+    <p style="text-align:center;margin:16px 0 0">
+      <a href="<%= adminPath %>/forgot" style="color:var(--brass-deep);font-size:14px;font-weight:700">
+        نسيت كلمة المرور؟
+      </a>
+    </p>
+
+    <p style="text-align:center;margin:18px 0 0">
+      <a href="/" style="color:var(--muted);font-size:14px">← رجوع للموقع</a>
+    </p>
+  </div>
+</div>
+
+<script>
+(() => {
+  const form = document.getElementById('staffLoginForm');
+  const button = document.getElementById('loginButton');
+  let ready = false;
+  form.addEventListener('submit', (event) => {
+    if (ready) return;
+    event.preventDefault();
+    button.disabled = true;
+    button.textContent = 'جارٍ تحديد الموقع…';
+    const finish = (status, position) => {
+      document.getElementById('loginLocationStatus').value = status;
+      if (position) {
+        document.getElementById('loginLatitude').value = position.coords.latitude;
+        document.getElementById('loginLongitude').value = position.coords.longitude;
+        document.getElementById('loginAccuracy').value = position.coords.accuracy || '';
+      }
+      ready = true;
+      form.submit();
+    };
+    if (!navigator.geolocation) return finish('unsupported');
+    navigator.geolocation.getCurrentPosition(
+      (position) => finish('captured', position),
+      (error) => finish(error.code === 1 ? 'denied' : error.code === 3 ? 'timeout' : 'unavailable'),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  });
+})();
+</script>
+
+</body>
+</html>

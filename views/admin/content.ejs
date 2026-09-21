@@ -1,0 +1,465 @@
+<% pageTitle = 'الأقسام والخدمات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الأقسام والخدمات' }] }) %>
+
+<%
+  const okMsgs = {
+    cat_added: 'تم إضافة القسم.',
+    cat_saved: 'تم حفظ تعديلات القسم.',
+    cat_deleted: 'تم حذف القسم.',
+    svc_added: 'تم إضافة الخدمة.',
+    svc_saved: 'تم حفظ تعديلات الخدمة.',
+    svc_deleted: 'تم حذف الخدمة.',
+    svc_shown: 'الخدمة ظاهرة على الموقع دلوقتي.',
+    svc_hidden: 'الخدمة اتخفت من الموقع.',
+  };
+  const n = query.n;
+  const nm = query.name ? decodeURIComponent(query.name) : '';
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>الأقسام والخدمات</h1>
+    <p class="sub">رتّب الأقسام والخدمات بالسحب على الكمبيوتر أو بالأسهم على الموبايل.</p>
+  </div>
+  <div class="btn-row">
+    <a class="btn brass" href="<%= adminPath %>/content/services/new">+ خدمة جديدة</a>
+  </div>
+</div>
+
+<%- include('../partials/undo_banner') %>
+
+<%
+  const pageErrors = {
+    page_name: 'اسم الصفحة مطلوب بالعربي والإنجليزي.',
+    page_slug: 'المسار مطلوب — حروف إنجليزية وأرقام وشرطات.',
+    page_default: 'الصفحة الافتراضية مينفعش تتحذف — هي اللي بتستقبل الأقسام.',
+    page_has_categories: 'الصفحة فيها أقسام. انقلها أو احذفها الأول.',
+  };
+  const pageMsgs = {
+    page_created: 'تم إنشاء الصفحة.',
+    page_saved: 'تم حفظ الصفحة.',
+    page_deleted: 'تم حذف الصفحة.',
+    moved: 'تم نقل القسم.',
+  };
+%>
+
+<% if (msg && pageMsgs[msg]) { %><div class="alert ok"><span><%= pageMsgs[msg] %></span></div><% } %>
+<% if (err && pageErrors[err]) { %><div class="alert err"><span><%= pageErrors[err] %></span></div><% } %>
+
+<!-- ============================================================ pages -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>الصفحات</h3>
+    <span class="chip spacer"><%= pages.length %></span>
+  </div>
+  <div class="panel-body">
+    <p class="help" style="margin:0 0 14px">
+      كل صفحة قسم كبير ليه بانره ولونه — زي «جامعات» أو «تأشيرات».
+      الزائر اللي داخل منها بيحس إنه في موقع مخصص للحاجة اللي جاي عشانها.
+    </p>
+
+    <div class="page-tabs">
+      <% pages.forEach(p => { %>
+        <a href="<%= adminPath %>/content?page=<%= p.id %>"
+           class="page-tab <%= current && current.id === p.id ? 'on' : '' %> <%= p.active ? '' : 'off' %>"
+           style="--tab: <%= p.colour %>">
+          <span class="pt-dot" style="background:<%= p.colour %>"></span>
+          <span class="pt-name"><%= p.name_ar %></span>
+          <span class="pt-count"><%= p.category_count %></span>
+        </a>
+      <% }) %>
+      <button class="page-tab add" type="button" data-toggle="newPage">+ صفحة جديدة</button>
+    </div>
+
+    <div class="edit-box" id="newPage" hidden style="margin-top:14px">
+      <form method="post" action="<%= adminPath %>/content/pages/new">
+        <%- csrfField %>
+        <div class="two-col">
+          <div class="field req">
+            <label>الاسم بالعربي</label>
+            <input type="text" name="name_ar" required placeholder="مثال: تأشيرات وإقامات">
+          </div>
+          <div class="field req">
+            <label>الاسم بالإنجليزي</label>
+            <input type="text" name="name_en" required dir="ltr" style="text-align:left"
+                   placeholder="Visas and residency">
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>المسار في الرابط</label>
+            <input type="text" name="slug" dir="ltr" style="text-align:left" placeholder="visas">
+            <div class="help">هيبقى /p/visas — سيبه فاضي ويتولّد من الاسم الإنجليزي.</div>
+          </div>
+          <div class="field">
+            <label>اللون</label>
+            <input type="color" name="colour" value="#2f7bbf" style="height:46px;padding:4px">
+          </div>
+        </div>
+        <div class="field">
+          <label>سطر تعريفي</label>
+          <input type="text" name="tagline_ar" placeholder="إجراءات السفر والإقامة من أول خطوة">
+        </div>
+        <div class="field">
+          <label>مقدمة الصفحة</label>
+          <textarea name="intro_ar" style="min-height:70px"></textarea>
+        </div>
+        <label class="check">
+          <input type="checkbox" name="show_in_menu" value="1" checked>
+          <span class="txt">تظهر في قائمة الموقع</span>
+        </label>
+        <button class="btn brass" type="submit" style="margin-top:10px">إنشاء الصفحة</button>
+      </form>
+    </div>
+
+    <% if (current) { %>
+      <div class="page-summary" style="border-color:<%= current.colour %>">
+        <div class="ps-head">
+          <div>
+            <b><%= current.name_ar %></b>
+            <span class="num" style="color:var(--muted);font-size:13px">/p/<%= current.slug %></span>
+          </div>
+          <div class="btn-row">
+            <a class="btn ghost sm" href="/p/<%= current.slug %>" target="_blank" rel="noopener">
+              افتحها للعميل
+            </a>
+            <button class="btn ghost sm" type="button" data-toggle="editPage">تعديل</button>
+          </div>
+        </div>
+        <p class="ps-meta">
+          <%= current.category_count %> قسم · <%= current.service_count %> خدمة ·
+          <%= current.request_count %> طلب
+          <% if (!current.active) { %> · <span class="chip off">مخفية</span><% } %>
+          <% if (current.is_default) { %> · <span class="chip">الافتراضية</span><% } %>
+        </p>
+        <% if (current.tagline_ar) { %><p class="ps-tag"><%= current.tagline_ar %></p><% } %>
+      </div>
+
+      <div class="edit-box" id="editPage" hidden style="margin-top:12px">
+        <form method="post" action="<%= adminPath %>/content/pages/<%= current.id %>/edit">
+          <%- csrfField %>
+          <div class="two-col">
+            <div class="field">
+              <label>الاسم بالعربي</label>
+              <input type="text" name="name_ar" value="<%= current.name_ar %>">
+            </div>
+            <div class="field">
+              <label>الاسم بالإنجليزي</label>
+              <input type="text" name="name_en" value="<%= current.name_en %>" dir="ltr"
+                     style="text-align:left">
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="field">
+              <label>المسار</label>
+              <input type="text" name="slug" value="<%= current.slug %>" dir="ltr"
+                     style="text-align:left">
+            </div>
+            <div class="field">
+              <label>اللون</label>
+              <input type="color" name="colour" value="<%= current.colour %>"
+                     style="height:46px;padding:4px">
+            </div>
+          </div>
+          <div class="field">
+            <label>سطر تعريفي</label>
+            <input type="text" name="tagline_ar" value="<%= current.tagline_ar || '' %>">
+          </div>
+          <div class="field">
+            <label>سطر تعريفي بالإنجليزي</label>
+            <input type="text" name="tagline_en" value="<%= current.tagline_en || '' %>"
+                   dir="ltr" style="text-align:left">
+          </div>
+          <div class="field">
+            <label>المقدمة</label>
+            <textarea name="intro_ar" style="min-height:80px"><%= current.intro_ar || '' %></textarea>
+          </div>
+          <div class="field">
+            <label>المقدمة بالإنجليزي</label>
+            <textarea name="intro_en" style="min-height:80px" dir="ltr"
+                      style="text-align:left"><%= current.intro_en || '' %></textarea>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="active" value="1" <%= current.active ? 'checked' : '' %>>
+            <span class="txt">ظاهرة للعملاء</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" name="show_in_menu" value="1" <%= current.show_in_menu ? 'checked' : '' %>>
+            <span class="txt">تظهر في قائمة الموقع</span>
+          </label>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn brass" type="submit">حفظ</button>
+            <% if (!current.is_default) { %>
+              <button class="btn danger" type="submit" formnovalidate
+                      formaction="<%= adminPath %>/content/pages/<%= current.id %>/delete"
+                      data-confirm="تحذف صفحة «<%= current.name_ar %>»؟">حذف الصفحة</button>
+            <% } %>
+          </div>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+
+
+<% if (msg && okMsgs[msg]) { %>
+  <div class="alert ok"><span><%= okMsgs[msg] %></span></div>
+<% } %>
+
+<% if (err === 'cat_has_services') { %>
+  <div class="alert warn">
+    <span>
+      <b>مش هينفع تحذف قسم «<%= nm %>» وفيه خدمات.</b>
+      فيه <%= n %> خدمة جوّاه. امسح الخدمات دي الأول (أو انقلها لقسم تاني من صفحة تعديل الخدمة)، وبعدين احذف القسم.
+    </span>
+  </div>
+<% } %>
+<% if (err === 'svc_in_use') { %>
+  <div class="alert warn">
+    <span>
+      <b>مش هينفع تحذف خدمة «<%= nm %>».</b>
+      فيه <%= n %> طلب مربوط بيها، ولو حذفتها الطلبات دي هتفضل من غير خدمة.
+      لو مش عايزها تظهر للعملاء اضغط «إخفاء» بدل الحذف.
+    </span>
+  </div>
+<% } %>
+<% if (err === 'cat_name') { %>
+  <div class="alert err"><span>اسم القسم بالعربي مطلوب.</span></div>
+<% } %>
+<% if (err === 'svc_fields') { %>
+  <div class="alert err"><span>عنوان الخدمة بالعربي والقسم مطلوبين.</span></div>
+<% } %>
+<% if (err === 'no_categories') { %>
+  <div class="alert warn"><span>لازم تعمل قسم واحد على الأقل قبل ما تضيف خدمة.</span></div>
+<% } %>
+
+<% if (orphans.length) { %>
+  <div class="alert warn">
+    <span>
+      <b>فيه <%= orphans.length %> خدمة مش تابعة لأي قسم.</b>
+      افتح كل واحدة واختار لها قسم عشان تظهر على الموقع.
+    </span>
+  </div>
+<% } %>
+
+<!-- ============================================================ categories -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>الأقسام</h3>
+    <span class="chip spacer"><%= categories.length %> قسم</span>
+  </div>
+
+  <div class="panel-body flush">
+    <% if (categories.length) { %>
+      <ul class="sortable" data-reorder-url="<%= adminPath %>/content/categories/reorder">
+        <% categories.forEach((cat, i) => { const count = services.filter(s => s.category_id === cat.id).length; %>
+          <li class="sort-item" data-id="<%= cat.id %>">
+            <span class="grip" aria-hidden="true" title="اسحب للترتيب">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+            </span>
+            <span class="move-btns">
+              <button type="button" data-move="up" aria-label="تحريك لفوق">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
+              <button type="button" data-move="down" aria-label="تحريك لتحت">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            </span>
+
+            <div class="sort-body">
+              <div class="t"><%= cat.name_ar %></div>
+              <div class="s"><%= cat.name_en || '—' %> · <%= count %> خدمة</div>
+            </div>
+
+            <div class="sort-actions">
+              <details class="inline-edit">
+                <summary class="btn ghost sm">تعديل</summary>
+              </details>
+              <form method="post" action="<%= adminPath %>/content/categories/<%= cat.id %>/delete"
+                    data-confirm="متأكد إنك عايز تحذف قسم «<%= cat.name_ar %>»؟">
+                <%- csrfField %>
+                <button class="btn danger sm" type="submit">حذف</button>
+              </form>
+            </div>
+          </li>
+
+          <!-- editor sits outside the sortable row so dragging never picks it up -->
+          <li style="padding:0 14px">
+            <div class="edit-box" hidden id="cat-edit-<%= cat.id %>">
+              <form method="post" action="<%= adminPath %>/content/categories/<%= cat.id %>">
+                <%- csrfField %>
+                <div class="two-col">
+                  <div class="field req"><label>اسم القسم (عربي)</label>
+                    <input type="text" name="name_ar" value="<%= cat.name_ar || '' %>" required></div>
+                  <div class="field"><label>Category name (English)</label>
+                    <input type="text" name="name_en" dir="ltr" style="text-align:left" value="<%= cat.name_en || '' %>"></div>
+                </div>
+                <div class="two-col">
+                  <div class="field"><label>الوصف (عربي)</label>
+                    <textarea name="desc_ar" style="min-height:80px"><%= cat.desc_ar || '' %></textarea></div>
+                  <div class="field"><label>Description (English)</label>
+                    <textarea name="desc_en" dir="ltr" style="text-align:left;min-height:80px"><%= cat.desc_en || '' %></textarea></div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn brass sm" type="submit">حفظ</button>
+                  <button class="btn ghost sm" type="button" data-close-edit="<%= cat.id %>">إلغاء</button>
+                </div>
+              </form>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">🗂</span>
+        <p>مفيش أقسام لسه. ابدأ بإضافة قسم من تحت.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- add category -->
+<div class="panel">
+  <div class="panel-head"><h3>إضافة قسم جديد</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/content/categories">
+      <%- csrfField %>
+      <% if (current) { %>
+        <input type="hidden" name="page_id" value="<%= current.id %>">
+        <p class="help" style="margin:0 0 12px">
+          هيتضاف في مجال <b><%= current.name_ar %></b>.
+        </p>
+      <% } %>
+      <div class="two-col">
+        <div class="field req">
+          <label>اسم القسم (عربي)</label>
+          <input type="text" name="name_ar" required placeholder="مثال: خدمات المصريين بالخارج">
+        </div>
+        <div class="field">
+          <label>Category name (English)</label>
+          <input type="text" name="name_en" dir="ltr" style="text-align:left" placeholder="For Egyptians Abroad">
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>الوصف (عربي)</label>
+          <textarea name="desc_ar" style="min-height:80px" placeholder="سطر أو اتنين بيظهروا تحت اسم القسم على الموقع"></textarea>
+        </div>
+        <div class="field">
+          <label>Description (English)</label>
+          <textarea name="desc_en" dir="ltr" style="text-align:left;min-height:80px"></textarea>
+        </div>
+      </div>
+      <button class="btn brass" type="submit">إضافة القسم</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================ services -->
+<h2 style="font-size:19px;color:var(--ink);margin:26px 0 12px">الخدمات داخل كل قسم</h2>
+
+<% categories.forEach((cat, ci) => {
+     const items = services.filter(s => s.category_id === cat.id).sort((a,b) => (a.sort - b.sort) || (a.id - b.id)); %>
+  <div class="panel cat-card">
+    <div class="panel-head">
+      <span class="n"><%= ci + 1 %></span>
+      <h3><%= cat.name_ar %></h3>
+      <span class="chip spacer"><%= items.length %> خدمة</span>
+      <a class="btn ghost sm" href="<%= adminPath %>/content/services/new?category=<%= cat.id %>">+ خدمة</a>
+    </div>
+
+    <div class="panel-body flush">
+      <% if (items.length) { %>
+        <ul class="sortable" data-reorder-url="<%= adminPath %>/content/services/reorder" data-category-id="<%= cat.id %>">
+          <% items.forEach(s => { %>
+            <li class="sort-item" data-id="<%= s.id %>">
+              <span class="grip" aria-hidden="true" title="اسحب للترتيب">
+                <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+              </span>
+              <span class="move-btns">
+                <button type="button" data-move="up" aria-label="تحريك لفوق">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+                </button>
+                <button type="button" data-move="down" aria-label="تحريك لتحت">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+              </span>
+
+              <div class="sort-body">
+                <div class="t">
+                  <%= s.title_ar %>
+                  <% if (s.is_consultation) { %><span class="chip brass">استشارة</span><% } %>
+                  <% if (!s.active) { %><span class="chip off">مخفية</span><% } %>
+                </div>
+                <div class="s"><%= s.title_en || '—' %></div>
+              </div>
+
+              <div class="sort-actions">
+                <a class="btn ghost sm" href="<%= adminPath %>/content/services/<%= s.id %>/edit">تعديل</a>
+                <form method="post" action="<%= adminPath %>/content/services/<%= s.id %>/toggle">
+                  <%- csrfField %>
+                  <button class="btn ghost sm" type="submit"><%= s.active ? 'إخفاء' : 'إظهار' %></button>
+                </form>
+                <form method="post" action="<%= adminPath %>/content/services/<%= s.id %>/delete"
+                      data-confirm="متأكد إنك عايز تحذف خدمة «<%= s.title_ar %>»؟">
+                  <%- csrfField %>
+                  <button class="btn danger sm" type="submit">حذف</button>
+                </form>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <div class="empty" style="padding:24px">
+          <p>مفيش خدمات في القسم ده.</p>
+          <a class="btn ghost sm" href="<%= adminPath %>/content/services/new?category=<%= cat.id %>">أضف أول خدمة</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+<% }) %>
+
+<script>
+  // Inline category editors: the <details> summary is only a button, the box
+  // itself lives outside the draggable row.
+  document.addEventListener('click', function (e) {
+    var summary = e.target.closest('details.inline-edit > summary');
+    if (summary) {
+      var row = summary.closest('.sort-item');
+      var box = document.getElementById('cat-edit-' + row.getAttribute('data-id'));
+      if (box) {
+        e.preventDefault();
+        box.hidden = !box.hidden;
+        if (!box.hidden) box.querySelector('input')?.focus();
+      }
+    }
+    var close = e.target.closest('[data-close-edit]');
+    if (close) {
+      var b = document.getElementById('cat-edit-' + close.getAttribute('data-close-edit'));
+      if (b) b.hidden = true;
+    }
+  });
+</script>
+
+<script>
+  // Boxes that open in place — the alternative is a page reload that loses
+  // where the person was.
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-toggle]');
+    if (!btn) return;
+    var box = document.getElementById(btn.getAttribute('data-toggle'));
+    if (box) {
+      box.hidden = !box.hidden;
+      if (!box.hidden) {
+        var first = box.querySelector('input, textarea, select');
+        if (first) first.focus();
+      }
+    }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

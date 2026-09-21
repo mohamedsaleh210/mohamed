@@ -1,0 +1,16 @@
+<% pageTitle = 'غير مسموح' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<div class="panel" style="max-width:520px;margin-top:20px">
+  <div class="panel-body" style="text-align:center;padding:36px 24px">
+    <div style="font-size:40px;opacity:.4;margin-bottom:10px">🔒</div>
+    <h1 style="font-size:20px;color:var(--ink);margin:0 0 8px">الصفحة دي مش من صلاحياتك</h1>
+    <p style="color:var(--muted);margin:0 0 20px">
+      لو محتاج توصل لها، كلّم الأدمن يظبط صلاحيتك.
+    </p>
+    <a class="btn brass" href="<%= adminPath %>">رجوع للوحة التحكم</a>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

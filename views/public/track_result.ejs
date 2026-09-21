@@ -1,0 +1,116 @@
+<% pageTitle = r.ref %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<%
+  const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
+  const pending = requirements.filter(q => q.status !== 'received');
+  const service = r.service_label
+    ? (lang === 'ar' ? r.service_label.split(' / ')[0] : (r.service_label.split(' / ')[1] || r.service_label))
+    : '—';
+%>
+
+<section class="section">
+  <div class="wrap" style="max-width:720px">
+
+    <nav class="crumbs">
+      <a href="/"><%= lang === 'ar' ? 'الرئيسية' : 'Home' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <a href="/track"><%= lang === 'ar' ? 'تتبّع طلب' : 'Track a request' %></a>
+      <span><%= dir === 'rtl' ? '‹' : '›' %></span>
+      <strong class="num"><%= r.ref %></strong>
+    </nav>
+
+    <div class="track-head">
+      <span class="req-ref"><%= r.ref %></span>
+      <h1><%= service %></h1>
+      <span class="req-status" style="background:<%= st.color %>"><%= lang === 'ar' ? st.ar : st.en %></span>
+    </div>
+
+    <div class="track-card">
+      <div class="track-row">
+        <span><%= lang === 'ar' ? 'مقدّم الطلب' : 'Requested by' %></span>
+        <strong><%= r.name %></strong>
+      </div>
+      <div class="track-row">
+        <span><%= lang === 'ar' ? 'تاريخ الطلب' : 'Submitted' %></span>
+        <strong><%= fmtDate(r.created_at) %></strong>
+      </div>
+      <% if (r.deadline) { %>
+        <div class="track-row">
+          <span><%= lang === 'ar' ? 'موعد التسليم المتوقّع' : 'Expected delivery' %></span>
+          <strong class="ltr"><%= r.deadline %></strong>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (pending.length) { %>
+      <div class="track-needed">
+        <h3><%= lang === 'ar' ? 'المطلوب منك' : 'What we need from you' %></h3>
+        <ul>
+          <% pending.forEach(q => { %><li><%= q.title %></li><% }) %>
+        </ul>
+        <% if (r.upload_token) { %>
+          <a class="btn brass" href="/upload/<%= r.id %>?t=<%= r.upload_token %>">
+            <%= lang === 'ar' ? 'رفع المستندات' : 'Upload documents' %>
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% const received = requirements.filter(q => q.status === 'received'); %>
+    <% if (received.length) { %>
+      <div class="track-card">
+        <h3 style="margin:0 0 10px;font-size:16px;color:var(--ink)">
+          <%= lang === 'ar' ? 'مستندات استلمناها' : 'Documents received' %>
+        </h3>
+        <% received.forEach(q => { %>
+          <div class="track-done">✓ <%= q.title %></div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (documents.length) { %>
+      <div class="track-card">
+        <h3 style="margin:0 0 12px;font-size:16px;color:var(--ink)">
+          <%= lang === 'ar' ? 'ملفاتك المرفوعة' : 'Your uploaded files' %>
+        </h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:11px">
+          <% documents.forEach(d => { %>
+            <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+              <% if (d.kind === 'pdf') { %>
+                <div style="aspect-ratio:3/4;display:grid;place-items:center;background:#fbf5f4;color:#c15450;font-weight:800">PDF</div>
+              <% } else if (d.files[0]) { %>
+                <div style="aspect-ratio:3/4;background:#fff center/cover no-repeat url('/files/<%= d.files[0].id %>')"></div>
+              <% } %>
+              <div style="padding:8px 10px">
+                <strong style="font-size:13px;display:block"><%= d.name %></strong>
+                <span style="font-size:12px;color:var(--muted)"><%= d.files.length %> <%= lang === 'ar' ? 'ملف' : 'files' %></span>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (!clientUser) { %>
+      <div class="track-invite">
+        <h3><%= lang === 'ar' ? 'بحساب، تتابع بسهولة أكبر' : 'With an account, following is easier' %></h3>
+        <p>
+          <%= lang === 'ar'
+            ? 'بدل إدخال رقم الطلب في كل مرة، سجّل الدخول لترى كل طلباتك معاً، وترفع مستنداتك مباشرة، وتصلك التنبيهات بما هو مطلوب منك. التسجيل يستغرق دقيقة.'
+            : 'Instead of entering your reference each time, sign in to see all your requests together, upload documents directly, and be notified of anything we need. It takes a minute.' %>
+        </p>
+        <div class="gate-actions">
+          <a class="btn brass" href="/portal/register?email=<%= encodeURIComponent(r.email || '') %>">
+            <%= T.createAccount %>
+          </a>
+          <a class="btn ghost" href="/portal/login"><%= T.signIn %></a>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

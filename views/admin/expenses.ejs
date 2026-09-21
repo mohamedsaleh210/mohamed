@@ -1,0 +1,161 @@
+<% pageTitle = 'المصاريف' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'المصاريف' }] }) %>
+
+<%
+  const money = (n) => (n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const views = [['owed', 'مستحقة للموظفين'], ['all', 'الكل'], ['mine', 'مصاريفي']];
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>المصاريف</h1>
+    <p class="sub">اللي الموظفين صرفوه على الطلبات — وإيه اللي المكتب لسه مدين بيه ليهم.</p>
+  </div>
+  <% if (can('expenses.custody')) { %><a class="btn brass" href="<%= adminPath %>/expenses/custodies">عهد الموظفين</a><% } %>
+  <% if (canManage) { %>
+    <a class="btn ghost" href="<%= adminPath %>/expenses/categories">أنواع المصاريف</a>
+  <% } %>
+  <%if(can('expenses.export')){%><a class="btn ghost" href="<%=adminPath%>/expenses/export.csv?view=<%=view%>">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/expenses/print?view=<%=view%>">PDF / طباعة</a><%}%>
+</div>
+
+<% if (msg === 'reimbursed') { %><div class="alert ok"><span>تم التسجيل.</span></div><% } %>
+<% if (msg === 'custody_expense') { %><div class="alert warn"><span>المصروف مدفوع من عهدة، لذلك لا يُسجل كمبلغ مستحق للموظف.</span></div><% } %>
+
+<div class="stat-grid">
+  <div class="stat icon-stat <%= summary.owed.amount > 0 ? 'warn' : '' %>">
+    <i class="stat-ico ic-warn">↩</i>
+    <div><span class="k">مستحق للموظفين</span>
+    <span class="v num"><%= money(summary.owed.amount) %></span>
+    <span class="sub-k"><%= summary.owed.count %> مصروف · <%= summary.owed.people %> موظف</span></div>
+  </div>
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-danger">↑</i>
+    <div><span class="k">على المكتب</span>
+    <span class="v num"><%= money(summary.totals.office) %></span>
+    <span class="sub-k">بينقص من الصافي</span></div>
+  </div>
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-info">↺</i>
+    <div><span class="k">على العملاء</span>
+    <span class="v num"><%= money(summary.totals.onClient) %></span>
+    <span class="sub-k">بيترد في الأتعاب</span></div>
+  </div>
+</div>
+
+<div class="quick-filters">
+  <% views.forEach(([key, label]) => { %>
+    <a href="<%= adminPath %>/expenses?view=<%= key %>" class="qf <%= view === key ? 'on' : '' %>">
+      <%= label %>
+    </a>
+  <% }) %>
+</div>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (rows.length) { %>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>المبلغ</th><th>السبب</th><th>الطلب</th>
+            <th>مين صرفه</th><th>المصدر</th><th>التاريخ</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% rows.forEach(e => { %>
+            <tr style="<%= e.reimbursed_at ? 'opacity:.62' : '' %>">
+              <td data-label="المبلغ">
+                <b class="num"><%= money(e.amount) %></b>
+                <br><span class="chip"><%= e.on_client ? 'على العميل' : 'على المكتب' %></span>
+              </td>
+              <td data-label="السبب">
+                <%= e.reason %>
+                <br><span style="font-size:12.5px;color:var(--muted)">
+                  <%= categories[e.category] ? categories[e.category].icon : '' %> <%= e.categoryLabel %>
+                </span>
+              </td>
+              <td data-label="الطلب">
+                <a class="num" href="<%= adminPath %>/requests/<%= e.request_id %>"><%= e.ref %></a>
+                <br><span style="font-size:12.5px;color:var(--muted)"><%= e.client_name %></span>
+              </td>
+              <td data-label="مين صرفه"><%= e.paid_by %></td>
+              <td data-label="المصدر"><% if(e.custody_id){ %><span class="chip brass">من عهدة</span><br><small><%= e.custody_purpose||'' %></small><% } else { %><span class="chip">من ماله</span><% } %></td>
+              <td data-label="التاريخ"><span class="num"><%= e.spent_on %></span></td>
+              <td data-label="" class="row-actions">
+                <% if (e.receipt_file) { %>
+                  <a class="btn ghost sm" target="_blank" rel="noopener"
+                     href="<%= adminPath %>/expenses/receipt/<%= e.id %>">الإيصال</a>
+                <% } %>
+                <% if (canManage && !e.custody_id) { %>
+                  <form method="post" action="<%= adminPath %>/expenses/<%= e.id %>/reimburse">
+                    <%- csrfField %>
+                    <input type="hidden" name="next" value="<%= adminPath %>/expenses?view=<%= view %>">
+                    <% if (e.reimbursed_at) { %>
+                      <input type="hidden" name="undo" value="1">
+                      <button class="btn ghost sm" type="submit">تراجع</button>
+                    <% } else { %>
+                      <button class="btn brass sm" type="submit">اتصرف</button>
+                    <% } %>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">✓</span>
+        <p><%= view === 'owed' ? 'مفيش مصاريف مستحقة لحد.' : 'مفيش مصاريف مسجّلة.' %></p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (summary.byCategory.length) { %>
+  <div class="two-col wide">
+    <div class="panel">
+      <div class="panel-head"><h3>حسب النوع</h3></div>
+      <div class="panel-body flush">
+        <table class="tbl">
+          <thead><tr><th>النوع</th><th>المبلغ</th><th>عدد</th></tr></thead>
+          <tbody>
+            <% summary.byCategory.forEach(c => { %>
+              <tr>
+                <td data-label="النوع"><%= c.label %></td>
+                <td data-label="المبلغ"><b class="num"><%= money(c.total) %></b></td>
+                <td data-label="عدد"><%= c.count %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>حسب الموظف</h3></div>
+      <div class="panel-body flush">
+        <table class="tbl">
+          <thead><tr><th>الموظف</th><th>صرف</th><th>مستحق له</th></tr></thead>
+          <tbody>
+            <% summary.byStaff.forEach(s => { %>
+              <tr>
+                <td data-label="الموظف"><%= s.staff %></td>
+                <td data-label="صرف"><span class="num"><%= money(s.total) %></span></td>
+                <td data-label="مستحق له">
+                  <% if (s.owed > 0) { %>
+                    <b class="num" style="color:var(--danger)"><%= money(s.owed) %></b>
+                  <% } else { %><span style="color:var(--ok)">✓</span><% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,87 @@
+<% pageTitle = 'مشوار ' + trip.trip_date %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', {
+  crumbs: [{ label: 'المشاوير', href: adminPath + '/errands' }, { label: 'مشوار ' + trip.trip_date }]
+}) %>
+
+<%
+  const doneCount = stops.filter(s => s.status !== 'pending').length;
+  const pct = stops.length ? Math.round((doneCount / stops.length) * 100) : 0;
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>
+      <span class="dot" style="background:<%= trip.colour || '#888' %>"></span>
+      <%= trip.destination || 'مشوار' %>
+    </h1>
+    <p class="sub">
+      <span class="num"><%= trip.trip_date %></span>
+      <% if (trip.assignee_name) { %> · <%= trip.assignee_name %><% } %>
+      <% if (trip.status === 'done') { %> · <span class="chip ok">مقفول</span><% } %>
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn ghost" href="<%= adminPath %>/errands/trip/<%= trip.id %>?print=1"
+       target="_blank" rel="noopener">طباعة</a>
+    <% if (canManage && trip.status !== 'done') { %>
+      <form method="post" action="<%= adminPath %>/errands/trip/<%= trip.id %>/close"
+            data-confirm="تقفل المشوار؟ اللي مخلّصش هيرجع لقائمة الجهة.">
+        <%- csrfField %>
+        <button class="btn brass" type="submit">قفل المشوار</button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<% if (trip.address) { %>
+  <div class="alert info"><span><b>العنوان:</b> <%= trip.address %></span></div>
+<% } %>
+<% if (trip.note) { %>
+  <div class="alert info"><span><%= trip.note %></span></div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>محطات المشوار</h3>
+    <span class="chip spacer"><%= doneCount %> من <%= stops.length %></span>
+  </div>
+  <div class="panel-body">
+    <% if (stops.length) { %>
+      <div class="progress" style="margin-bottom:16px"><i style="width:<%= pct %>%"></i></div>
+
+      <ul class="checklist">
+        <% stops.forEach(s => { %>
+          <li class="todo-row <%= s.status !== 'pending' ? 'done' : '' %>">
+            <form method="post" action="<%= adminPath %>/errands/item/<%= s.id %>/done" style="flex:none">
+              <%- csrfField %>
+              <input type="hidden" name="next" value="<%= adminPath %>/errands/trip/<%= trip.id %>">
+              <button class="tick <%= s.status !== 'pending' ? 'on' : '' %>" type="submit"
+                      aria-label="تغيير الحالة">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"
+                     stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </button>
+            </form>
+            <span class="txt">
+              <span class="t">
+                <% if (s.is_critical) { %><span class="flag urgent">عاجل</span> <% } %>
+                <a class="num" href="<%= adminPath %>/requests/<%= s.request_id %>"><%= s.ref %></a>
+                — <%= s.task || (s.service_label ? s.service_label.split(' / ')[0] : '') %>
+              </span>
+              <span class="m">
+                <%= s.name %> · <span class="num"><%= s.phone %></span>
+                <% if (s.result_note) { %> · <%= s.result_note %><% } %>
+              </span>
+            </span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty"><p>مفيش طلبات في المشوار ده.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,22 @@
+const express=require('express');
+const multer=require('multer');
+const path=require('path');
+const fs=require('fs');
+const crypto=require('crypto');
+const {db}=require('../db');
+const csrf=require('../lib/csrf');
+const router=express.Router();
+const dir=path.join(process.env.DATA_DIR||path.join(__dirname,'..','data'),'support');fs.mkdirSync(dir,{recursive:true});
+const upload=multer({storage:multer.diskStorage({destination:dir,filename:(_r,f,cb)=>cb(null,crypto.randomBytes(16).toString('hex')+path.extname(f.originalname).toLowerCase())}),limits:{fileSize:10*1024*1024},fileFilter:(_r,f,cb)=>cb(null,/^(image\/(jpeg|png|webp)|application\/pdf)$/.test(f.mimetype))});
+const STATUSES={new:'جديدة',review:'تحت المراجعة',assigned:'محالة إلى مسؤول',working:'جارٍ العمل عليها',waiting_client:'بانتظار رد العميل',resolved:'تم الحل',closed:'مغلقة',reopened:'معاد فتحها'};
+const clean=(v,n=1000)=>String(v||'').trim().slice(0,n);
+const nextRef=()=>`SUP-${new Date().getFullYear()}-${String(db.prepare('SELECT COALESCE(MAX(id),0)+1 n FROM support_tickets').get().n).padStart(5,'0')}`;
+router.get('/',(req,res)=>res.render('public/support',{sent:req.query.sent||'',clientUser:req.session.client||null}));
+router.post('/',upload.single('attachment'),csrf.verifyDeferred,(req,res)=>{const b=req.body,email=clean(b.email,160).toLowerCase(),client=db.prepare('SELECT id FROM clients WHERE lower(email)=?').get(email),ref=nextRef(),info=db.prepare(`INSERT INTO support_tickets(ref,opened_by_type,opened_by_client_id,requester_name,requester_email,requester_phone,request_id,issue_type,title,description,priority) VALUES(?,?,?,?,?,?,?,?,?,?,?)`).run(ref,req.session.client?'client':'guest',req.session.client?.id||client?.id||null,clean(b.name,120),email||null,clean(b.phone,40)||null,Number(b.request_id)||null,clean(b.issue_type,80),clean(b.title,180),clean(b.description,5000),['low','medium','high','urgent'].includes(b.priority)?b.priority:'medium');const id=Number(info.lastInsertRowid);db.prepare('INSERT INTO support_ticket_messages(ticket_id,author_type,author_id,author_name,body,attachment_path) VALUES(?,?,?,?,?,?)').run(id,req.session.client?'client':'guest',req.session.client?.id||null,clean(b.name,120),clean(b.description,5000),req.file?req.file.filename:null);res.redirect('/support?sent='+encodeURIComponent(ref))});
+function client(req,res,next){if(!req.session.client)return res.redirect('/portal/login?next=/support/my');next()}
+router.get('/my',client,(req,res)=>res.render('portal/support',{rows:db.prepare('SELECT * FROM support_tickets WHERE opened_by_client_id=? ORDER BY id DESC').all(req.session.client.id),STATUSES}));
+router.get('/my/:id',client,(req,res)=>{const t=db.prepare('SELECT * FROM support_tickets WHERE id=? AND opened_by_client_id=?').get(req.params.id,req.session.client.id);if(!t)return res.sendStatus(404);res.render('portal/support_detail',{t,STATUSES,messages:db.prepare('SELECT * FROM support_ticket_messages WHERE ticket_id=? AND internal=0 ORDER BY id').all(t.id)})});
+router.post('/my/:id/reply',client,upload.single('attachment'),csrf.verifyDeferred,(req,res)=>{const t=db.prepare('SELECT * FROM support_tickets WHERE id=? AND opened_by_client_id=?').get(req.params.id,req.session.client.id);if(!t)return res.sendStatus(404);db.prepare('INSERT INTO support_ticket_messages(ticket_id,author_type,author_id,author_name,body,attachment_path) VALUES(?,?,?,?,?,?)').run(t.id,'client',req.session.client.id,req.session.client.full_name,clean(req.body.body,5000),req.file?req.file.filename:null);db.prepare("UPDATE support_tickets SET status=CASE WHEN status='waiting_client' THEN 'working' ELSE status END,updated_at=datetime('now') WHERE id=?").run(t.id);res.redirect('/support/my/'+t.id)});
+router.post('/my/:id/rate',client,(req,res)=>{const stars=Math.max(1,Math.min(5,Number(req.body.rating)||0));db.prepare("UPDATE support_tickets SET rating=?,rating_note=? WHERE id=? AND opened_by_client_id=? AND status IN ('resolved','closed')").run(stars,clean(req.body.rating_note,500)||null,req.params.id,req.session.client.id);res.redirect('/support/my/'+req.params.id)});
+router.post('/my/:id/reopen',client,(req,res)=>{db.prepare("UPDATE support_tickets SET status='reopened',closed_at=NULL,resolved_at=NULL,updated_at=datetime('now') WHERE id=? AND opened_by_client_id=? AND status IN ('resolved','closed') AND reopened_until>=datetime('now')").run(req.params.id,req.session.client.id);res.redirect('/support/my/'+req.params.id)});
+module.exports=router;

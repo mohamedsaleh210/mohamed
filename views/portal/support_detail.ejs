@@ -1,0 +1,18 @@
+<% pageTitle=t.ref %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+<section class="section"><div class="wrap narrow">
+  <h1><%=t.ref%> — <%=t.title%></h1>
+  <p>الحالة: <b><%=STATUSES[t.status]%></b></p>
+  <div class="ticket-thread">
+    <% messages.forEach(m=>{ %><article class="ticket-message"><b><%=m.author_name%></b><small><%=fmtDateTime(m.created_at)%></small><p><%=m.body%></p><%if(m.attachment_path){%><a href="/support-files/<%=m.attachment_path%>" target="_blank">عرض المرفق</a><%}%></article><% }) %>
+  </div>
+  <% if(!['resolved','closed'].includes(t.status)){ %>
+  <form class="panel panel-body" method="post" enctype="multipart/form-data" action="/support/my/<%=t.id%>/reply"><%-csrfField%><label>إضافة رد<textarea name="body" required></textarea></label><label>مرفق<input type="file" name="attachment" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn brass">إرسال الرد</button></form>
+  <% } %>
+  <% if(['resolved','closed'].includes(t.status)){ %>
+  <form class="panel panel-body" method="post" action="/support/my/<%=t.id%>/rate"><%-csrfField%><label>تقييم الخدمة<select name="rating"><%[5,4,3,2,1].forEach(n=>{%><option value="<%=n%>" <%=t.rating===n?'selected':''%>><%=n%> نجوم</option><%})%></select></label><label>ملاحظة اختيارية<textarea name="rating_note"><%=t.rating_note||''%></textarea></label><button class="btn">حفظ التقييم</button></form>
+  <% if(t.reopened_until && new Date(t.reopened_until) >= new Date()){ %><form method="post" action="/support/my/<%=t.id%>/reopen"><%-csrfField%><button class="btn ghost">إعادة فتح التذكرة</button></form><% } %>
+  <% } %>
+</div></section>
+<%- include('../partials/footer') %>

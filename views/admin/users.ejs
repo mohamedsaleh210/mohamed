@@ -1,0 +1,354 @@
+<% pageTitle = 'الموظفين' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الموظفين' }] }) %>
+
+<%
+  const okMsgs = {
+    added: 'تم إنشاء الحساب. سلّم الموظف كلمة السر المؤقتة — هيتطلب منه يغيّرها أول ما يدخل.',
+    reset: 'تم تغيير كلمة السر. الموظف هيتطلب منه يغيّرها أول ما يدخل.',
+    activated: 'تم تفعيل الحساب.',
+    deactivated: 'تم إيقاف الحساب. تاريخه وملاحظاته كلها محفوظة.',
+  };
+  const errMsgs = {
+    missing: 'الاسم واسم المستخدم مطلوبين.',
+    email: 'الإيميل مطلوب وبصيغة صحيحة — من غيره الموظف مش هيقدر يستعيد كلمة سره.',
+    mismatch: 'الكلمتان مش متطابقتين.',
+    exists: 'اسم المستخدم ده موجود بالفعل.',
+    username: 'اسم المستخدم يقبل حروف إنجليزي وأرقام و . _ - بس.',
+    self: 'مش هتقدر توقف حسابك انت.',
+    last_admin: 'ده آخر حساب أدمن شغّال — لو أوقفته محدش هيقدر يدير النظام.',
+  };
+  const roleLabel = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي' };
+%>
+
+<div class="page-head">
+  <h1>الموظفين</h1>
+  <p class="sub">حسابات الدخول للوحة الإدارة: أدمن، مشرف، ومحامي.</p>
+</div>
+<%if(can('users.export')){%><div class="btn-row" style="margin-bottom:14px"><a class="btn ghost" href="<%=adminPath%>/users/export.csv">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/users/print">PDF / طباعة</a></div><%}%>
+
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (err && errMsgs[err]) { %><div class="alert err"><span><%= errMsgs[err] %></span></div><% } %>
+<% if (err === 'weak' && errText) { %><div class="alert err"><span><%= errText %></span></div><% } %>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>الحسابات</h3>
+    <span class="chip spacer"><%= users.filter(u => u.active).length %> شغّال</span>
+  </div>
+  <div class="panel-body flush">
+    <table class="tbl">
+      <thead>
+        <tr><th>الاسم</th><th>اسم المستخدم</th><th>الصلاحية</th><th>الحالة</th><th>أُنشئ</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% users.forEach(u => { %>
+          <tr style="<%= u.active ? '' : 'opacity:.6' %>">
+            <td data-label="الاسم">
+              <strong><%= u.display_name || u.username %></strong>
+              <% if(u.job_title){%><br><small><%=u.job_title%></small><%}%>
+              <% if (u.id === user.id) { %><span class="chip brass">أنت</span><% } %>
+              <% if (!u.profile_completed) { %>
+                <span class="chip warn">بياناته ناقصة</span>
+              <% } %>
+              <% if (u.legal_name && u.legal_name !== u.display_name) { %>
+                <br><span style="font-size:12.5px;color:var(--muted)"><%= u.legal_name %></span>
+              <% } %>
+            </td>
+            <td data-label="المستخدم"><span class="num"><%= u.username %></span></td>
+            <td data-label="الصلاحية"><span class="chip"><%= roleLabel[u.role] || u.role %></span></td>
+            <td data-label="الحالة">
+              <% if (!u.active) { %>
+                <span class="chip off">موقوف</span>
+              <% } else if (u.must_change_password) { %>
+                <span class="chip warn">لسه مغيّرش كلمة السر</span>
+              <% } else { %>
+                <span class="chip ok">شغّال</span>
+              <% } %>
+            </td>
+            <td data-label="أُنشئ" style="color:var(--muted);font-size:13px">
+              <%= fmtDate(u.created_at) %>
+              <% if (u.created_by) { %><br><span style="font-size:12px">بواسطة <%= u.created_by %></span><% } %>
+            </td>
+            <td data-label="إجراءات" class="row-actions">
+              <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
+              <% if (u.role !== 'admin') { %>
+                <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">
+                  الصلاحيات
+                  <% if (u.exception_count) { %>
+                    <span class="chip brass"><%= u.exception_count %></span>
+                  <% } %>
+                </a>
+              <% } %>
+              <button class="btn ghost sm" type="button" data-reset="<%= u.id %>">كلمة سر جديدة</button>
+              <% if (u.id !== user.id) { %>
+                <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle" style="display:inline"
+                      data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
+                  <%- csrfField %>
+                  <button class="btn <%= u.active ? 'danger' : 'ghost' %> sm" type="submit">
+                    <%= u.active ? 'إيقاف' : 'تفعيل' %>
+                  </button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+          <tr id="reset-<%= u.id %>" hidden>
+            <td colspan="6" data-label="" style="background:#fbfcfb">
+              <form method="post" action="<%= adminPath %>/users/<%= u.id %>/reset" style="max-width:420px">
+                <%- csrfField %>
+                <div class="field" style="margin-bottom:8px">
+                  <label>كلمة سر مؤقتة</label>
+                  <input name="password" type="text" required data-pw="new" dir="ltr"
+                         style="text-align:left" autocomplete="off">
+                </div>
+                <div class="pw-meter" data-pw-meter data-level="0">
+                  <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+                  <span class="pw-label"></span>
+                </div>
+                <ul class="pw-rules" data-pw-rules></ul>
+                <div class="field" style="margin-bottom:6px">
+                  <label>اكتبها تاني</label>
+                  <input name="password_confirm" type="text" required data-pw="confirm" dir="ltr"
+                         style="text-align:left" autocomplete="off">
+                </div>
+                <p class="pw-match" data-pw-match></p>
+                <div class="pw-tools">
+                  <button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button>
+                </div>
+                <div class="btn-row">
+                  <button class="btn sm" type="submit">تعيين</button>
+                  <button class="btn ghost sm" type="button" data-close-reset="<%= u.id %>">إلغاء</button>
+                </div>
+                <p class="help" style="margin:8px 0 0">
+                  الموظف هيتطلب منه يغيّرها فوراً أول ما يدخل، وأي جلسة مفتوحة بحسابه هتتقفل.
+                </p>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-head"><h3>إضافة موظف</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/users/new">
+      <%- csrfField %>
+
+      <div class="alert info" style="margin-top:0">
+        <span>
+          محتاج اسم مستخدم وكلمة سر مؤقتة بس. الموظف هيغيّر كلمة السر أول ما يدخل،
+          وهيكمّل بياناته بنفسه — الاسم والبريد والموبايل والرقم القومي<%= idRequired ? ' وصورة البطاقة' : '' %>.
+          مش هيقدر يشتغل قبل ما يكمّلها.
+          <br><br>
+          <b>الصلاحيات بتيجي من الدور تلقائياً.</b>
+          لو عايز تزوّد أو تشيل حاجة لشخص بعينه، هتلاقي زرار
+          <b>«الصلاحيات»</b> جنب اسمه في القايمة بعد ما تضيفه.
+        </span>
+      </div>
+
+      <div class="two-col">
+        <div class="field req">
+          <label>اسم المستخدم</label>
+          <input type="text" name="username" required dir="ltr" style="text-align:left"
+                 pattern="[a-z0-9._-]+" placeholder="khaled">
+          <div class="help">حروف إنجليزي صغيرة وأرقام بس.</div>
+        </div>
+        <div class="field req">
+          <label>الصلاحية</label>
+          <select name="role" id="newRole" required>
+            <option value="lawyer">محامي — طلباته هو فقط، بدون أرقام مالية</option>
+            <option value="accountant">محاسب — الإيرادات والمصاريف، قراءة فقط</option>
+            <option value="supervisor">مشرف — كل حاجة عدا الموظفين والإعدادات</option>
+            <option value="admin">أدمن — بلا حدود</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field req">
+        <label>كلمة سر مؤقتة</label>
+        <input type="text" name="password" required data-pw="new" dir="ltr"
+               style="text-align:left" autocomplete="off">
+      </div>
+
+      <div class="pw-meter" data-pw-meter data-level="0">
+        <span class="pw-track"><i></i><i></i><i></i><i></i></span>
+        <span class="pw-label"></span>
+      </div>
+      <ul class="pw-rules" data-pw-rules></ul>
+
+      <div class="field req">
+        <label>اكتبها تاني</label>
+        <input type="text" name="password_confirm" required data-pw="confirm" dir="ltr"
+               style="text-align:left" autocomplete="off">
+      </div>
+      <p class="pw-match" data-pw-match></p>
+
+      <div class="pw-tools">
+        <button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button>
+      </div>
+      <%
+        /*
+         * Permissions, on the same screen.
+         *
+         * They used to live behind a second visit after the account existed,
+         * which meant every new person was briefly wrong and somebody had to
+         * remember the follow-up. Here the defaults for the chosen role are
+         * already ticked, and any adjustment is saved with the account.
+         */
+      %>
+      <input type="hidden" name="_perms" value="1">
+
+      <details class="perm-block" id="newPerms">
+        <summary>
+          <b>الصلاحيات</b>
+          <span id="permSummary" class="chip"></span>
+          <small>الافتراضي متعلّم حسب الدور — عدّل اللي تحبه</small>
+        </summary>
+
+        <div class="perm-body-wrap">
+          <p class="help" id="permAdminNote" hidden>
+            الأدمن صلاحياته مفتوحة ومش بتتحدد.
+          </p>
+
+          <div id="permGroups">
+            <% Object.entries(catalogue).forEach(([groupKey, group]) => { %>
+              <div class="perm-group <%= groupKey === 'erase' ? 'danger-group' : '' %>">
+                <div class="perm-group-head">
+                  <b><%= group.label %></b>
+                  <% if (groupKey === 'erase') { %>
+                    <span class="chip danger">
+                      مفيش تراجع
+                    </span>
+                  <% } %>
+                  <button type="button" class="perm-all" data-group="<%= groupKey %>">الكل</button>
+                  <button type="button" class="perm-none" data-group="<%= groupKey %>">ولا حاجة</button>
+                </div>
+                <ul class="perm-list">
+                  <% Object.entries(group.items).forEach(([key, item]) => { %>
+                    <li>
+                      <label class="perm-row">
+                        <input type="checkbox" name="permission" value="<%= key %>"
+                               data-group="<%= groupKey %>" data-perm="<%= key %>">
+                        <span class="perm-body">
+                          <b><%= item.label %></b>
+                          <% if (item.note) { %><small><%= item.note %></small><% } %>
+                        </span>
+                        <span class="perm-tags">
+                          <span class="chip default-tag" hidden>من الدور</span>
+                        </span>
+                      </label>
+                    </li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </details>
+
+
+      <button class="btn brass" type="submit">إنشاء الحساب</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    var open = e.target.closest('[data-reset]');
+    if (open) {
+      var row = document.getElementById('reset-' + open.getAttribute('data-reset'));
+      if (row) { row.hidden = !row.hidden; if (!row.hidden) row.querySelector('input[name=password]').focus(); }
+    }
+    var close = e.target.closest('[data-close-reset]');
+    if (close) {
+      var r = document.getElementById('reset-' + close.getAttribute('data-close-reset'));
+      if (r) r.hidden = true;
+    }
+  });
+</script>
+
+<script src="/js/password.js" defer></script>
+
+<script>
+(function () {
+  'use strict';
+
+  var roleSel = document.getElementById('newRole');
+  var block   = document.getElementById('newPerms');
+  if (!roleSel || !block) return;
+
+  var groupsEl  = document.getElementById('permGroups');
+  var adminNote = document.getElementById('permAdminNote');
+  var summary   = document.getElementById('permSummary');
+
+  // What each role grants out of the box, straight from the catalogue.
+  var DEFAULTS = <%- JSON.stringify(roleDefaults) %>;
+  var ALL = <%- JSON.stringify(allPermissions) %>;
+
+  function boxes() {
+    return Array.prototype.slice.call(groupsEl.querySelectorAll('input[name="permission"]'));
+  }
+
+  /*
+   * Reset to the role's defaults.
+   *
+   * Called whenever the role changes, because a tick that made sense for a
+   * lawyer is rarely the right starting point for an accountant — and carrying
+   * it over silently would hand somebody access nobody chose to give them.
+   */
+  function applyRole() {
+    var role = roleSel.value;
+    var isAdmin = role === 'admin';
+    var granted = DEFAULTS[role] || [];
+
+    groupsEl.hidden = isAdmin;
+    adminNote.hidden = !isAdmin;
+
+    boxes().forEach(function (box) {
+      var byRole = granted.indexOf(box.value) !== -1;
+      box.checked = byRole;
+      box.disabled = isAdmin;
+
+      var tag = box.parentNode.querySelector('.default-tag');
+      if (tag) tag.hidden = !byRole;
+    });
+
+    updateSummary();
+  }
+
+  function updateSummary() {
+    if (roleSel.value === 'admin') {
+      summary.textContent = 'بلا حدود';
+      return;
+    }
+    var on = boxes().filter(function (b) { return b.checked; }).length;
+    summary.textContent = on + ' من ' + ALL.length;
+  }
+
+  roleSel.addEventListener('change', applyRole);
+  groupsEl.addEventListener('change', updateSummary);
+
+  groupsEl.addEventListener('click', function (e) {
+    var all = e.target.closest('.perm-all');
+    var none = e.target.closest('.perm-none');
+    var btn = all || none;
+    if (!btn) return;
+
+    var group = btn.getAttribute('data-group');
+    boxes()
+      .filter(function (b) { return b.getAttribute('data-group') === group; })
+      .forEach(function (b) { b.checked = !!all; });
+
+    updateSummary();
+  });
+
+  applyRole();
+})();
+</script>
+
+<%- include('../partials/admin_foot') %>

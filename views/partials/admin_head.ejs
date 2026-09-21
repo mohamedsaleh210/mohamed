@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang!=='undefined'?lang:'ar' %>" dir="<%= typeof dir!=='undefined'?dir:'rtl' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'الإدارة' %> — سند</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css?v=20260919.1650">
+  <link rel="stylesheet" href="/css/responsive-admin.css?v=16.7.3">
+
+  <%# Loaded in the head so the position is restored before anything is painted,
+      which avoids a visible jump from the top down to where you were. %>
+  <script src="/js/keep-place.js" defer></script>
+</head>
+<body class="admin">

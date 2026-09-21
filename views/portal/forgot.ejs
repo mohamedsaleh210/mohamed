@@ -1,0 +1,34 @@
+<% pageTitle = T.forgotTitle %>
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+
+    <p class="crumb-home">
+      <a href="/portal/login">&larr; <%= lang === 'ar' ? 'تسجيل الدخول' : 'Sign in' %></a>
+    </p>
+
+    <div class="form-card" style="max-width:430px">
+      <h2 style="text-align:center;color:var(--ink);margin:0 0 8px"><%= T.forgotTitle %></h2>
+      <p style="text-align:center;color:var(--muted);margin:0 0 22px;font-size:14.5px"><%= T.forgotSub %></p>
+
+      <% if (sent) { %><div class="notice-ok"><%= T.forgotSent %></div><% } %>
+
+      <form method="post" action="/portal/forgot">
+        <%- csrfField %>
+        <div class="field">
+          <label for="email"><%= T.email %></label>
+          <input type="email" id="email" name="email" required dir="ltr" autocomplete="email">
+        </div>
+        <button class="btn brass block" type="submit"><%= T.send %></button>
+      </form>
+
+      <p style="text-align:center;margin:18px 0 0">
+        <a href="/portal/login" style="color:var(--muted);font-size:14px">← <%= T.signIn %></a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

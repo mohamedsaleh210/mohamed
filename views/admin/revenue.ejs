@@ -1,0 +1,325 @@
+<% pageTitle = 'الإيرادات' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الإيرادات' }] }) %>
+
+<%
+  const money = (n) => (n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const periods = [
+    ['today', 'اليوم'],
+    ['week', 'آخر ٧ أيام'],
+    ['month', 'آخر ٣٠ يوم'],
+    ['this_month', 'الشهر ده'],
+    ['last_month', 'الشهر اللي فات'],
+    ['quarter', 'آخر ٣ شهور'],
+    ['year', 'آخر سنة'],
+  ];
+  const qs = (p) => `${adminPath}/revenue?period=${p}`;
+  const maxDay = Math.max(1, ...byDay.map((d) => d.total));
+  const maxMethod = Math.max(1, ...byMethod.map((m) => m.total));
+%>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>الإيرادات</h1>
+    <p class="sub"><%= bounds.label %> — من <span class="num"><%= bounds.from %></span> إلى <span class="num"><%= bounds.to %></span></p>
+  </div>
+  <% if(can('revenue.export')) { %><details class="export-menu">
+    <summary class="btn ghost">تحميل CSV</summary>
+    <div class="export-list">
+      <%
+        const exportQs = `period=${period}&from=${bounds.from}&to=${bounds.to}`;
+        const files = [
+          ['payments', 'التحصيل', 'كل دفعة بتاريخها وطريقتها ورقم عمليتها'],
+          ['expenses', 'المصاريف', 'كل مصروف: على مين، ومين دفعه، واتصرف ولا لأ'],
+          ['requests', 'ملخص الطلبات', 'صف لكل طلب: الأتعاب والمُحصَّل والمصاريف والصافي'],
+          ['owed', 'مستحق للموظفين', 'اللي المكتب مدين بيه لموظفيه دلوقتي'],
+        ];
+      %>
+      <% files.forEach(([kind, label, note]) => { %>
+        <a href="<%= adminPath %>/revenue/export.csv?kind=<%= kind %>&<%= exportQs %>">
+          <b><%= label %></b>
+          <small><%= note %></small>
+        </a>
+      <% }) %>
+    </div>
+  </details>
+  <a class="btn ghost" target="_blank" href="<%=adminPath%>/revenue/print?kind=payments&period=<%=period%>&from=<%=bounds.from%>&to=<%=bounds.to%>">PDF / طباعة</a><% } %>
+</div>
+
+<div class="quick-filters">
+  <% periods.forEach(([key, label]) => { %>
+    <a href="<%= qs(key) %>" class="qf <%= period === key ? 'on' : '' %>"><%= label %></a>
+  <% }) %>
+</div>
+
+<details class="custom-range" <%= period === 'custom' ? 'open' : '' %>>
+  <summary class="btn ghost sm">فترة محددة</summary>
+  <form method="get" action="<%= adminPath %>/revenue" class="range-form">
+    <input type="hidden" name="period" value="custom">
+    <label>من <input type="date" name="from" value="<%= bounds.from %>" required></label>
+    <label>إلى <input type="date" name="to" value="<%= bounds.to %>" required></label>
+    <button class="btn sm" type="submit">عرض</button>
+  </form>
+</details>
+
+<!-- ============================================================ headline -->
+<div class="stat-grid">
+  <a class="stat icon-stat" href="<%=adminPath%>/treasury">
+    <i class="stat-ico ic-brass">◈</i>
+    <div><span class="k">المتوفر في الخزنة</span>
+    <span class="v num"><%= money(treasuryBalance) %> <small><%= currency %></small></span>
+    <span class="sub-k">الرصيد الفعلي بعد الوارد والعهد</span></div>
+  </a>
+  <div class="stat big-stat icon-stat">
+    <i class="stat-ico ic-ok">↓</i>
+    <div><span class="k">المُحصَّل في الفترة</span>
+    <span class="v num"><%= money(totals.collected) %> <small><%= currency %></small></span>
+    <span class="sub-k"><%= totals.count %> دفعة من <%= totals.requests %> طلب</span></div>
+  </div>
+
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-danger">↑</i>
+    <div><span class="k">المصاريف على المكتب</span>
+    <span class="v num" style="color:var(--danger)"><%= money(expenses.totals.office) %></span>
+    <span class="sub-k"><%= expenses.totals.count %> مصروف</span></div>
+  </div>
+
+  <div class="stat icon-stat">
+    <i class="stat-ico <%= net >= 0 ? 'ic-ok' : 'ic-danger' %>">=</i>
+    <div><span class="k">الصافي</span>
+    <span class="v num" style="color:<%= net >= 0 ? 'var(--ok)' : 'var(--danger)' %>">
+      <%= money(net) %>
+    </span>
+    <span class="sub-k">المُحصَّل ناقص المصاريف</span></div>
+  </div>
+
+  <div class="stat icon-stat <%= outstanding.amount > 0 ? 'warn' : '' %>">
+    <i class="stat-ico ic-warn">%</i>
+    <div><span class="k">المتبقي على العملاء</span>
+    <span class="v num"><%= money(outstanding.amount) %></span>
+    <span class="sub-k"><%= outstanding.requests %> طلب</span></div>
+  </div>
+
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-info">≈</i>
+    <div><span class="k">متوسط الدفعة</span>
+    <span class="v num"><%= totals.count ? money(totals.collected / totals.count) : 0 %></span></div>
+  </div>
+
+  <% if (discounts.amount > 0) { %>
+    <div class="stat icon-stat">
+      <i class="stat-ico ic-violet">٪</i>
+      <div><span class="k">إجمالي الخصومات</span>
+      <span class="v num"><%= money(discounts.amount) %></span>
+      <span class="sub-k"><%= discounts.requests %> طلب</span></div>
+    </div>
+  <% } %>
+
+  <% if (voided.count > 0) { %>
+    <div class="stat icon-stat">
+      <i class="stat-ico ic-danger">⊗</i>
+      <div><span class="k">دفعات ملغاة</span>
+      <span class="v num" style="color:var(--danger)"><%= money(voided.amount) %></span>
+      <span class="sub-k"><%= voided.count %> دفعة</span></div>
+    </div>
+  <% } %>
+</div>
+
+<!-- ============================================================ over time -->
+<div class="panel">
+  <div class="panel-head"><h3>التحصيل يوم بيوم</h3></div>
+  <div class="panel-body">
+    <% if (byDay.length) { %>
+      <div class="day-chart">
+        <% byDay.forEach(d => { %>
+          <div class="day-bar" title="<%= d.day %> — <%= money(d.total) %> <%= currency %>">
+            <span class="bar" style="height:<%= Math.max(4, (d.total / maxDay) * 100) %>%"></span>
+            <span class="day-label"><%= d.day.slice(8) %></span>
+          </div>
+        <% }) %>
+      </div>
+      <div class="help" style="margin-top:10px;text-align:center">
+        أعلى يوم: <span class="num"><%= money(maxDay) %></span> <%= currency %>
+      </div>
+    <% } else { %>
+      <div class="empty"><p>مفيش تحصيل في الفترة دي.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<div class="two-col wide">
+  <!-- by method -->
+  <div class="panel">
+    <div class="panel-head"><h3>حسب طريقة الدفع</h3></div>
+    <div class="panel-body">
+      <% if (byMethod.length) { %>
+        <% byMethod.forEach(m => { %>
+          <div class="breakdown">
+            <div class="breakdown-top">
+              <span><%= methods[m.method] ? methods[m.method].icon : '•' %> <%= m.label %></span>
+              <b class="num"><%= money(m.total) %></b>
+            </div>
+            <div class="breakdown-bar">
+              <i style="width:<%= (m.total / maxMethod) * 100 %>%"></i>
+            </div>
+            <span class="breakdown-sub">
+              <%= m.count %> دفعة ·
+              <%= totals.collected ? Math.round((m.total / totals.collected) * 100) : 0 %>%
+            </span>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="empty" style="padding:24px"><p>لا يوجد.</p></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- by staff -->
+  <div class="panel">
+    <div class="panel-head"><h3>مين سجّل التحصيل</h3></div>
+    <div class="panel-body flush">
+      <% if (byStaff.length) { %>
+        <table class="tbl">
+          <thead><tr><th>الموظف</th><th>المبلغ</th><th>دفعات</th></tr></thead>
+          <tbody>
+            <% byStaff.forEach(s => { %>
+              <tr>
+                <td data-label="الموظف"><%= s.staff %></td>
+                <td data-label="المبلغ"><b class="num"><%= money(s.total) %></b></td>
+                <td data-label="دفعات"><%= s.count %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty" style="padding:24px"><p>لا يوجد.</p></div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ by service -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>أكتر الخدمات تحصيلاً</h3>
+    <span class="chip spacer">في الفترة</span>
+  </div>
+  <div class="panel-body flush">
+    <% if (byService.length) { %>
+      <table class="tbl">
+        <thead><tr><th>الخدمة</th><th>القسم</th><th>المبلغ</th><th>دفعات</th></tr></thead>
+        <tbody>
+          <% byService.forEach(s => { %>
+            <tr>
+              <td data-label="الخدمة"><strong><%= s.service %></strong></td>
+              <td data-label="القسم" style="color:var(--muted)"><%= s.category %></td>
+              <td data-label="المبلغ"><b class="num"><%= money(s.total) %></b></td>
+              <td data-label="دفعات"><%= s.count %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty"><p>مفيش بيانات في الفترة دي.</p></div>
+    <% } %>
+  </div>
+</div>
+
+<!-- ============================================================ expenses -->
+<% if (expenses.byCategory.length) { %>
+  <div class="two-col wide">
+    <div class="panel">
+      <div class="panel-head">
+        <h3>المصاريف حسب النوع</h3>
+        <a class="btn ghost sm" href="<%= adminPath %>/expenses">التفاصيل</a>
+      </div>
+      <div class="panel-body flush">
+        <table class="tbl">
+          <thead><tr><th>النوع</th><th>المبلغ</th><th>عدد</th></tr></thead>
+          <tbody>
+            <% expenses.byCategory.forEach(c => { %>
+              <tr>
+                <td data-label="النوع"><%= c.label %></td>
+                <td data-label="المبلغ"><b class="num"><%= money(c.total) %></b></td>
+                <td data-label="عدد"><%= c.count %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>مستحق للموظفين</h3>
+        <% if (expenses.owed.amount > 0) { %>
+          <span class="chip spacer" style="background:var(--warn-bg);color:#8a6416">
+            <%= money(expenses.owed.amount) %>
+          </span>
+        <% } %>
+      </div>
+      <div class="panel-body flush">
+        <% if (expenses.byStaff.length) { %>
+          <table class="tbl">
+            <thead><tr><th>الموظف</th><th>صرف</th><th>مستحق له</th></tr></thead>
+            <tbody>
+              <% expenses.byStaff.forEach(s => { %>
+                <tr>
+                  <td data-label="الموظف"><%= s.staff %></td>
+                  <td data-label="صرف"><span class="num"><%= money(s.total) %></span></td>
+                  <td data-label="مستحق له">
+                    <% if (s.owed > 0) { %>
+                      <b class="num" style="color:var(--danger)"><%= money(s.owed) %></b>
+                    <% } else { %><span style="color:var(--ok)">✓</span><% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty" style="padding:24px"><p>مفيش مصاريف في الفترة.</p></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<!-- ============================================================ debtors -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>أكبر المبالغ المستحقة</h3>
+    <span class="chip spacer">دلوقتي — مش مربوط بالفترة</span>
+  </div>
+  <div class="panel-body flush">
+    <% if (topDebtors.length) { %>
+      <table class="tbl">
+        <thead><tr><th>الطلب</th><th>العميل</th><th>الحالة</th><th>المتبقي</th><th></th></tr></thead>
+        <tbody>
+          <% topDebtors.forEach(d => {
+               const st = STATUS[d.status] || { ar: d.status, color: '#888' }; %>
+            <tr>
+              <td data-label="الطلب"><span class="num"><%= d.ref %></span></td>
+              <td data-label="العميل"><%= d.name %></td>
+              <td data-label="الحالة">
+                <span class="badge" style="background:<%= st.color %>"><%= st.ar %></span>
+              </td>
+              <td data-label="المتبقي"><b class="num" style="color:var(--danger)"><%= money(d.owed) %></b></td>
+              <td data-label="" class="row-actions">
+                <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= d.id %>">فتح</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">✓</span>
+        <p>مفيش مبالغ مستحقة. كل الطلبات مسدّدة.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

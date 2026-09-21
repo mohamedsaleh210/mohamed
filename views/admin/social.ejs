@@ -1,0 +1,174 @@
+<% pageTitle = 'حسابات التواصل' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'حسابات التواصل' }] }) %>
+
+<%
+  const okMsgs = {
+    added: 'تم إضافة الحساب.',
+    saved: 'تم حفظ الرابط.',
+    deleted: 'تم حذف الحساب.',
+    shown: 'الحساب ظاهر على الموقع دلوقتي.',
+    hidden: 'الحساب اتخفى من الموقع.',
+  };
+  const used = links.map(l => l.platform);
+%>
+
+<div class="page-head">
+  <h1>حسابات التواصل</h1>
+  <p class="sub">بتظهر للعملاء في فوتر الموقع، أسفل كل صفحة.</p>
+</div>
+
+<%- include('../partials/undo_banner') %>
+
+<% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
+<% if (err === 'fields') { %><div class="alert err"><span>اختار المنصة واكتب الرابط.</span></div><% } %>
+
+<!-- ============================================================ current -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>الحسابات المضافة</h3>
+    <span class="chip spacer"><%= links.length %></span>
+  </div>
+
+  <div class="panel-body flush">
+    <% if (links.length) { %>
+      <ul class="sortable" data-reorder-url="<%= adminPath %>/social/reorder">
+        <% links.forEach(l => { %>
+          <li class="sort-item" data-id="<%= l.id %>">
+            <span class="grip" aria-hidden="true" title="اسحب للترتيب">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+            </span>
+            <span class="move-btns">
+              <button type="button" data-move="up" aria-label="تحريك لفوق">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
+              <button type="button" data-move="down" aria-label="تحريك لتحت">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            </span>
+
+            <span class="social-ic" style="background:<%= l.meta.color %>">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="<%= l.meta.icon %>"/></svg>
+            </span>
+
+            <div class="sort-body">
+              <div class="t">
+                <%= l.label || l.meta.ar %>
+                <% if (!l.active) { %><span class="chip off">مخفي</span><% } %>
+              </div>
+              <div class="social-url"><%= l.url %></div>
+            </div>
+
+            <div class="sort-actions">
+              <a class="btn ghost sm" href="<%= l.url %>" target="_blank" rel="noopener noreferrer">فتح</a>
+              <button class="btn ghost sm" type="button" data-edit="<%= l.id %>">تعديل</button>
+              <form method="post" action="<%= adminPath %>/social/<%= l.id %>/toggle">
+                <%- csrfField %>
+                <button class="btn ghost sm" type="submit"><%= l.active ? 'إخفاء' : 'إظهار' %></button>
+              </form>
+              <form method="post" action="<%= adminPath %>/social/<%= l.id %>/delete"
+                    data-confirm="متأكد إنك عايز تحذف حساب <%= l.meta.ar %>؟">
+                <%- csrfField %>
+                <button class="btn danger sm" type="submit">حذف</button>
+              </form>
+            </div>
+          </li>
+
+          <li style="padding:0 14px">
+            <div class="edit-box" hidden id="social-edit-<%= l.id %>">
+              <form method="post" action="<%= adminPath %>/social/<%= l.id %>">
+                <%- csrfField %>
+                <div class="field">
+                  <label>الرابط</label>
+                  <input type="text" name="url" dir="ltr" style="text-align:left" value="<%= l.url %>" required>
+                </div>
+                <div class="field">
+                  <label>اسم بديل (اختياري)</label>
+                  <input type="text" name="label" value="<%= l.label || '' %>" placeholder="<%= l.meta.ar %>">
+                  <div class="help">سيبها فاضية عشان يظهر «<%= l.meta.ar %>».</div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn brass sm" type="submit">حفظ</button>
+                  <button class="btn ghost sm" type="button" data-close="<%= l.id %>">إلغاء</button>
+                </div>
+              </form>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">🔗</span>
+        <p>مفيش حسابات لسه. اختار منصة من تحت وضيف الرابط.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- ============================================================ add -->
+<div class="panel">
+  <div class="panel-head"><h3>إضافة حساب</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/social" id="addSocial">
+      <%- csrfField %>
+
+      <div class="field">
+        <label>المنصة</label>
+        <div class="platform-pick">
+          <% platforms.forEach((p, i) => { %>
+            <label>
+              <input type="radio" name="platform" value="<%= p.id %>"
+                     data-placeholder="<%= p.placeholder %>" <%= i === 0 ? 'checked' : '' %> required>
+              <span class="ic" style="background:<%= p.color %>">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="<%= p.icon %>"/></svg>
+              </span>
+              <span><%= p.ar %></span>
+            </label>
+          <% }) %>
+        </div>
+        <div class="help">تقدر تضيف أكتر من حساب لنفس المنصة لو محتاج.</div>
+      </div>
+
+      <div class="field req">
+        <label for="socialUrl">الرابط</label>
+        <input id="socialUrl" type="text" name="url" dir="ltr" style="text-align:left"
+               placeholder="<%= platforms[0].placeholder %>" required>
+        <div class="help">انسخ الرابط من المتصفح والصقه هنا. مش لازم تكتب https — هنضيفها لوحدنا.</div>
+      </div>
+
+      <div class="field">
+        <label for="socialLabel">اسم بديل (اختياري)</label>
+        <input id="socialLabel" type="text" name="label" placeholder="مثال: صفحتنا الرسمية">
+      </div>
+
+      <button class="btn brass" type="submit">إضافة الحساب</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Swap the URL placeholder to match the chosen platform.
+  document.querySelectorAll('.platform-pick input').forEach(function (r) {
+    r.addEventListener('change', function () {
+      var f = document.getElementById('socialUrl');
+      if (f) f.placeholder = r.getAttribute('data-placeholder') || '';
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    var edit = e.target.closest('[data-edit]');
+    if (edit) {
+      var box = document.getElementById('social-edit-' + edit.getAttribute('data-edit'));
+      if (box) { box.hidden = !box.hidden; if (!box.hidden) box.querySelector('input').focus(); }
+    }
+    var close = e.target.closest('[data-close]');
+    if (close) {
+      var b = document.getElementById('social-edit-' + close.getAttribute('data-close'));
+      if (b) b.hidden = true;
+    }
+  });
+</script>
+
+<%- include('../partials/admin_foot') %>

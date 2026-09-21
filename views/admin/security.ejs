@@ -1,0 +1,98 @@
+<% pageTitle = 'الأمان والدخول' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'الأمان والدخول' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>الأمان والدخول</h1>
+    <p class="sub">آخر ٣ عمليات دخول لكل حساب، وأي محاولات فاشلة تستاهل تبص عليها.</p>
+  </div>
+  <a class="btn ghost" href="<%= adminPath %>/security/log">السجل الكامل</a>
+</div>
+
+<% if (suspicious.length) { %>
+  <div class="alert err">
+    <span>
+      <b>فيه محاولات دخول فاشلة متكررة.</b>
+      <% suspicious.forEach(([ip, n]) => { %>
+        <br><span class="num"><%= ip %></span> — <%= n %> محاولة فاشلة.
+      <% }) %>
+      <br>لو مش انت أو حد من الفريق، غيّر كلمات السر فوراً.
+    </span>
+  </div>
+<% } %>
+
+<% users.forEach(u => { %>
+  <div class="panel sec-card">
+    <div class="panel-head">
+      <span class="avatar-sm"><%= (u.display_name || u.username).charAt(0) %></span>
+      <h3><%= u.display_name || u.username %></h3>
+      <span class="chip"><%= { admin:'أدمن', supervisor:'مشرف', lawyer:'محامي' }[u.role] || u.role %></span>
+      <% if (!u.active) { %><span class="chip off">موقوف</span><% } %>
+      <span class="spacer"></span>
+      <% if (u.sessions > 0) { %>
+        <span class="chip ok"><%= u.sessions %> جلسة مفتوحة</span>
+      <% } %>
+      <% if (u.ipCount > 3) { %>
+        <span class="chip warn"><%= u.ipCount %> عنوان مختلف</span>
+      <% } %>
+    </div>
+
+    <div class="panel-body flush">
+      <% if (u.logins.length) { %>
+        <table class="tbl">
+          <thead><tr><th>الوقت</th><th>عنوان IP والموقع</th><th>الجهاز</th><th>المتصفح والنظام</th></tr></thead>
+          <tbody>
+            <% u.logins.forEach((l, i) => { %>
+              <tr>
+                <td data-label="الوقت">
+                  <%= fmtDateTime(l.created_at) %>
+                  <% if (i === 0) { %><span class="chip brass">الأحدث</span><% } %>
+                </td>
+                <td data-label="IP والموقع"><span class="num"><%= l.ip %></span><br>
+                  <% if(l.location_status==='captured' && l.latitude!=null && l.longitude!=null){ %><a class="location-link" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q=<%= l.latitude %>,<%= l.longitude %>">📍 فتح الموقع</a><% } else { %><small class="location-missing"><%= {denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم'}[l.location_status] || 'غير مسجل' %></small><% } %>
+                </td>
+                <td data-label="الجهاز">
+                  <span class="chip"><%= l.device %></span>
+                </td>
+                <td data-label="المتصفح"><%= l.browser %> · <%= l.os %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty" style="padding:20px"><p>الحساب ده مدخلش من الجهاز ده قبل كده.</p></div>
+      <% } %>
+    </div>
+  </div>
+<% }) %>
+
+<% if (failures.length) { %>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>محاولات دخول فاشلة</h3>
+      <span class="chip spacer"><%= failures.length %></span>
+    </div>
+    <div class="panel-body flush">
+      <table class="tbl">
+        <thead><tr><th>الوقت</th><th>اسم المستخدم</th><th>IP والموقع</th><th>الجهاز</th></tr></thead>
+        <tbody>
+          <% failures.forEach(f => { %>
+            <tr>
+              <td data-label="الوقت"><%= fmtDateTime(f.created_at) %></td>
+              <td data-label="المستخدم"><span class="num"><%= f.username || '—' %></span></td>
+              <td data-label="IP والموقع"><span class="num"><%= f.ip %></span><br><small class="location-missing"><%= f.location_status==='captured'?'الموقع مسجل':({denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم'}[f.location_status]||'غير مسجل') %></small></td>
+              <td data-label="الجهاز"><%= f.device %> · <%= f.browser %> · <%= f.os %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+
+
+<%- include('../partials/admin_foot') %>

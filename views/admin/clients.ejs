@@ -1,0 +1,165 @@
+<% pageTitle = 'العملاء' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+<div class="btn-row" style="margin-bottom:14px"><a class="btn brass" href="<%= adminPath %>/clients/companies">الشركات والفروع</a></div>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'العملاء' }] }) %>
+
+<%
+  const money = (n) => (n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const sorts = [
+    ['recent', 'آخر طلب'],
+    ['newest', 'الأحدث تسجيلاً'],
+    ['oldest', 'الأقدم'],
+    ['requests', 'الأكتر طلبات'],
+    ['owing', 'الأكتر مديونية'],
+  ];
+  const linkFor = (params) => {
+    const merged = { q, sort, page: 1, ...params };
+    const parts = Object.entries(merged)
+      .filter(([, v]) => v && v !== 1)
+      .map(([k, v]) => `${k}=${encodeURIComponent(v)}`);
+    return adminPath + '/clients' + (parts.length ? '?' + parts.join('&') : '');
+  };
+%>
+
+<% if (msg === 'client_deleted') { %>
+  <div class="alert ok">
+    <span>تم حذف العميل نهائياً مع <b><%= query.n %></b> طلب، والصور اتشالت من السيرفر.</span>
+  </div>
+<% } %>
+
+<div class="page-head">
+  <h1>العملاء</h1>
+  <p class="sub">
+    <%= total.toLocaleString('en-US') %> عميل — مجمّعين برقم الموبايل،
+    فاللي قدّم قبل ما يسجّل بيظهر مرة واحدة.
+  </p>
+</div>
+
+<form class="toolbar" method="get" action="<%= adminPath %>/clients">
+  <input type="hidden" name="sort" value="<%= sort %>">
+  <input type="search" name="q" value="<%= q %>" placeholder="ابحث بالاسم أو الموبايل أو البريد">
+  <button class="btn" type="submit">بحث</button>
+  <%if(can('clients.export')){%><a class="btn ghost" href="<%=adminPath%>/clients/export.csv?q=<%=encodeURIComponent(q)%>">Excel</a>
+  <a class="btn ghost" target="_blank" href="<%=adminPath%>/clients/print?q=<%=encodeURIComponent(q)%>">PDF / طباعة</a><%}%>
+  <% if (q) { %>
+    <a class="btn ghost" href="<%= adminPath %>/clients">مسح</a>
+  <% } %>
+</form>
+
+<div class="quick-filters">
+  <% sorts.forEach(([key, label]) => { %>
+    <a href="<%= linkFor({ sort: key }) %>" class="qf <%= sort === key ? 'on' : '' %>"><%= label %></a>
+  <% }) %>
+</div>
+
+<div class="panel">
+  <div class="panel-body flush">
+    <% if (clients.length) { %>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>العميل</th><th>التواصل</th><th>الطلبات</th>
+            <th>آخر طلب</th>
+            <% if (showMoney) { %><th>المتبقي</th><% } %>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% clients.forEach(c => { %>
+            <tr>
+              <td data-label="العميل">
+                <a href="<%= adminPath %>/clients/<%= c.client_id || encodeURIComponent(c.phone) %>"
+                   style="font-weight:800;color:var(--ink)"><%= c.name %></a>
+                <% if (!c.client_id) { %>
+                  <br><span class="chip">بدون حساب</span>
+                <% } %>
+              </td>
+              <td data-label="التواصل">
+                <span class="num" style="font-size:13px"><%= c.phone %></span>
+                <% if (c.email) { %>
+                  <br><span class="num" style="font-size:12.5px;color:var(--muted)"><%= c.email %></span>
+                <% } %>
+              </td>
+              <td data-label="الطلبات">
+                <strong><%= c.request_count %></strong>
+                <% if (c.open_count) { %>
+                  <br><span class="flag" style="background:var(--brass-soft);color:var(--brass-deep)">
+                    <%= c.open_count %> مفتوح
+                  </span>
+                <% } %>
+              </td>
+              <td data-label="آخر طلب" style="color:var(--muted);font-size:13px">
+                <%= fmtDate(c.last_request) %>
+                <br><span style="font-size:12px"><%= timeAgo(c.last_request) %></span>
+              </td>
+              <% if (showMoney) { %>
+                <td data-label="المتبقي">
+                  <% if (c.owed > 0.01) { %>
+                    <b class="num" style="color:var(--danger)"><%= money(c.owed) %></b>
+                  <% } else { %>
+                    <span style="color:var(--ok)">✓</span>
+                  <% } %>
+                </td>
+              <% } %>
+              <td data-label="" class="row-actions">
+                <a class="btn ghost sm"
+                   href="<%= adminPath %>/clients/<%= c.client_id || encodeURIComponent(c.phone) %>">
+                  الملف
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty">
+        <span class="big">👤</span>
+        <p><%= q ? 'مفيش عميل بالبيانات دي.' : 'مفيش عملاء لسه.' %></p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (pages > 1) {
+     const qs = (n) => {
+       const parts = [];
+       if (q) parts.push('q=' + encodeURIComponent(q));
+       if (sort) parts.push('sort=' + sort);
+       parts.push('page=' + n);
+       return '?' + parts.join('&');
+     };
+     const from = (page - 1) * pageSize + 1;
+     const to = Math.min(page * pageSize, total);
+     const window = [];
+     for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) window.push(i);
+%>
+  <nav class="pager">
+    <span class="pager-info"><%= from %>–<%= to %> من <%= total %></span>
+    <span class="pager-links">
+      <% if (page > 1) { %><a href="<%= qs(page - 1) %>" class="pg">السابق</a>
+      <% } else { %><span class="pg off">السابق</span><% } %>
+
+      <% if (window[0] > 1) { %>
+        <a href="<%= qs(1) %>" class="pg">1</a>
+        <% if (window[0] > 2) { %><span class="pg gap">…</span><% } %>
+      <% } %>
+
+      <% window.forEach(n => { %>
+        <% if (n === page) { %><span class="pg cur"><%= n %></span>
+        <% } else { %><a href="<%= qs(n) %>" class="pg"><%= n %></a><% } %>
+      <% }) %>
+
+      <% if (window[window.length - 1] < pages) { %>
+        <% if (window[window.length - 1] < pages - 1) { %><span class="pg gap">…</span><% } %>
+        <a href="<%= qs(pages) %>" class="pg"><%= pages %></a>
+      <% } %>
+
+      <% if (page < pages) { %><a href="<%= qs(page + 1) %>" class="pg">التالي</a>
+      <% } else { %><span class="pg off">التالي</span><% } %>
+    </span>
+  </nav>
+<% } %>
+
+<%- include('../partials/admin_foot') %>

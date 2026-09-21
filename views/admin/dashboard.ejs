@@ -1,0 +1,275 @@
+<% pageTitle = 'لوحة التحكم' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<div class="page-head">
+  <h1>لوحة التحكم</h1>
+  <p class="sub">أهلاً <%= user.display_name || user.username %>.</p>
+</div>
+
+<form class="dashboard-filters" method="get">
+  <label>الفترة<select name="period"><%[['today','اليوم'],['week','هذا الأسبوع'],['month','هذا الشهر'],['custom','فترة مخصصة']].forEach(x=>{%><option value="<%=x[0]%>" <%=period===x[0]?'selected':''%>><%=x[1]%></option><%})%></select></label>
+  <label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label>
+  <label>الفرع<select name="branch_id"><option value="">كل الفروع</option><%branches.forEach(b=>{%><option value="<%=b.id%>" <%=branchId===b.id?'selected':''%>><%=b.company_name%> — <%=b.name%></option><%})%></select></label>
+  <label>المسؤول<select name="staff_id"><option value="">كل المسؤولين</option><%staffFilter.forEach(u=>{%><option value="<%=u.id%>" <%=staffId===u.id?'selected':''%>><%=u.display_name%></option><%})%></select></label><button class="btn brass">تحديث البيانات</button>
+</form>
+
+<% if (showMoney) { %><div class="stat-grid">
+  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass">◈</i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><%=financial.treasury.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok">↓</i><div><div class="k">إجمالي الإيرادات</div><div class="v"><%=financial.revenue.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger">↑</i><div><div class="k">إجمالي المصروفات</div><div class="v"><%=financial.expenses.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet">◫</i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><%=financial.custody.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+</div><% } %>
+
+<div class="stat-grid">
+  <a class="stat icon-stat" href="<%= adminPath %>/requests">
+    <i class="stat-ico ic-brass">▤</i>
+    <div><div class="k"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></div>
+    <div class="v"><%= total %></div></div>
+  </a>
+  <% if (showMoney) { %>
+    <%# Collected belongs on the revenue page, where it can be read by period.
+        What matters at a glance here is only what is still owed. %>
+    <a class="stat icon-stat" href="<%= adminPath %>/revenue">
+      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>">%</i>
+      <div><div class="k">المتبقي على العملاء</div>
+      <div class="v" style="color:<%= remaining > 0 ? 'var(--danger)' : 'var(--ok)' %>">
+        <%= remaining.toLocaleString('en-US') %> <small><%= site.currency %></small>
+      </div></div>
+    </a>
+  <% } %>
+  <a class="stat icon-stat" href="<%= adminPath %>/notifications">
+    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>">🔔</i>
+    <div><div class="k">إشعارات جديدة</div>
+    <div class="v" style="color:<%= notifications.length ? 'var(--danger)' : 'var(--ok)' %>"><%= notifications.length %></div></div>
+  </a>
+</div>
+
+<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger">🔔</i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn">⟳</i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger">⏱</i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info">▦</i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
+
+<div class="stat-grid">
+  <%# Finished work is not something anyone acts on from a dashboard, so the
+      strip shows only the statuses that still need attention. %>
+  <% Object.keys(STATUS).filter(k => k !== 'completed').forEach(k => { %>
+    <a class="stat" href="<%= adminPath %>/requests?status=<%= k %>" style="padding:13px 15px">
+      <div class="k"><span class="dot" style="background:<%= STATUS[k].color %>"></span><%= STATUS[k].ar %></div>
+      <div class="v" style="font-size:22px"><%= byStatus[k] %></div>
+    </a>
+  <% }) %>
+</div>
+
+<div class="two-col wide">
+  <div>
+    <!-- notifications -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>إشعارات محتاجة انتباهك</h3>
+        <a href="<%= adminPath %>/notifications" class="btn ghost sm spacer">الكل</a>
+      </div>
+      <div class="panel-body">
+        <% if (notifications.length) { %>
+          <% notifications.forEach(n => { %>
+            <div class="notif unseen">
+              <span class="ic"><%= { comment:'💬', assigned:'👤', status:'🔄', deadline:'📅', upload:'📎' }[n.type] || '🔔' %></span>
+              <div class="nb <%= n.priority === 'critical' ? 'critical' : '' %>">
+                <div class="m"><%= n.text %></div>
+                <div class="meta"><%= n.ref || '' %> · <%= timeAgo(n.created_at) %></div>
+              </div>
+              <div class="acts">
+                <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= n.request_id %>">افتح</a>
+                <a class="btn ghost sm" href="<%= adminPath %>/requests/<%= n.request_id %>"
+                   target="_blank" rel="noopener" title="فتح في تاب جديدة">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                       stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <path d="M15 3h6v6M10 14L21 3"/>
+                  </svg>
+                </a>
+                <form method="post" action="<%= adminPath %>/notifications/<%= n.id %>/seen">
+                  <%- csrfField %>
+                  <input type="hidden" name="next" value="<%= adminPath %>">
+                  <button class="btn ghost sm" type="submit">شوفتها</button>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="empty" style="padding:24px"><p>مفيش إشعارات جديدة. كل حاجة تحت السيطرة.</p></div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- latest requests -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>آخر الطلبات</h3>
+        <a href="<%= adminPath %>/requests" class="btn ghost sm spacer">الكل</a>
+      </div>
+      <div class="panel-body flush">
+        <% if (recent.length) { %>
+          <table class="tbl">
+            <thead><tr><th>الرقم</th><th>العميل</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+            <tbody>
+              <% recent.forEach(r => { %>
+                <tr onclick="location.href='<%= adminPath %>/requests/<%= r.id %>'" style="cursor:pointer">
+                  <td data-label="الرقم"><a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a></td>
+                  <td data-label="العميل"><strong><%= r.name %></strong></td>
+                  <td data-label="الحالة">
+                    <span class="badge" style="background:<%= STATUS[r.status] ? STATUS[r.status].color : '#888' %>">
+                      <%= STATUS[r.status] ? STATUS[r.status].ar : r.status %>
+                    </span>
+                  </td>
+                  <td data-label="التاريخ" style="color:var(--muted)"><%= timeAgo(r.created_at) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <div class="empty"><span class="big">📋</span><p>مفيش طلبات لسه.</p></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <!-- unclaimed -->
+<% if (unclaimed && unclaimed.length) { %>
+  <div class="panel" style="border-inline-start:4px solid var(--warn)">
+    <div class="panel-head">
+      <h3>محدش استلمها</h3>
+      <span class="chip spacer" style="background:var(--warn-bg);color:#8a6416">
+        <%= unclaimed.length %>
+      </span>
+    </div>
+    <div class="panel-body flush">
+      <p class="help" style="padding:12px 16px 4px;margin:0">
+        طلبات مفتوحة ومفيش محامي معيّن عليها — العميل مستني.
+      </p>
+      <ul class="timeline" style="padding:0 16px 12px">
+        <% unclaimed.forEach(r => { %>
+          <li>
+            <span style="flex:1">
+              <a class="num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
+              — <%= r.name %>
+              <% if (r.page_label) { %><br><small><%= r.page_label %></small><% } %>
+            </span>
+            <span class="chip" style="flex:none;<%= r.waiting_days >= 5
+              ? 'background:var(--danger-bg);color:#8f2f2b'
+              : 'background:var(--warn-bg);color:#8a6416' %>">
+              مستني <%= r.waiting_days %> يوم
+            </span>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+<% } %>
+
+<!-- deadlines -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>المواعيد</h3>
+        <% if (overdueList.length) { %>
+          <span class="chip spacer" style="background:var(--danger);color:#fff">
+            <%= overdueList.length %> متأخر
+          </span>
+        <% } %>
+      </div>
+      <div class="panel-body">
+
+        <%# Overdue first and always: the window below narrows what is still
+            ahead, never what has already slipped. %>
+        <% if (overdueList.length) { %>
+          <div class="due-group overdue">
+            <div class="due-group-head">متأخر — بغضّ النظر عن الفترة</div>
+            <ul class="timeline">
+              <% overdueList.slice(0, 8).forEach(r => { %>
+                <li>
+                  <span class="who" style="background:var(--danger-bg)">!</span>
+                  <div class="what">
+                    <div class="m">
+                      <a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
+                      — <%= r.name %>
+                    </div>
+                    <div class="meta">
+                      <span class="num"><%= r.deadline %></span>
+                      <span class="flag late">
+                        متأخر <%= Math.round((new Date(today) - new Date(r.deadline)) / 86400000) %> يوم
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+            <% if (overdueList.length > 8) { %>
+              <a class="due-more" href="<%= adminPath %>/requests?open=1">
+                + <%= overdueList.length - 8 %> طلب متأخر كمان
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+
+        <div class="due-filters">
+          <% [['week','أسبوع'],['month','شهر'],['quarter','٣ شهور'],['half','٦ شهور']].forEach(([key, label]) => { %>
+            <a href="<%= adminPath %>/?due=<%= key %>#due"
+               class="qf sm <%= horizon === key ? 'on' : '' %>"><%= label %></a>
+          <% }) %>
+        </div>
+
+        <div id="due">
+          <% if (upcomingList.length) { %>
+            <ul class="timeline">
+              <% upcomingList.forEach(r => { %>
+                <li>
+                  <span class="who" style="background:<%= r.deadline === today ? 'var(--warn-bg)' : 'var(--bg)' %>">⏱</span>
+                  <div class="what">
+                    <div class="m">
+                      <a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
+                      — <%= r.name %>
+                    </div>
+                    <div class="meta">
+                      <span class="num"><%= r.deadline %></span>
+                      <% if (r.deadline === today) { %><span class="flag soon">النهاردة</span><% } %>
+                    </div>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <div class="empty" style="padding:20px">
+              <p>مفيش مواعيد في الـ <%= horizonDays %> يوم الجايين.</p>
+            </div>
+          <% } %>
+        </div>
+
+        <% if (!overdueList.length && !upcomingList.length) { %>
+          <div class="empty" style="padding:24px"><p>مفيش مواعيد متأخرة ولا قريبة.</p></div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (activity.length) { %>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>آخر النشاط</h3>
+          <a href="<%= adminPath %>/activity" class="btn ghost sm spacer">السجل</a>
+        </div>
+        <div class="panel-body">
+          <ul class="timeline">
+            <% activity.forEach(a => { %>
+              <li>
+                <span class="who"><%= (a.user_label || '؟').charAt(0) %></span>
+                <div class="what">
+                  <div class="m"><%= a.details || a.action %></div>
+                  <div class="meta"><%= a.user_label %> · <%= timeAgo(a.created_at) %></div>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

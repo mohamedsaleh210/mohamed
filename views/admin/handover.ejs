@@ -1,0 +1,96 @@
+<% pageTitle = 'تسليم شغل ' + (person.display_name || person.username) %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', {
+  crumbs: [
+    { label: 'الموظفين', href: adminPath + '/users' },
+    { label: person.display_name || person.username, href: adminPath + '/users/' + person.id },
+    { label: 'تسليم الشغل' }
+  ]
+}) %>
+
+<% const roleAr = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي', accountant: 'محاسب' }; %>
+
+<div class="page-head">
+  <h1>قبل ما توقف <%= person.display_name || person.username %></h1>
+  <p class="sub">عنده <b><%= openWork.length %></b> طلب مفتوح لازم تقرر يروحوا لمين.</p>
+</div>
+
+<div class="alert warn">
+  <span>
+    <b>لو أوقفته والشغل معاه، الطلبات هتبان كأن حد ماشي فيها — وهو مش هيقدر يدخل.</b>
+    <br>
+    غالباً المكتب بيكتشف ده لما العميل يتصل ويسأل.
+  </span>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3>الطلبات المفتوحة</h3>
+    <span class="chip spacer"><%= openWork.length %></span>
+  </div>
+  <div class="panel-body flush">
+    <table class="tbl">
+      <thead><tr><th>الطلب</th><th>العميل</th><th>الحالة</th><th>الموعد</th></tr></thead>
+      <tbody>
+        <% openWork.forEach(r => {
+             const st = STATUS[r.status] || { ar: r.status, color: '#888' }; %>
+          <tr>
+            <td data-label="الطلب">
+              <% if (r.is_critical) { %><span class="flag urgent">عاجل</span><br><% } %>
+              <a class="num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
+            </td>
+            <td data-label="العميل"><%= r.name %></td>
+            <td data-label="الحالة">
+              <span class="badge" style="background:<%= st.color %>"><%= st.ar %></span>
+            </td>
+            <td data-label="الموعد">
+              <span class="num"><%= r.deadline || '—' %></span>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel" style="max-width:620px">
+  <div class="panel-head"><h3>تروح لمين؟</h3></div>
+  <div class="panel-body">
+    <form method="post" action="<%= adminPath %>/users/<%= person.id %>/toggle">
+      <%- csrfField %>
+      <input type="hidden" name="handled" value="1">
+
+      <div class="field">
+        <label>انقلهم إلى</label>
+        <select name="reassign_to">
+          <option value="">— سيبهم معاه زي ما هم —</option>
+          <% candidates.forEach(c => { %>
+            <option value="<%= c.id %>" <%= c.assign_locked ? 'disabled' : '' %>>
+              <%= c.display_name %> (<%= roleAr[c.role] || c.role %>)
+              — <%= c.load %> طلب
+              <%= c.assign_locked ? ' · مش متاح' : '' %>
+            </option>
+          <% }) %>
+        </select>
+        <div class="help">
+          الترتيب بالأقل شغل — والمش متاحين (قافلين التعيين) مش قابلين للاختيار.
+        </div>
+      </div>
+
+      <div class="alert info" style="margin-top:0">
+        <span>
+          لو سيبتهم معاه، ده بيتسجّل كقرار — مش كنسيان. نافع لو راجع قريب.
+        </span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn danger" type="submit">إيقاف الحساب</button>
+        <a class="btn ghost" href="<%= adminPath %>/users">إلغاء</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/admin_foot') %>

@@ -1,0 +1,266 @@
+[
+  {
+    "file": "pilot-browser-check.js",
+    "kind": "added"
+  },
+  {
+    "file": "TEST-ACCOUNTS.txt",
+    "kind": "modified"
+  },
+  {
+    "file": "package-lock.json",
+    "kind": "modified"
+  },
+  {
+    "file": "pilot-fixtures.js",
+    "kind": "added"
+  },
+  {
+    "file": "PILOT-IMPLEMENTATION.md",
+    "kind": "added"
+  },
+  {
+    "file": "package.json",
+    "kind": "modified"
+  },
+  {
+    "file": "booking-test.js",
+    "kind": "added"
+  },
+  {
+    "file": "server.js",
+    "kind": "modified"
+  },
+  {
+    "file": "pilot-evidence/regression-tests.log",
+    "kind": "added"
+  },
+  {
+    "file": "pilot-evidence/seed-initial.log",
+    "kind": "added"
+  },
+  {
+    "file": "pilot-evidence/seed-final.log",
+    "kind": "added"
+  },
+  {
+    "file": "pilot-evidence/p0-tests.log",
+    "kind": "added"
+  },
+  {
+    "file": "pilot-evidence/booking-tests.log",
+    "kind": "added"
+  },
+  {
+    "file": "routes/bookings.js",
+    "kind": "added"
+  },
+  {
+    "file": "platform/db.js",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/central.db-shm",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/central.db-wal",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/central.db",
+    "kind": "modified"
+  },
+  {
+    "file": "lib/entitlements.js",
+    "kind": "modified"
+  },
+  {
+    "file": "lib/permissions.js",
+    "kind": "modified"
+  },
+  {
+    "file": "lib/booking-invoices.js",
+    "kind": "added"
+  },
+  {
+    "file": "lib/bookings.js",
+    "kind": "added"
+  },
+  {
+    "file": "data/sanad.db-shm",
+    "kind": "added"
+  },
+  {
+    "file": "data/pilot-fixtures-report.json",
+    "kind": "added"
+  },
+  {
+    "file": "data/sanad.db",
+    "kind": "modified"
+  },
+  {
+    "file": "data/sanad.db-wal",
+    "kind": "added"
+  },
+  {
+    "file": "data/empty-before-consultations.db",
+    "kind": "added"
+  },
+  {
+    "file": "db/migrations/051_consultation_bookings.js",
+    "kind": "added"
+  },
+  {
+    "file": "db/migrations/052_booking_billing_content.js",
+    "kind": "added"
+  },
+  {
+    "file": "routes/admin/agenda.js",
+    "kind": "modified"
+  },
+  {
+    "file": "routes/admin/bookings.js",
+    "kind": "added"
+  },
+  {
+    "file": "routes/admin/index.js",
+    "kind": "modified"
+  },
+  {
+    "file": "views/partials/admin_nav.ejs",
+    "kind": "modified"
+  },
+  {
+    "file": "views/partials/header.ejs",
+    "kind": "modified"
+  },
+  {
+    "file": "views/admin/notifications.ejs",
+    "kind": "modified"
+  },
+  {
+    "file": "views/admin/bookings.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/admin/booking_detail.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/booking_invoice.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/consultations.ejs",
+    "kind": "modified"
+  },
+  {
+    "file": "views/public/booking_new.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/booking_list.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/home.ejs",
+    "kind": "modified"
+  },
+  {
+    "file": "views/public/booking_providers.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/booking_detail.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "views/public/booking_error.ejs",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/tenant-license.json",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/sanad.db-shm",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/pilot-fixtures-report.json",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/sanad.db",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/sanad.db-wal",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-gateway-services/tenant-license.json",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-gateway-services/pilot-fixtures-report.json",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-gateway-services/sanad.db",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/tenant-license.json",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/pilot-fixtures-report.json",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/sanad.db",
+    "kind": "modified"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/uploads/pilot-attachment-3.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/uploads/pilot-attachment-4.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/uploads/pilot-attachment-1.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/uploads/pilot-attachment-2.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-horizon-office/uploads/pilot-attachment-5.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/uploads/pilot-attachment-3.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/uploads/pilot-attachment-4.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/uploads/pilot-attachment-1.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/uploads/pilot-attachment-2.png",
+    "kind": "added"
+  },
+  {
+    "file": "platform-data/tenants/demo-nile-legal/uploads/pilot-attachment-5.png",
+    "kind": "added"
+  }
+]

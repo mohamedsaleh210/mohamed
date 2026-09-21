@@ -1,6 +1,6 @@
 <% pageTitle=t.ref %>
 <%- include('../partials/head') %>
-<%- include('../partials/header') %>
+<%- include('../partials/header') %><main>
 <section class="section"><div class="wrap narrow">
   <h1><%=t.ref%> — <%=t.title%></h1>
   <p>الحالة: <b><%=STATUSES[t.status]%></b></p>
@@ -15,4 +15,4 @@
   <% if(t.reopened_until && new Date(t.reopened_until) >= new Date()){ %><form method="post" action="/support/my/<%=t.id%>/reopen"><%-csrfField%><button class="btn ghost">إعادة فتح التذكرة</button></form><% } %>
   <% } %>
 </div></section>
-<%- include('../partials/footer') %>
+</main><%- include('../partials/footer') %>

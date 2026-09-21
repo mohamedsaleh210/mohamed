@@ -2,6 +2,18 @@
 (function () {
   'use strict';
 
+  // ------------------------------------------------------------ alert announcements
+  // Server-rendered .alert banners (validation errors, save confirmations)
+  // had no ARIA role, so screen readers never announced them. This only sets
+  // an attribute on markup the server already rendered — no change to when
+  // alerts appear, their text, or form submission/validation behavior.
+  document.querySelectorAll('.alert').forEach(function (el) {
+    if (el.hasAttribute('role')) return;
+    var isError = el.classList.contains('err') || el.classList.contains('danger');
+    el.setAttribute('role', isError ? 'alert' : 'status');
+    if (!isError) el.setAttribute('aria-live', 'polite');
+  });
+
   // ------------------------------------------------------------ drawer
   var sidebar = document.getElementById('sidebar');
   var scrim = document.getElementById('scrim');
@@ -107,6 +119,8 @@
     if (!statusPill) {
       statusPill = document.createElement('div');
       statusPill.className = 'sort-status';
+      statusPill.setAttribute('role', 'status');
+      statusPill.setAttribute('aria-live', 'polite');
       document.body.appendChild(statusPill);
     }
     statusPill.textContent = text;

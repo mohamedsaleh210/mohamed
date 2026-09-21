@@ -78,6 +78,12 @@
     var matchBox = scope.querySelector('[data-pw-match]');
     var submitBtn = scope.querySelector('button[type="submit"]');
 
+    // These regions update live as the user types, with no page reload, so a
+    // screen reader needs an explicit live region to ever announce them.
+    if (meter) meter.setAttribute('aria-live', 'polite');
+    if (rulesBox) rulesBox.setAttribute('aria-live', 'polite');
+    if (matchBox) matchBox.setAttribute('aria-live', 'polite');
+
     if (rulesBox && !rulesBox.children.length) {
       RULES.forEach(function (r) {
         var li = document.createElement('li');

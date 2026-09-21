@@ -512,6 +512,29 @@ table.tbl .row-actions { text-align: left; white-space: nowrap; }
 [dir="ltr"] .field select,
 [dir="ltr"] .toolbar select { background-position: right 13px center; }
 
+/* `body.admin select` further down (the v12.3 unified-control block) sets
+   `background:#fdfdfc` as a shorthand, which resets background-image,
+   -repeat, -size AND -position to their initial values at higher
+   specificity than the .field/.toolbar rule above — blanking out the
+   arrow in every direction (the [dir=ltr] position override two rules up
+   already had enough specificity to win on its own, which is why LTR
+   position alone looked fine even before this fix).
+   Restore image/repeat/size/position at matching specificity so the
+   arrow renders again, with its own [dir=ltr] mirror so direction still
+   flips correctly. Deliberately not touching padding-inline-start here
+   (it loses to that same shorthand's `padding` too, and stays as-is) so
+   dimensions, padding, colors, border and focus behavior are all unchanged
+   — see docs/UI-UX-AUDIT-v16.7.3-BASELINE.md for the full root cause. */
+body.admin .field select,
+body.admin .toolbar select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2366757e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 17px;
+  background-position: left 13px center;
+}
+[dir="ltr"] body.admin .field select,
+[dir="ltr"] body.admin .toolbar select { background-position: right 13px center; }
+
 /* Category headings inside a grouped list of services. */
 .field select optgroup {
   font-weight: 800;

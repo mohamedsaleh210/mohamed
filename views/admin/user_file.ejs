@@ -14,23 +14,30 @@
   const money = (n) => (n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
   const added = permissionRows.filter(r => r.override === true).length;
   const removed = permissionRows.filter(r => r.override === false).length;
+  const initial = (person.display_name || person.username || '?').trim().charAt(0);
 %>
 
+<!-- =========================== identity header =========================== -->
 <div class="page-head-row">
   <div class="page-head">
-    <h1><%= person.display_name || person.username %></h1>
-    <p class="sub">
-      <span class="chip"><%= roleAr[person.role] || person.role %></span>
-      <%if(person.job_title){%><span><%=person.job_title%></span><%}%>
-      <span class="num"><%= person.username %></span>
-      <% if (!person.active) { %> · <span class="chip off">موقوف</span><% } %>
-      <% if (person.must_change_password) { %>
-        · <span class="chip warn">هيغيّر كلمته</span>
-      <% } %>
-      <% if (person.assign_locked) { %>
-        · <span class="chip warn">مش متاح للتعيين</span>
-      <% } %>
-    </p>
+    <div class="identity-chip">
+      <span class="id-avatar lg" aria-hidden="true"><%= initial %></span>
+      <span>
+        <h1 style="margin:0"><%= person.display_name || person.username %></h1>
+        <p class="sub" style="margin-top:4px">
+          <span class="chip teal"><%= roleAr[person.role] || person.role %></span>
+          <%if(person.job_title){%><span><%=person.job_title%></span><%}%>
+          <span class="num"><%= person.username %></span>
+          <% if (!person.active) { %> · <span class="chip off">موقوف</span><% } %>
+          <% if (person.must_change_password) { %>
+            · <span class="chip warn">هيغيّر كلمته</span>
+          <% } %>
+          <% if (person.assign_locked) { %>
+            · <span class="chip warn">مش متاح للتعيين</span>
+          <% } %>
+        </p>
+      </span>
+    </div>
   </div>
   <div class="btn-row">
     <% if (can('users.manage') && person.active) { %>
@@ -66,210 +73,167 @@
   </div>
 <% } %>
 
-<%# Phase 2 V3: native #hash anchor nav — no JS/tab-state. %>
-<nav class="section-jump" aria-label="الانتقال السريع">
-  <a class="qf sm" href="#uf-identity"><svg aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</a>
-  <a class="qf sm" href="#uf-workload"><svg aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي</a>
-  <a class="qf sm" href="#uf-devices"><svg aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</a>
-  <a class="qf sm" href="#custody"><svg aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> العهد والمصروفات</a>
-  <% if (!isAdminAccount) { %><a class="qf sm" href="#uf-permissions"><svg aria-hidden="true"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</a><% } %>
-</nav>
+<!-- =========================== compact context row =========================== -->
+<div class="ws-section ws-stagger">
+  <div class="kpi-hero-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-tile"><span class="kpi-ico ic-info stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></span><span><span class="kpi-label">شغل مفتوح</span><span class="kpi-value"><%= openCount %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-lock"/></svg></span><span><span class="kpi-label">أجهزة مسجّلة</span><span class="kpi-value"><%= devices.length %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico <%= custodyStatement.totals.remaining>0?'ic-warn':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></span><span><span class="kpi-label">متبقي من العهدة</span><span class="kpi-value"><%= money(custodyStatement.totals.remaining) %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico <%= owed.amount>0?'ic-danger':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></span><span><span class="kpi-label">مستحق له</span><span class="kpi-value"><%= money(owed.amount) %></span></span></div>
+  </div>
+</div>
 
-<div class="two-col wide">
-  <!-- identity -->
-  <div class="panel" id="uf-identity">
-    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</h3></div>
-    <div class="panel-body">
+<!-- =========================== workspace tabs =========================== -->
+<div class="panel wtabs">
+  <input class="wtabs-input" type="radio" name="uftab" id="tab-identity" checked>
+  <input class="wtabs-input" type="radio" name="uftab" id="tab-work">
+  <input class="wtabs-input" type="radio" name="uftab" id="tab-access">
+  <input class="wtabs-input" type="radio" name="uftab" id="tab-custody">
+  <% if (!isAdminAccount) { %><input class="wtabs-input" type="radio" name="uftab" id="tab-perms"><% } %>
+
+  <nav class="wtabs-nav panel-body" style="padding-bottom:0">
+    <label for="tab-identity"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</label>
+    <label for="tab-work"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي<% if(openCount){ %> <span class="chip">‎<%=openCount%></span><% } %></label>
+    <label for="tab-access"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</label>
+    <label for="tab-custody"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-briefcase"/></svg> العهد والمصروفات</label>
+    <% if (!isAdminAccount) { %><label for="tab-perms"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</label><% } %>
+  </nav>
+
+  <div class="wtabs-panels panel-body">
+    <!-- ---- profile / employment ---- -->
+    <section class="wtabs-panel">
       <% if (person.photo) { %>
         <div style="text-align:center;margin-bottom:16px">
           <img src="<%= adminPath %>/account/avatar/<%= person.id %>" alt=""
                style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--line)">
         </div>
       <% } %>
-
       <table class="tbl">
-        <tr>
-          <td data-label="الاسم الرسمي">الاسم الرسمي</td>
-          <td><%= person.legal_name || '—' %></td>
-        </tr>
-        <tr>
-          <td data-label="الاسم المختصر">الاسم المختصر</td>
-          <td><%= person.display_name || '—' %></td>
-        </tr>
-        <tr>
-          <td data-label="البريد">البريد</td>
-          <td><span class="num"><%= person.email || '—' %></span></td>
-        </tr>
-        <tr>
-          <td data-label="الموبايل">الموبايل</td>
-          <td><span class="num"><%= person.phone || '—' %></span></td>
-        </tr>
-        <tr>
-          <td data-label="الرقم القومي">الرقم القومي</td>
-          <td><span class="num"><%= person.national_id || '—' %></span></td>
-        </tr>
-        <tr>
-          <td data-label="تاريخ الميلاد">تاريخ الميلاد</td>
-          <td><span class="num"><%= person.birth_date || '—' %></span></td>
-        </tr>
-        <tr>
-          <td data-label="تاريخ الإضافة">اتضاف</td>
-          <td>
-            <%= fmtDate(person.created_at) %>
-            <% if (person.created_by) { %> بواسطة <%= person.created_by %><% } %>
-          </td>
-        </tr>
+        <tr><td data-label="الاسم الرسمي">الاسم الرسمي</td><td><%= person.legal_name || '—' %></td></tr>
+        <tr><td data-label="الاسم المختصر">الاسم المختصر</td><td><%= person.display_name || '—' %></td></tr>
+        <tr><td data-label="البريد">البريد</td><td><span class="num"><%= person.email || '—' %></span></td></tr>
+        <tr><td data-label="الموبايل">الموبايل</td><td><span class="num"><%= person.phone || '—' %></span></td></tr>
+        <tr><td data-label="الرقم القومي">الرقم القومي</td><td><span class="num"><%= person.national_id || '—' %></span></td></tr>
+        <tr><td data-label="تاريخ الميلاد">تاريخ الميلاد</td><td><span class="num"><%= person.birth_date || '—' %></span></td></tr>
+        <tr><td data-label="تاريخ الإضافة">اتضاف</td><td><%= fmtDate(person.created_at) %><% if (person.created_by) { %> بواسطة <%= person.created_by %><% } %></td></tr>
       </table>
-
       <% if (idRequired && (person.id_front || person.id_back)) { %>
         <div class="id-sides" style="margin-top:16px">
-          <% if (person.id_front) { %>
-            <a href="<%= adminPath %>/users/<%= person.id %>/id/front"
-               target="_blank" rel="noopener">
-              <img src="<%= adminPath %>/users/<%= person.id %>/id/front" alt="وجه البطاقة">
-              <span>وجه البطاقة</span>
-            </a>
-          <% } %>
-          <% if (person.id_back) { %>
-            <a href="<%= adminPath %>/users/<%= person.id %>/id/back"
-               target="_blank" rel="noopener">
-              <img src="<%= adminPath %>/users/<%= person.id %>/id/back" alt="ظهر البطاقة">
-              <span>ظهر البطاقة</span>
-            </a>
-          <% } %>
+          <% if (person.id_front) { %><a href="<%= adminPath %>/users/<%= person.id %>/id/front" target="_blank" rel="noopener"><img src="<%= adminPath %>/users/<%= person.id %>/id/front" alt="وجه البطاقة"><span>وجه البطاقة</span></a><% } %>
+          <% if (person.id_back) { %><a href="<%= adminPath %>/users/<%= person.id %>/id/back" target="_blank" rel="noopener"><img src="<%= adminPath %>/users/<%= person.id %>/id/back" alt="ظهر البطاقة"><span>ظهر البطاقة</span></a><% } %>
         </div>
       <% } else if (idRequired) { %>
         <p class="help" style="margin-top:14px">صورة البطاقة مش مرفوعة لسه.</p>
       <% } %>
-    </div>
-  </div>
+    </section>
 
-  <div>
-    <!-- workload -->
-    <div class="panel" id="uf-workload">
-      <div class="panel-head">
-        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي</h3>
-        <span class="chip spacer"><%= openCount %> مفتوح</span>
-      </div>
-      <div class="panel-body flush">
-        <% if (assigned.length) { %>
-          <table class="tbl">
-            <thead><tr><th>الطلب</th><th>العميل</th><th>الحالة</th></tr></thead>
-            <tbody>
-              <% assigned.slice(0, 10).forEach(r => {
-                   const st = STATUS[r.status] || { ar: r.status, color: '#888' }; %>
-                <tr>
-                  <td data-label="الطلب">
-                    <% if (r.is_critical) { %><span class="flag urgent">عاجل</span><br><% } %>
-                    <a class="num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
-                  </td>
-                  <td data-label="العميل"><%= r.name %></td>
-                  <td data-label="الحالة">
-                    <span class="badge" style="background:<%= st.color %>"><%= st.ar %></span>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-          <% if (assigned.length > 10) { %>
-            <p class="help" style="padding:12px 16px">+ <%= assigned.length - 10 %> طلب كمان</p>
+    <!-- ---- work / assignments ---- -->
+    <section class="wtabs-panel">
+      <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">الطلبات المعيّنة عليه</h3><span class="chip spacer"><%= openCount %> مفتوح</span></div>
+      <% if (assigned.length) { %>
+        <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>الطلب</th><th>العميل</th><th>الحالة</th></tr></thead>
+          <tbody>
+            <% assigned.slice(0, 10).forEach(r => { const st = STATUS[r.status] || { ar: r.status, color: '#888' }; %>
+              <tr>
+                <td data-label="الطلب"><% if (r.is_critical) { %><span class="flag urgent">عاجل</span><br><% } %><a class="num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a></td>
+                <td data-label="العميل"><%= r.name %></td>
+                <td data-label="الحالة"><span class="badge" style="background:<%= st.color %>"><%= st.ar %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        </div>
+        <% if (assigned.length > 10) { %><p class="help" style="padding:12px 0">+ <%= assigned.length - 10 %> طلب كمان</p><% } %>
+      <% } else { %>
+        <div class="empty" style="padding:24px"><p>مفيش طلبات معيّنة عليه.</p></div>
+      <% } %>
+
+      <% if (owed.amount > 0) { %>
+        <div class="panel" style="margin-top:14px"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-wallet"/></svg> مستحق له</h3></div><div class="panel-body">
+          <div class="pay-totals"><div class="owing"><span>مصاريف لسه ماتصرفتش</span><b class="num"><%= money(owed.amount) %></b></div><div><span>عدد المصاريف</span><b><%= owed.count %></b></div></div>
+          <a class="btn ghost block sm" style="margin-top:12px" href="<%= adminPath %>/expenses?view=owed">افتح المصاريف</a>
+        </div></div>
+      <% } %>
+    </section>
+
+    <!-- ---- account / access ---- -->
+    <section class="wtabs-panel">
+      <div class="two-col wide">
+        <div>
+          <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">الأجهزة المسجّلة</h3><span class="chip spacer"><%= devices.length %> جهاز</span></div>
+          <% if (devices.length) { %>
+            <div class="tbl-wrap"><table class="tbl">
+              <thead><tr><th>الجهاز</th><th>آخر دخول</th><th>مرات</th></tr></thead>
+              <tbody><% devices.forEach(d => { %><tr><td data-label="الجهاز"><%= d.label %><br><span class="num" style="font-size:12px;color:var(--muted)"><%= d.ip %></span></td><td data-label="آخر دخول" style="font-size:13px"><%= timeAgo(d.last_seen) %></td><td data-label="مرات"><%= d.seen_count %></td></tr><% }) %></tbody>
+            </table></div>
+          <% } else { %>
+            <div class="empty" style="padding:20px"><p>مفيش أجهزة مسجّلة.</p></div>
           <% } %>
-        <% } else { %>
-          <div class="empty" style="padding:24px"><p>مفيش طلبات معيّنة عليه.</p></div>
-        <% } %>
-      </div>
-    </div>
-
-    <!-- what the office owes them -->
-    <% if (owed.amount > 0) { %>
-      <div class="panel">
-        <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-wallet"/></svg> مستحق له</h3></div>
-        <div class="panel-body">
-          <div class="pay-totals">
-            <div class="owing">
-              <span>مصاريف لسه ماتصرفتش</span>
-              <b class="num"><%= money(owed.amount) %></b>
-            </div>
-            <div><span>عدد المصاريف</span><b><%= owed.count %></b></div>
-          </div>
-          <a class="btn ghost block sm" style="margin-top:12px"
-             href="<%= adminPath %>/expenses?view=owed">افتح المصاريف</a>
+        </div>
+        <div>
+          <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">آخر عمليات الدخول</h3><span class="chip spacer"><%= logins.length %></span></div>
+          <% if (logins.length) { %>
+            <ul class="timeline">
+              <% logins.forEach(l => { %>
+                <li>
+                  <span class="who"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-lock"/></svg></span>
+                  <div class="what">
+                    <div class="m"><%= l.browser || 'متصفح غير معروف' %> · <%= l.os || '—' %></div>
+                    <div class="meta"><span class="num"><%= l.ip || '—' %></span> · <%= timeAgo(l.created_at) %></div>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <div class="empty" style="padding:20px"><p>مفيش سجل دخول لسه.</p></div>
+          <% } %>
         </div>
       </div>
-    <% } %>
+    </section>
 
-    <!-- devices and sign-ins -->
-    <div class="panel" id="uf-devices">
-      <div class="panel-head">
-        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</h3>
-        <span class="chip spacer"><%= devices.length %> جهاز</span>
+    <!-- ---- custody / assets ---- -->
+    <section class="wtabs-panel" id="custody">
+      <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">كشف العهد والمصروفات</h3><span class="chip spacer"><%= custodyStatement.custodies.length %> عهدة</span><% if(can('expenses.custody')){ %><a class="btn ghost sm" href="<%= adminPath %>/expenses/custodies">إدارة العهد</a><% } %></div>
+      <div class="pay-totals custody-totals">
+        <div><span>إجمالي ما استلم</span><b class="num"><%= money(custodyStatement.totals.received) %></b></div>
+        <div><span>صُرف من العهد</span><b class="num"><%= money(custodyStatement.totals.spent) %></b></div>
+        <div><span>مرتجع للمكتب</span><b class="num"><%= money(custodyStatement.totals.returned) %></b></div>
+        <div class="<%= custodyStatement.totals.remaining>0?'owing':'settled' %>"><span>المتبقي معه</span><b class="num"><%= money(custodyStatement.totals.remaining) %></b></div>
       </div>
-      <div class="panel-body flush">
-        <% if (devices.length) { %>
-          <table class="tbl">
-            <thead><tr><th>الجهاز</th><th>آخر دخول</th><th>مرات</th></tr></thead>
-            <tbody>
-              <% devices.forEach(d => { %>
-                <tr>
-                  <td data-label="الجهاز">
-                    <%= d.label %>
-                    <br><span class="num" style="font-size:12px;color:var(--muted)"><%= d.ip %></span>
-                  </td>
-                  <td data-label="آخر دخول" style="font-size:13px"><%= timeAgo(d.last_seen) %></td>
-                  <td data-label="مرات"><%= d.seen_count %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        <% } else { %>
-          <div class="empty" style="padding:20px"><p>مفيش أجهزة مسجّلة.</p></div>
-        <% } %>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- staff custody and expense statement -->
-<div class="panel" id="custody">
-  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> كشف العهد والمصروفات</h3><span class="chip spacer"><%= custodyStatement.custodies.length %> عهدة</span><% if(can('expenses.custody')){ %><a class="btn ghost sm" href="<%= adminPath %>/expenses/custodies">إدارة العهد</a><% } %></div>
-  <div class="panel-body">
-    <div class="pay-totals custody-totals">
-      <div><span>إجمالي ما استلم</span><b class="num"><%= money(custodyStatement.totals.received) %></b></div>
-      <div><span>صُرف من العهد</span><b class="num"><%= money(custodyStatement.totals.spent) %></b></div>
-      <div><span>مرتجع للمكتب</span><b class="num"><%= money(custodyStatement.totals.returned) %></b></div>
-      <div class="<%= custodyStatement.totals.remaining>0?'owing':'settled' %>"><span>المتبقي معه</span><b class="num"><%= money(custodyStatement.totals.remaining) %></b></div>
-    </div>
-  </div>
-  <% if(custodyStatement.custodies.length){ %><div class="panel-body flush"><table class="tbl"><thead><tr><th>العهدة</th><th>استلم</th><th>صرف</th><th>مرتجع</th><th>المتبقي</th><th>التاريخ</th></tr></thead><tbody><% custodyStatement.custodies.forEach(c=>{ %><tr><td><%= c.purpose %><% if(c.reference){ %><br><small><%= c.reference %></small><% } %></td><td class="num"><%= money(c.amount) %></td><td class="num"><%= money(c.spent) %></td><td class="num"><%= money(c.returned) %></td><td><b class="num"><%= money(c.remaining) %></b></td><td class="num"><%= c.issued_on %></td></tr><% }) %></tbody></table></div><% } %>
-  <% if(custodyStatement.expenses.length){ %><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> كشف مصروفاته على الطلبات</h3><span class="chip spacer"><%= custodyStatement.expenses.length %></span></div><div class="panel-body flush"><table class="tbl"><thead><tr><th>التاريخ</th><th>الطلب</th><th>السبب</th><th>المبلغ</th><th>المصدر</th></tr></thead><tbody><% custodyStatement.expenses.forEach(e=>{ %><tr><td class="num"><%= e.spent_on %></td><td><a class="num" href="<%= adminPath %>/requests/<%= e.request_id %>"><%= e.ref %></a><br><small><%= e.client_name %></small></td><td><%= e.reason %></td><td><b class="num"><%= money(e.amount) %></b></td><td><span class="chip <%= e.custody_id?'brass':'' %>"><%= e.custody_id?'من العهدة':'من ماله' %></span></td></tr><% }) %></tbody></table></div><% } %>
-  <% if(!custodyStatement.custodies.length&&!custodyStatement.expenses.length){ %><div class="empty"><p>لا توجد عهد أو مصروفات مسجلة لهذا الموظف.</p></div><% } %>
-</div>
-
-<!-- permissions summary -->
-<% if (!isAdminAccount) { %>
-  <div class="panel" id="uf-permissions">
-    <div class="panel-head">
-      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</h3>
-      <span class="chip spacer">
-        <%= permissionRows.filter(r => r.effective).length %> من <%= permissionRows.length %>
-      </span>
-      <a class="btn ghost sm" href="<%= adminPath %>/users/<%= person.id %>/permissions">تعديل</a>
-    </div>
-    <div class="panel-body">
-      <% if (added || removed) { %>
-        <p class="help" style="margin:0 0 12px">
-          <%= added %> مضافة · <%= removed %> مشيلة عن افتراضي الدور
-        </p>
-      <% } else { %>
-        <p class="help" style="margin:0 0 12px">على افتراضي الدور بالكامل.</p>
+      <% if(custodyStatement.custodies.length){ %><div class="tbl-wrap" style="margin-top:12px"><table class="tbl"><thead><tr><th>العهدة</th><th>استلم</th><th>صرف</th><th>مرتجع</th><th>المتبقي</th><th>التاريخ</th></tr></thead><tbody><% custodyStatement.custodies.forEach(c=>{ %><tr><td data-label="العهدة"><%= c.purpose %><% if(c.reference){ %><br><small><%= c.reference %></small><% } %></td><td data-label="استلم" class="num"><%= money(c.amount) %></td><td data-label="صرف" class="num"><%= money(c.spent) %></td><td data-label="مرتجع" class="num"><%= money(c.returned) %></td><td data-label="المتبقي"><b class="num"><%= money(c.remaining) %></b></td><td data-label="التاريخ" class="num"><%= c.issued_on %></td></tr><% }) %></tbody></table></div><% } %>
+      <% if(custodyStatement.expenses.length){ %>
+        <div class="panel-head" style="padding-inline:0;margin-top:16px"><h3 style="margin:0">كشف مصروفاته على الطلبات</h3><span class="chip spacer"><%= custodyStatement.expenses.length %></span></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>التاريخ</th><th>الطلب</th><th>السبب</th><th>المبلغ</th><th>المصدر</th></tr></thead><tbody><% custodyStatement.expenses.forEach(e=>{ %><tr><td data-label="التاريخ" class="num"><%= e.spent_on %></td><td data-label="الطلب"><a class="num" href="<%= adminPath %>/requests/<%= e.request_id %>"><%= e.ref %></a><br><small><%= e.client_name %></small></td><td data-label="السبب"><%= e.reason %></td><td data-label="المبلغ"><b class="num"><%= money(e.amount) %></b></td><td data-label="المصدر"><span class="chip <%= e.custody_id?'brass':'' %>"><%= e.custody_id?'من العهدة':'من ماله' %></span></td></tr><% }) %></tbody></table></div>
       <% } %>
-      <ul class="svc-tags">
-        <% permissionRows.filter(r => r.effective).forEach(r => { %>
-          <li class="<%= r.override === true ? '' : 'gone' %>"><%= r.label %></li>
-        <% }) %>
-      </ul>
-    </div>
+      <% if(!custodyStatement.custodies.length&&!custodyStatement.expenses.length){ %><div class="empty"><p>لا توجد عهد أو مصروفات مسجلة لهذا الموظف.</p></div><% } %>
+    </section>
+
+    <!-- ---- permissions ---- -->
+    <% if (!isAdminAccount) { %>
+      <section class="wtabs-panel">
+        <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">الصلاحيات</h3><span class="chip spacer"><%= permissionRows.filter(r => r.effective).length %> من <%= permissionRows.length %></span><a class="btn ghost sm" href="<%= adminPath %>/users/<%= person.id %>/permissions">تعديل</a></div>
+        <% if (added || removed) { %><p class="help" style="margin:0 0 12px"><%= added %> مضافة · <%= removed %> مشيلة عن افتراضي الدور</p><% } else { %><p class="help" style="margin:0 0 12px">على افتراضي الدور بالكامل.</p><% } %>
+        <ul class="svc-tags"><% permissionRows.filter(r => r.effective).forEach(r => { %><li class="<%= r.override === true ? '' : 'gone' %>"><%= r.label %></li><% }) %></ul>
+      </section>
+    <% } %>
   </div>
-<% } %>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // #custody is a real inbound deep-link from custodies.ejs (two places).
+  // The tabs above are native radio/label — no JS needed to operate them by
+  // keyboard or click — but a bare #hash can't check a radio on its own, so
+  // this one small script keeps that existing link working against the new
+  // tabbed layout instead of landing on a hidden panel.
+  if (window.location.hash === '#custody') {
+    var r = document.getElementById('tab-custody');
+    if (r) { r.checked = true; document.getElementById('custody').scrollIntoView({ block: 'start' }); }
+  }
+})();
+</script>
 
 <%- include('../partials/admin_foot') %>

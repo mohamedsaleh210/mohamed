@@ -14,6 +14,20 @@
     if (!isError) el.setAttribute('aria-live', 'polite');
   });
 
+  // ------------------------------------------------------- success alert auto-recede
+  // A save confirmation (.alert.ok) recedes on its own after a few seconds so
+  // it doesn't linger as stale chrome once the user has moved on — but only
+  // when the visitor hasn't asked for reduced motion (WCAG 2.2.1: the timer
+  // itself, not just its animation, is skipped, per ui-ux-pro-max's
+  // auto-dismiss guidance in design-review/v4/checkpoint-1/UIUX-PRO-MAX-USAGE.md).
+  // Error/warning banners are never auto-dismissed — they need a read and,
+  // often, a next action.
+  if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    document.querySelectorAll('.alert.ok').forEach(function (el) {
+      setTimeout(function () { el.classList.add('alert-recede'); }, 4000);
+    });
+  }
+
   // ------------------------------------------------------------ drawer
   var sidebar = document.getElementById('sidebar');
   var scrim = document.getElementById('scrim');

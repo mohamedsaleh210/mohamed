@@ -1,13 +1,99 @@
 <%pageTitle='الخزنة'%><%-include('../partials/admin_head')%><%-include('../partials/admin_nav')%><%-include('../partials/crumbs',{crumbs:[{label:'الخزنة'}]})%>
 <div class="page-head-row"><div class="page-head"><h1>الخزنة</h1><p class="sub">أرصدة مستقلة للكاش والتحويلات وإنستاباي مع سجل واعتماد لكل حركة.</p></div><%if(can('treasury.export')){%><a class="btn ghost" href="<%=adminPath%>/treasury/export.csv?<%=new URLSearchParams(filters).toString()%>">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/treasury/print?<%=new URLSearchParams(filters).toString()%>">PDF / طباعة</a><%}%></div>
-<%const main=treasuries[0]||{balance:0,byMethod:{}}%><div class="stat-grid treasury-stats"><div class="stat featured icon-stat"><span class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></span><div><span class="k">إجمالي الرصيد المتاح</span><b class="v"><span data-count-to="<%=Number(main.balance)%>">0</span> <%=site.currency%></b></div></div><div class="stat icon-stat"><span class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></span><div><span class="k">رصيد الكاش</span><b class="v"><span data-count-to="<%=Number(main.byMethod.cash||0)%>">0</span></b></div></div><div class="stat icon-stat"><span class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-building"/></svg></span><div><span class="k">التحويلات البنكية</span><b class="v"><span data-count-to="<%=Number(main.byMethod.bank||0)%>">0</span></b></div></div><div class="stat icon-stat"><span class="stat-ico ic-violet" aria-hidden="true"><svg><use href="/images/icons.svg#i-globe"/></svg></span><div><span class="k">رصيد إنستاباي</span><b class="v"><span data-count-to="<%=Number(main.byMethod.instapay||0)%>">0</span></b></div></div><div class="stat icon-stat"><span class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-chevron-down"/></svg></span><div><span class="k">الوارد في النتائج</span><b class="v ok-text"><span data-count-to="<%=totals.incoming%>">0</span></b></div></div><div class="stat icon-stat"><span class="stat-ico ic-danger" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></span><div><span class="k">المنصرف في النتائج</span><b class="v danger-text"><span data-count-to="<%=totals.outgoing%>">0</span></b></div></div></div>
-<%if(can('treasury.manage')){%><div class="treasury-tabs" data-tabs><div class="tab-buttons"><button type="button" class="btn brass" data-tab="in"><svg aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل وارد</button><button type="button" class="btn ghost" data-tab="out"><svg aria-hidden="true" style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل منصرف</button><button type="button" class="btn ghost" data-tab="transfer"><svg aria-hidden="true"><use href="/images/icons.svg#i-refresh"/></svg> تحويل بين الخزن</button></div>
+
+<%
+  const main = treasuries[0] || { balance: 0, byMethod: {} };
+  const methodColors = { cash: 'var(--brass)', bank: 'var(--info)', instapay: '#7c5cbf', card: 'var(--ink-3)', other: 'var(--muted)', custody: 'var(--ok)' };
+  const methodMax = Math.max(1, ...Object.keys(methods).map(m => Number(main.byMethod[m] || 0)));
+
+  /* Net movement per real transaction date already in the fetched, filtered
+     `rows` — never a projected running balance, since we don't have a true
+     starting-balance anchor for the filtered window server-side. Shown only
+     with 4+ distinct days (ui-ux-pro-max chart-domain rule: fewer points ->
+     a stat card instead — see UIUX-PRO-MAX-USAGE.md item 4). */
+  const dayTotals = {};
+  rows.filter(r => r.approval_status === 'approved').forEach(r => {
+    const d = r.transaction_date;
+    dayTotals[d] = (dayTotals[d] || 0) + (r.direction === 'in' ? Number(r.amount) : -Number(r.amount));
+  });
+  const trendDays = Object.keys(dayTotals).sort();
+  const trendVals = trendDays.map(d => dayTotals[d]);
+  const showTrend = trendDays.length >= 4;
+  let trendLine = '', trendArea = '', zeroY = 0;
+  if (showTrend) {
+    const w = 300, h = 40, pad = 3;
+    const min = Math.min(...trendVals, 0), max = Math.max(...trendVals, 0);
+    const range = (max - min) || 1;
+    const stepX = (w - pad * 2) / (trendVals.length - 1 || 1);
+    const yFor = (v) => pad + (h - pad * 2) * (1 - (v - min) / range);
+    const pts = trendVals.map((v, i) => (pad + i * stepX).toFixed(1) + ',' + yFor(v).toFixed(1));
+    trendLine = pts.join(' ');
+    const firstX = pad.toFixed(1), lastX = (pad + (trendVals.length - 1) * stepX).toFixed(1);
+    trendArea = firstX + ',' + (h - pad) + ' ' + trendLine + ' ' + lastX + ',' + (h - pad);
+    zeroY = yFor(0).toFixed(1);
+  }
+%>
+
+<!-- =========================== primary balance + channels + trend =========================== -->
+<div class="ws-section ws-stagger">
+  <div class="kpi-hero-row">
+    <div class="kpi-primary">
+      <span class="kpi-label">إجمالي الرصيد المتاح</span>
+      <span class="kpi-value"><span data-count-to="<%=Number(main.balance)%>">0</span> <small><%=site.currency%></small></span>
+      <span class="kpi-sub">عبر كل طرق الاستلام النشطة</span>
+    </div>
+    <div class="kpi-secondary-col">
+      <div class="kpi-tile"><span class="kpi-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-chevron-down"/></svg></span><span><span class="kpi-label">الوارد في النتائج</span><span class="kpi-value" style="color:var(--ok)"><span data-count-to="<%=totals.incoming%>">0</span></span></span></div>
+      <div class="kpi-tile"><span class="kpi-ico ic-danger stat-ico" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></span><span><span class="kpi-label">المنصرف في النتائج</span><span class="kpi-value" style="color:var(--danger)"><span data-count-to="<%=totals.outgoing%>">0</span></span></span></div>
+    </div>
+  </div>
+
+  <div class="two-col wide">
+    <div class="panel">
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-chart"/></svg> الرصيد حسب طريقة الاستلام</h3></div>
+      <div class="panel-body">
+        <div class="bar-compare">
+          <% Object.entries(methods).forEach(([k,label]) => { var v = Number(main.byMethod[k] || 0); if (!v) return; %>
+          <div class="bar-compare-row">
+            <span class="bc-label"><span class="dot" style="background:<%=methodColors[k]||'var(--muted)'%>"></span><%=label%></span>
+            <span class="bar-compare-track"><span class="bar-compare-fill" style="width:<%=Math.round(v/methodMax*100)%>%;background:<%=methodColors[k]||'var(--muted)'%>"></span></span>
+            <span class="bc-count"><%=Number(v).toLocaleString('en-US')%></span>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-chart"/></svg> صافي الحركة اليومية (النتائج الحالية)</h3></div>
+      <div class="panel-body">
+        <% if (showTrend) { %>
+          <div class="trend-wrap">
+            <svg class="trend-svg" viewBox="0 0 300 46" preserveAspectRatio="none">
+              <line class="zero" x1="0" y1="<%=zeroY%>" x2="300" y2="<%=zeroY%>"></line>
+              <polygon class="area" points="<%=trendArea%>"></polygon>
+              <polyline class="line" points="<%=trendLine%>"></polyline>
+            </svg>
+            <div class="trend-meta"><span><%=trendDays[0]%></span><span><%=trendDays[trendDays.length-1]%></span></div>
+          </div>
+        <% } else { %>
+          <div class="empty" style="padding:20px"><p>محتاج ٤ أيام حركة معتمدة على الأقل لعرض اتجاه — النتائج الحالية أقل من كده.</p></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================== transaction entry workspace =========================== -->
+<%if(can('treasury.manage')){%><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> تسجيل حركة جديدة</h3></div>
+<div class="treasury-tabs" data-tabs><div class="tab-buttons"><button type="button" class="btn brass" data-tab="in"><svg aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل وارد</button><button type="button" class="btn ghost" data-tab="out"><svg aria-hidden="true" style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل منصرف</button><button type="button" class="btn ghost" data-tab="transfer"><svg aria-hidden="true"><use href="/images/icons.svg#i-refresh"/></svg> تحويل بين الخزن</button></div>
 <section data-pane="in"><div class="two-col wide"><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل وارد للخزنة</h3></div><form class="panel-body" method="post" enctype="multipart/form-data" action="<%=adminPath%>/treasury/deposit"><%-csrfField%><div class="form-grid"><label>الخزنة المستلمة<select name="treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>التاريخ<input type="date" name="transaction_date" value="<%=new Date().toISOString().slice(0,10)%>" required></label><label>الوقت اختياري<input type="time" name="transaction_time"></label><label>مصدر الوارد<input type="text" name="source_name" required placeholder="مدير الشركة أو اسم المحول"></label><label>العميل المرتبط اختياري<select name="client_id"><option value="">—</option><%clients.forEach(c=>{%><option value="<%=c.id%>"><%=c.full_name%></option><%})%></select></label><label>الطلب المرتبط اختياري<select name="request_id"><option value="">—</option><%requests.forEach(r=>{%><option value="<%=r.id%>"><%=r.ref%> — <%=r.name%></option><%})%></select></label></div><div id="receiptMethods"><div class="receipt-row"><select name="method"><option value="bank">تحويل بنكي</option><option value="instapay">إنستاباي</option><option value="cash">كاش</option><option value="card">شبكة/بطاقة</option><option value="other">أخرى</option></select><input type="number" min=".01" step=".01" name="split_amount" placeholder="المبلغ" required><input type="text" name="reference" placeholder="مرجع التحويل أو سند القبض"><input type="text" name="bank_name" placeholder="البنك عند الحاجة"><input type="text" name="account_no" placeholder="الحساب/رقم العملية"><input type="text" name="recipient_name" placeholder="اسم المستلم للكاش"><button type="button" class="btn ghost remove-receipt">حذف</button></div></div><button type="button" class="btn ghost" id="addReceiptMethod">+ إضافة طريقة استلام أخرى</button><p>الإجمالي: <b id="receiptTotal">0</b> <%=site.currency%></p><label>البيان<input type="text" name="purpose" placeholder="تغذية الخزنة"></label><label>ملاحظات<textarea name="notes"></textarea></label><label>سند التحويل أو القبض<input type="file" name="attachment" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn brass block">تسجيل الوارد وتحديث الرصيد</button></form></div><aside class="tx-summary" id="txSummary" data-balance="<%=Number(main.balance)%>"><h4>ملخص الحركة</h4><div class="tx-summary-row"><span class="lbl">رصيد الخزنة قبل الحركة</span><span class="amt"><%=Number(main.balance).toLocaleString('en-US')%> <%=site.currency%></span></div><div class="tx-summary-row"><span class="lbl">+ الوارد الحالي</span><span class="amt" id="txCurrentIncoming">0</span></div><div class="tx-summary-row total"><span class="lbl">الرصيد بعد التسجيل</span><span class="amt" id="txAfterBalance"><%=Number(main.balance).toLocaleString('en-US')%></span></div><h4 style="margin-top:18px">توزيع طرق الاستلام</h4><div class="mini-donut" id="methodDonut"><span id="methodDonutLabel">لا يوجد بعد</span></div><ul class="donut-legend" id="methodLegend"></ul></aside></div></section>
 <section data-pane="out" class="panel" hidden><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true" style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg> تسجيل منصرف</h3></div><form class="panel-body" method="post" enctype="multipart/form-data" action="<%=adminPath%>/treasury/withdraw"><%-csrfField%><div class="form-grid"><label>الخزنة<select name="treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>طريقة الصرف<select name="method"><option value="cash">كاش</option><option value="bank">تحويل بنكي</option><option value="instapay">إنستاباي</option><option value="card">شبكة/بطاقة</option></select></label><label>المبلغ<input type="number" min=".01" step=".01" name="amount" required></label><label>التاريخ<input type="date" name="transaction_date" value="<%=new Date().toISOString().slice(0,10)%>" required></label><label>الوقت<input type="time" name="transaction_time"></label><label>المستفيد<input type="text" name="beneficiary" required></label></div><label>البيان<input type="text" name="purpose" required></label><label>المرجع<input type="text" name="reference"></label><label>ملاحظات<textarea name="notes"></textarea></label><label>المرفق<input type="file" name="attachment"></label><button class="btn brass block">تسجيل المنصرف</button></form></section>
-<section data-pane="transfer" class="panel" hidden><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-refresh"/></svg> تحويل بين الخزن</h3></div><form class="panel-body" method="post" action="<%=adminPath%>/treasury/transfer"><%-csrfField%><div class="form-grid"><label>من خزنة<select name="from_treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>إلى خزنة<select name="to_treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>الطريقة<select name="method"><option value="cash">كاش</option><option value="bank">تحويل بنكي</option><option value="instapay">إنستاباي</option></select></label><label>المبلغ<input type="number" min=".01" step=".01" name="amount" required></label><label>التاريخ<input type="date" name="transaction_date" value="<%=new Date().toISOString().slice(0,10)%>"></label></div><button class="btn brass">تنفيذ التحويل</button></form></section></div><%}%>
+<section data-pane="transfer" class="panel" hidden><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-refresh"/></svg> تحويل بين الخزن</h3></div><form class="panel-body" method="post" action="<%=adminPath%>/treasury/transfer"><%-csrfField%><div class="form-grid"><label>من خزنة<select name="from_treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>إلى خزنة<select name="to_treasury_id"><%treasuries.forEach(t=>{%><option value="<%=t.id%>"><%=t.name%></option><%})%></select></label><label>الطريقة<select name="method"><option value="cash">كاش</option><option value="bank">تحويل بنكي</option><option value="instapay">إنستاباي</option></select></label><label>المبلغ<input type="number" min=".01" step=".01" name="amount" required></label><label>التاريخ<input type="date" name="transaction_date" value="<%=new Date().toISOString().slice(0,10)%>"></label></div><button class="btn brass">تنفيذ التحويل</button></form></section></div></div><%}%>
+
+<!-- =========================== recent transactions + approvals =========================== -->
 <form class="toolbar" method="get"><label>من<input type="date" name="from" value="<%=filters.from||''%>"></label><label>إلى<input type="date" name="to" value="<%=filters.to||''%>"></label><label>النوع<select name="direction"><option value="">الكل</option><option value="in" <%=filters.direction==='in'?'selected':''%>>وارد</option><option value="out" <%=filters.direction==='out'?'selected':''%>>منصرف</option></select></label><label>الطريقة<select name="method"><option value="">كل الطرق</option><%Object.entries(methods).forEach(([k,v])=>{%><option value="<%=k%>" <%=filters.method===k?'selected':''%>><%=v%></option><%})%></select></label><button class="btn">بحث</button></form>
 <%if(rowsTruncated){%><div class="alert warn">يتم عرض أول 1000 حركة فقط في الشاشة لتحسين الأداء. الإجماليات بالأعلى محسوبة من جميع النتائج المطابقة، والتصدير يشمل جميع النتائج.</div><%}%>
-<div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> حركات الخزنة</h3><span class="chip spacer"><%=rows.length%></span></div><div class="panel-body flush"><table class="tbl"><thead><tr><th>رقم</th><th>التاريخ</th><th>الحركة</th><th>المبلغ</th><th>الطريقة</th><th>المصدر/المستفيد</th><th>الطلب</th><th>المسجل</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody><%rows.forEach(r=>{%><tr><td><%=r.id%></td><td><%=r.transaction_date%> <%=r.transaction_time||''%></td><td><span class="chip"><%=r.direction==='in'?'وارد':'منصرف'%></span></td><td><b><%=Number(r.amount).toLocaleString('en-US')%></b></td><td><%=methods[r.method]||r.method%></td><td><%=r.employee_name||r.source_name||'—'%></td><td><%=r.request_ref||'—'%></td><td><%=r.recorded_by||'—'%></td><td><span class="chip <%=r.approval_status==='approved'?'ok':(r.approval_status==='pending'?'brass':'danger')%>"><%=r.approval_status==='approved'?'معتمد':(r.approval_status==='pending'?'بانتظار الاعتماد':'مرفوض')%></span></td><td><div class="btn-row"><%if(r.approval_status==='pending'&&can('settings.manage')){%><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/approve"><%-csrfField%><button class="btn brass sm">اعتماد</button></form><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/reject" onsubmit="return confirm('رفض حركة الصرف؟')"><%-csrfField%><input type="hidden" name="reason" value="رفض الصرف"><button class="btn danger sm">رفض</button></form><%}%><%if(can('treasury.manage')&&r.approval_status!=='rejected'){%><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/void" onsubmit="return confirm('إلغاء هذه الحركة؟')"><%-csrfField%><input type="hidden" name="reason" value="إلغاء من سجل الخزنة"><button class="btn ghost sm">إلغاء</button></form><%}%></div></td></tr><%})%></tbody></table></div></div>
+<div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> حركات الخزنة</h3><span class="chip spacer"><%=rows.length%></span></div><div class="tbl-wrap panel-body flush"><table class="tbl"><thead><tr><th>رقم</th><th>التاريخ</th><th>الحركة</th><th>المبلغ</th><th>الطريقة</th><th>المصدر/المستفيد</th><th>الطلب</th><th>المسجل</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody><%rows.forEach(r=>{%><tr><td data-label="رقم"><%=r.id%></td><td data-label="التاريخ"><%=r.transaction_date%> <%=r.transaction_time||''%></td><td data-label="الحركة"><span class="chip"><%=r.direction==='in'?'وارد':'منصرف'%></span></td><td data-label="المبلغ"><b><%=Number(r.amount).toLocaleString('en-US')%></b></td><td data-label="الطريقة"><%=methods[r.method]||r.method%></td><td data-label="المصدر/المستفيد"><%=r.employee_name||r.source_name||'—'%></td><td data-label="الطلب"><%=r.request_ref||'—'%></td><td data-label="المسجل"><%=r.recorded_by||'—'%></td><td data-label="الحالة"><span class="chip <%=r.approval_status==='approved'?'ok':(r.approval_status==='pending'?'brass':'danger')%>"><%=r.approval_status==='approved'?'معتمد':(r.approval_status==='pending'?'بانتظار الاعتماد':'مرفوض')%></span></td><td data-label="الإجراء"><div class="btn-row"><%if(r.approval_status==='pending'&&can('settings.manage')){%><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/approve"><%-csrfField%><button class="btn brass sm">اعتماد</button></form><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/reject" onsubmit="return confirm('رفض حركة الصرف؟')"><%-csrfField%><input type="hidden" name="reason" value="رفض الصرف"><button class="btn danger sm">رفض</button></form><%}%><%if(can('treasury.manage')&&r.approval_status!=='rejected'){%><form method="post" action="<%=adminPath%>/treasury/<%=r.id%>/void" onsubmit="return confirm('إلغاء هذه الحركة؟')"><%-csrfField%><input type="hidden" name="reason" value="إلغاء من سجل الخزنة"><button class="btn ghost sm">إلغاء</button></form><%}%></div></td></tr><%})%></tbody></table></div></div>
 <script>(function(){var box=document.getElementById('receiptMethods'),add=document.getElementById('addReceiptMethod');
 var colors={bank:'var(--info)',instapay:'#7c5cbf',cash:'var(--brass)',card:'var(--ink-3)',other:'var(--muted)'};
 var labels={bank:'تحويل بنكي',instapay:'إنستاباي',cash:'كاش',card:'شبكة/بطاقة',other:'أخرى'};

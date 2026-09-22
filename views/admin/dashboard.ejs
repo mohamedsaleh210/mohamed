@@ -7,58 +7,105 @@
   <p class="sub">أهلاً <%= user.display_name || user.username %>.</p>
 </div>
 
-<form class="dashboard-filters" method="get">
-  <label>الفترة<select name="period"><%[['today','اليوم'],['week','هذا الأسبوع'],['month','هذا الشهر'],['custom','فترة مخصصة']].forEach(x=>{%><option value="<%=x[0]%>" <%=period===x[0]?'selected':''%>><%=x[1]%></option><%})%></select></label>
-  <label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label>
-  <label>الفرع<select name="branch_id"><option value="">كل الفروع</option><%branches.forEach(b=>{%><option value="<%=b.id%>" <%=branchId===b.id?'selected':''%>><%=b.company_name%> — <%=b.name%></option><%})%></select></label>
-  <label>المسؤول<select name="staff_id"><option value="">كل المسؤولين</option><%staffFilter.forEach(u=>{%><option value="<%=u.id%>" <%=staffId===u.id?'selected':''%>><%=u.display_name%></option><%})%></select></label><button class="btn brass">تحديث البيانات</button>
-</form>
+<details class="panel" style="margin-bottom:16px">
+  <summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-settings"/></svg> فلترة الفترة والفرع والمسؤول</h3><span class="spacer"></span><span class="btn ghost sm">تعديل</span></summary>
+  <form class="dashboard-filters panel-body" method="get">
+    <label>الفترة<select name="period"><%[['today','اليوم'],['week','هذا الأسبوع'],['month','هذا الشهر'],['custom','فترة مخصصة']].forEach(x=>{%><option value="<%=x[0]%>" <%=period===x[0]?'selected':''%>><%=x[1]%></option><%})%></select></label>
+    <label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label>
+    <label>الفرع<select name="branch_id"><option value="">كل الفروع</option><%branches.forEach(b=>{%><option value="<%=b.id%>" <%=branchId===b.id?'selected':''%>><%=b.company_name%> — <%=b.name%></option><%})%></select></label>
+    <label>المسؤول<select name="staff_id"><option value="">كل المسؤولين</option><%staffFilter.forEach(u=>{%><option value="<%=u.id%>" <%=staffId===u.id?'selected':''%>><%=u.display_name%></option><%})%></select></label><button class="btn brass">تحديث البيانات</button>
+  </form>
+</details>
 
-<% if (showMoney) { %><div class="stat-grid">
-  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><span data-count-to="<%=financial.treasury%>">0</span> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-chevron-down"/></svg></i><div><div class="k">إجمالي الإيرادات</div><div class="v"><span data-count-to="<%=financial.revenue%>">0</span> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></i><div><div class="k">إجمالي المصروفات</div><div class="v"><span data-count-to="<%=financial.expenses%>">0</span> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><span data-count-to="<%=financial.custody%>">0</span> <small><%=site.currency%></small></div></div></a>
-</div><% } %>
-
-<div class="stat-grid">
-  <a class="stat icon-stat" href="<%= adminPath %>/requests">
-    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></i>
-    <div><div class="k"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></div>
-    <div class="v"><span data-count-to="<%= total %>">0</span></div></div>
-  </a>
-  <% if (showMoney) { %>
-    <%# Collected belongs on the revenue page, where it can be read by period.
-        What matters at a glance here is only what is still owed. %>
-    <a class="stat icon-stat" href="<%= adminPath %>/revenue">
-      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true"><svg><use href="/images/icons.svg#i-receipt"/></svg></i>
-      <div><div class="k">المتبقي على العملاء</div>
-      <div class="v" style="color:<%= remaining > 0 ? 'var(--danger)' : 'var(--ok)' %>">
-        <span data-count-to="<%= remaining %>">0</span> <small><%= site.currency %></small>
-      </div></div>
-    </a>
-  <% } %>
-  <a class="stat icon-stat" href="<%= adminPath %>/notifications">
-    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></i>
-    <div><div class="k">إشعارات جديدة</div>
-    <div class="v" style="color:<%= notifications.length ? 'var(--danger)' : 'var(--ok)' %>"><span data-count-to="<%= notifications.length %>">0</span></div></div>
-  </a>
-</div>
-
-<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-refresh"/></svg></i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
-
-<div class="stat-grid">
-  <%# Finished work is not something anyone acts on from a dashboard, so the
-      strip shows only the statuses that still need attention. %>
-  <% Object.keys(STATUS).filter(k => k !== 'completed').forEach(k => { %>
-    <a class="stat" href="<%= adminPath %>/requests?status=<%= k %>" style="padding:13px 15px">
-      <div class="k"><span class="dot" style="background:<%= STATUS[k].color %>"></span><%= STATUS[k].ar %></div>
-      <div class="v" style="font-size:22px"><%= byStatus[k] %></div>
-    </a>
+<%
+  /* Quick actions: real routes only, each gated by a permission key already
+     verified elsewhere in this codebase — not a new access rule. */
+  const quickActions = [];
+  if (can('requests.create')) quickActions.push({href: adminPath+'/requests/new', label: 'طلب جديد', icon: 'i-plus'});
+  if (can('treasury.view')) quickActions.push({href: adminPath+'/treasury', label: 'الخزنة', icon: 'i-wallet'});
+  if (can('agenda.view')) quickActions.push({href: adminPath+'/agenda', label: 'الأجندة', icon: 'i-calendar'});
+  if (can('users.manage')) quickActions.push({href: adminPath+'/users', label: 'الموظفون', icon: 'i-users'});
+%>
+<% if (quickActions.length) { %>
+<div class="btn-row" style="margin-bottom:16px">
+  <% quickActions.forEach(function(a) { %>
+    <a class="btn ghost" href="<%=a.href%>"><svg aria-hidden="true" style="width:15px;height:15px"><use href="/images/icons.svg#<%=a.icon%>"/></svg> <%=a.label%></a>
   <% }) %>
 </div>
+<% } %>
 
-<div class="two-col wide">
+<!-- =========================== primary KPI hierarchy =========================== -->
+<div class="ws-section ws-stagger">
+  <div class="kpi-hero-row">
+    <% if (showMoney) { %>
+      <a class="kpi-primary" href="<%=adminPath%>/treasury">
+        <span class="kpi-label">رصيد الخزنة الحالي</span>
+        <span class="kpi-value"><span data-count-to="<%=financial.treasury%>">0</span> <small><%=site.currency%></small></span>
+        <span class="kpi-sub">إجمالي الأرصدة المتاحة عبر كل طرق الاستلام</span>
+      </a>
+    <% } else { %>
+      <a class="kpi-primary" href="<%=adminPath%>/requests">
+        <span class="kpi-label"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></span>
+        <span class="kpi-value"><span data-count-to="<%=total%>">0</span></span>
+        <span class="kpi-sub">كل الطلبات المفتوحة والمنتهية الظاهرة لك</span>
+      </a>
+    <% } %>
+    <div class="kpi-secondary-col">
+      <% if (showMoney) { %>
+        <a class="kpi-tile" href="<%=adminPath%>/requests"><span class="kpi-ico ic-brass stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></span><span><span class="kpi-label"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></span><span class="kpi-value"><span data-count-to="<%=total%>">0</span></span></span></a>
+        <a class="kpi-tile" href="<%=adminPath%>/revenue"><span class="kpi-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-receipt"/></svg></span><span><span class="kpi-label">المتبقي على العملاء</span><span class="kpi-value" style="color:<%= remaining > 0 ? 'var(--danger)' : 'var(--ok)' %>"><span data-count-to="<%=remaining%>">0</span></span></span></a>
+      <% } else { %>
+        <a class="kpi-tile" href="<%=adminPath%>/notifications"><span class="kpi-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></span><span><span class="kpi-label">إشعارات جديدة</span><span class="kpi-value"><span data-count-to="<%=notifications.length%>">0</span></span></span></a>
+        <a class="kpi-tile" href="#due"><span class="kpi-ico ic-warn stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></span><span><span class="kpi-label">مواعيد متأخرة</span><span class="kpi-value"><%=attention.overdue%></span></span></a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (showMoney) { %>
+  <div class="attention-list" style="margin-bottom:14px">
+    <a class="attention-row" href="<%=adminPath%>/revenue"><span class="a-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-chevron-down"/></svg></span><span class="a-text"><span class="a-label">إجمالي الإيرادات</span><span class="a-value"><span data-count-to="<%=financial.revenue%>">0</span></span></span></a>
+    <a class="attention-row" href="<%=adminPath%>/expenses"><span class="a-ico ic-danger stat-ico" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></span><span class="a-text"><span class="a-label">إجمالي المصروفات</span><span class="a-value"><span data-count-to="<%=financial.expenses%>">0</span></span></span></a>
+    <a class="attention-row" href="<%=adminPath%>/expenses/custodies"><span class="a-ico ic-violet stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></span><span class="a-text"><span class="a-label">عهد الموظفين</span><span class="a-value"><span data-count-to="<%=financial.custody%>">0</span></span></span></a>
+    <a class="attention-row" href="<%=adminPath%>/notifications"><span class="a-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></span><span class="a-text"><span class="a-label">إشعارات جديدة</span><span class="a-value"><span data-count-to="<%=notifications.length%>">0</span></span></span></a>
+  </div>
+  <% } %>
+</div>
+
+<!-- =========================== requests requiring attention =========================== -->
+<div class="ws-section">
+  <div class="ws-section-head"><h2><svg aria-hidden="true"><use href="/images/icons.svg#i-alert-triangle"/></svg> يحتاج انتباهك</h2></div>
+  <div class="attention-list">
+    <a class="attention-row <%=unseenCount?'urgent':'ok'%>" href="<%=adminPath%>/notifications"><span class="a-ico ic-danger stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></span><span class="a-text"><span class="a-label">الإشعارات الجديدة</span><span class="a-value"><%=unseenCount%></span></span></a>
+    <a class="attention-row <%=attention.renewals?'warn':'ok'%>" href="<%=adminPath%>/renewals"><span class="a-ico ic-warn stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-refresh"/></svg></span><span class="a-text"><span class="a-label">الانتهاء والتجديد</span><span class="a-value"><%=attention.renewals%></span></span></a>
+    <a class="attention-row <%=attention.overdue?'urgent':'ok'%>" href="#due"><span class="a-ico ic-danger stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></span><span class="a-text"><span class="a-label">المواعيد المتأخرة</span><span class="a-value"><%=attention.overdue%></span></span></a>
+    <a class="attention-row <%=attention.todayTasks?'warn':'ok'%>" href="<%=adminPath%>/agenda"><span class="a-ico ic-info stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></span><span class="a-text"><span class="a-label">مهام اليوم</span><span class="a-value"><%=attention.todayTasks%></span></span></a>
+  </div>
+</div>
+
+<!-- =========================== requests by status: real visualization ================= -->
+<%
+  const statusKeys = Object.keys(STATUS).filter(k => k !== 'completed');
+  const statusMax = Math.max(1, ...statusKeys.map(k => byStatus[k] || 0));
+%>
+<div class="ws-section">
+  <div class="panel">
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-chart"/></svg> الطلبات حسب الحالة</h3><span class="chip spacer"><%=total%> إجمالي</span></div>
+    <div class="panel-body">
+      <div class="bar-compare">
+        <% statusKeys.forEach(function(k) { var v = byStatus[k] || 0; %>
+        <a class="bar-compare-row" href="<%=adminPath%>/requests?status=<%=k%>" style="text-decoration:none;color:inherit">
+          <span class="bc-label"><span class="dot" style="background:<%=STATUS[k].color%>"></span><%=STATUS[k].ar%></span>
+          <span class="bar-compare-track"><span class="bar-compare-fill" style="width:<%= Math.round(v/statusMax*100) %>%;background:<%=STATUS[k].color%>"></span></span>
+          <span class="bc-count"><%=v%></span>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================== workspace: notifications/requests + side context ======== -->
+<div class="ws-layout with-side">
   <div>
     <!-- notifications -->
     <div class="panel">
@@ -131,7 +178,7 @@
     </div>
   </div>
 
-  <div>
+  <div class="ws-side">
     <!-- unclaimed -->
 <% if (unclaimed && unclaimed.length) { %>
   <div class="panel" style="border-inline-start:4px solid var(--warn)">

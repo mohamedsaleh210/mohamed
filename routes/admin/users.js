@@ -35,11 +35,12 @@ const me = (req) => req.session.user.display_name || req.session.user.username;
 router.get('/', (req, res) => {
   const users = db
     .prepare(
-      `SELECT id, username, display_name, legal_name, job_title, role, email, phone, active, profile_completed,
-              must_change_password, created_at, created_by, deactivated_at
+      `SELECT users.id, username, display_name, legal_name, job_title, role, email, phone, users.active, profile_completed,
+              must_change_password, users.created_at, created_by, deactivated_at, ob.name AS branch_name
        ,
         (SELECT COUNT(*) FROM user_permissions up WHERE up.user_id = users.id) AS exception_count
-       FROM users ORDER BY role, id`
+       FROM users LEFT JOIN office_branches ob ON ob.id = users.office_branch_id
+       ORDER BY role, users.id`
     )
     .all();
 

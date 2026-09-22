@@ -20,131 +20,176 @@
     self: 'مش هتقدر توقف حسابك انت.',
     last_admin: 'ده آخر حساب أدمن شغّال — لو أوقفته محدش هيقدر يدير النظام.',
   };
-  const roleLabel = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي' };
+  const roleLabel = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي', accountant: 'محاسب' };
   const GROUP_ICON = {
     'الطلبات': 'i-list', 'إدارة مكتب المحاماة': 'i-scale', 'الفلوس': 'i-wallet',
     'المصاريف': 'i-receipt', 'تقييم الموظفين': 'i-gauge', 'المرتبات والمكافآت والحوافز': 'i-receipt',
     'العملاء': 'i-users', 'المشاوير': 'i-map-pin', 'أجندة الأعمال والتجديدات': 'i-calendar',
     'الدعم الفني': 'i-message', 'المحتوى': 'i-file', 'الحذف النهائي': 'i-trash', 'الإدارة': 'i-settings',
   };
+  const initials = (u) => (u.display_name || u.username || '?').trim().charAt(0);
+
+  /* One reset-password form definition, reused by both the desktop table row
+     and the mobile card so the real /users/:id/reset contract (same field
+     names, same CSRF field) is never duplicated by hand in two dialects. */
+  function resetForm(u, domId) {
+    return `<form method="post" action="${adminPath}/users/${u.id}/reset">
+      ${csrfField}
+      <div class="field" style="margin-bottom:8px"><label>كلمة سر مؤقتة</label>
+        <input name="password" type="text" required data-pw="new" dir="ltr" style="text-align:left" autocomplete="off"></div>
+      <div class="pw-meter" data-pw-meter data-level="0"><span class="pw-track"><i></i><i></i><i></i><i></i></span><span class="pw-label"></span></div>
+      <ul class="pw-rules" data-pw-rules></ul>
+      <div class="field" style="margin-bottom:6px"><label>اكتبها تاني</label>
+        <input name="password_confirm" type="text" required data-pw="confirm" dir="ltr" style="text-align:left" autocomplete="off"></div>
+      <p class="pw-match" data-pw-match></p>
+      <div class="pw-tools"><button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button></div>
+      <div class="btn-row"><button class="btn sm" type="submit">تعيين</button><button class="btn ghost sm" type="button" data-close-reset="${domId}">إلغاء</button></div>
+      <p class="help" style="margin:8px 0 0">الموظف هيتطلب منه يغيّرها فوراً أول ما يدخل، وأي جلسة مفتوحة بحسابه هتتقفل.</p>
+    </form>`;
+  }
 %>
 
 <div class="page-head">
   <h1>الموظفين</h1>
-  <p class="sub">حسابات الدخول للوحة الإدارة: أدمن، مشرف، ومحامي.</p>
+  <p class="sub">حسابات الدخول للوحة الإدارة: أدمن، مشرف، محامي، ومحاسب.</p>
 </div>
 
-<div class="stat-grid" style="margin-bottom:14px">
-  <div class="stat icon-stat"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-users"/></svg></i><div><div class="k">كل الموظفين</div><div class="v"><span data-count-to="<%= users.length %>">0</span></div></div></div>
-  <div class="stat icon-stat"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></i><div><div class="k">شغّالين</div><div class="v" style="color:var(--ok)"><span data-count-to="<%= users.filter(u => u.active).length %>">0</span></div></div></div>
-  <% const stopped = users.filter(u => !u.active).length; %>
-  <% if (stopped) { %><div class="stat icon-stat"><i class="stat-ico" style="background:var(--line-soft);color:var(--muted)" aria-hidden="true"><svg><use href="/images/icons.svg#i-x-circle"/></svg></i><div><div class="k">موقوفين</div><div class="v" style="color:var(--muted)"><span data-count-to="<%= stopped %>">0</span></div></div></div><% } %>
-  <% const incomplete = users.filter(u => u.active && !u.profile_completed).length; %>
-  <% if (incomplete) { %><div class="stat icon-stat"><i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-alert-triangle"/></svg></i><div><div class="k">بياناتهم ناقصة</div><div class="v" style="color:var(--warn)"><span data-count-to="<%= incomplete %>">0</span></div></div></div><% } %>
+<!-- =========================== KPI hierarchy (compact context, not a wall of cards) === -->
+<div class="ws-section ws-stagger">
+  <div class="kpi-hero-row">
+    <a class="kpi-primary" href="#roster">
+      <span class="kpi-label">كل الموظفين</span>
+      <span class="kpi-value"><span data-count-to="<%= users.length %>">0</span></span>
+      <span class="kpi-sub"><%= users.filter(u => u.active).length %> شغّال الآن</span>
+    </a>
+    <div class="kpi-secondary-col">
+      <div class="kpi-tile"><span class="kpi-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></span><span><span class="kpi-label">شغّالين</span><span class="kpi-value" style="color:var(--ok)"><span data-count-to="<%= users.filter(u => u.active).length %>">0</span></span></span></div>
+      <% const stopped = users.filter(u => !u.active).length; const incomplete = users.filter(u => u.active && !u.profile_completed).length; %>
+      <% if (stopped) { %><div class="kpi-tile"><span class="kpi-ico stat-ico" style="background:var(--line-soft);color:var(--muted)" aria-hidden="true"><svg><use href="/images/icons.svg#i-x-circle"/></svg></span><span><span class="kpi-label">موقوفين</span><span class="kpi-value" style="color:var(--muted)"><span data-count-to="<%= stopped %>">0</span></span></span></div>
+      <% } else if (incomplete) { %><div class="kpi-tile"><span class="kpi-ico ic-warn stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-alert-triangle"/></svg></span><span><span class="kpi-label">بياناتهم ناقصة</span><span class="kpi-value" style="color:var(--warn)"><span data-count-to="<%= incomplete %>">0</span></span></span></div>
+      <% } %>
+    </div>
+  </div>
 </div>
+
 <%if(can('users.export')){%><div class="btn-row" style="margin-bottom:14px"><a class="btn ghost" href="<%=adminPath%>/users/export.csv">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/users/print">PDF / طباعة</a></div><%}%>
 
 <% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
 <% if (err && errMsgs[err]) { %><div class="alert err"><span><%= errMsgs[err] %></span></div><% } %>
 <% if (err === 'weak' && errText) { %><div class="alert err"><span><%= errText %></span></div><% } %>
 
-<div class="panel">
+<div class="panel" id="roster">
   <div class="panel-head">
     <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> الحسابات</h3>
     <span class="chip spacer"><%= users.filter(u => u.active).length %> شغّال</span>
   </div>
-  <div class="panel-body flush">
-    <table class="tbl">
-      <thead>
-        <tr><th>الاسم</th><th>اسم المستخدم</th><th>الصلاحية</th><th>الحالة</th><th>أُنشئ</th><th></th></tr>
-      </thead>
-      <tbody>
-        <% users.forEach(u => { %>
-          <tr style="<%= u.active ? '' : 'opacity:.6' %>">
-            <td data-label="الاسم">
-              <strong><%= u.display_name || u.username %></strong>
-              <% if(u.job_title){%><br><small><%=u.job_title%></small><%}%>
-              <% if (u.id === user.id) { %><span class="chip brass">أنت</span><% } %>
-              <% if (!u.profile_completed) { %>
-                <span class="chip warn">بياناته ناقصة</span>
-              <% } %>
-              <% if (u.legal_name && u.legal_name !== u.display_name) { %>
-                <br><span style="font-size:12.5px;color:var(--muted)"><%= u.legal_name %></span>
-              <% } %>
-            </td>
-            <td data-label="المستخدم"><span class="num"><%= u.username %></span></td>
-            <td data-label="الصلاحية"><span class="chip"><%= roleLabel[u.role] || u.role %></span></td>
-            <td data-label="الحالة">
-              <% if (!u.active) { %>
-                <span class="chip off">موقوف</span>
-              <% } else if (u.must_change_password) { %>
-                <span class="chip warn">لسه مغيّرش كلمة السر</span>
-              <% } else { %>
-                <span class="chip ok">شغّال</span>
-              <% } %>
-            </td>
-            <td data-label="أُنشئ" style="color:var(--muted);font-size:13px">
-              <%= fmtDate(u.created_at) %>
-              <% if (u.created_by) { %><br><span style="font-size:12px">بواسطة <%= u.created_by %></span><% } %>
-            </td>
-            <td data-label="إجراءات" class="row-actions">
-              <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
-              <% if (u.role !== 'admin') { %>
-                <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">
-                  الصلاحيات
-                  <% if (u.exception_count) { %>
-                    <span class="chip brass"><%= u.exception_count %></span>
-                  <% } %>
-                </a>
-              <% } %>
-              <button class="btn ghost sm" type="button" data-reset="<%= u.id %>">كلمة سر جديدة</button>
-              <% if (u.id !== user.id) { %>
-                <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle" style="display:inline"
-                      data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
-                  <%- csrfField %>
-                  <button class="btn <%= u.active ? 'danger' : 'ghost' %> sm" type="submit">
-                    <%= u.active ? 'إيقاف' : 'تفعيل' %>
-                  </button>
-                </form>
-              <% } %>
-            </td>
-          </tr>
-          <tr id="reset-<%= u.id %>" hidden>
-            <td colspan="6" data-label="" style="background:#fbfcfb">
-              <form method="post" action="<%= adminPath %>/users/<%= u.id %>/reset" style="max-width:420px">
+  <div class="panel-body">
+    <div class="emp-toolbar">
+      <div class="emp-search"><svg aria-hidden="true"><use href="/images/icons.svg#i-search"/></svg><input type="search" id="empSearch" placeholder="بحث بالاسم أو اسم المستخدم أو المسمى الوظيفي…" aria-label="بحث في الموظفين"></div>
+      <select id="empRoleFilter" aria-label="فلترة حسب الصلاحية"><option value="">كل الصلاحيات</option><% Object.entries(roleLabel).forEach(([k,v]) => { %><option value="<%=k%>"><%=v%></option><% }) %></select>
+      <select id="empStatusFilter" aria-label="فلترة حسب الحالة"><option value="">كل الحالات</option><option value="active">شغّال</option><option value="off">موقوف</option></select>
+    </div>
+    <p class="emp-count-status" id="empCountStatus" role="status" aria-atomic="true"><%= users.length %> نتيجة</p>
+
+    <div class="tbl-wrap emp-table-wrap">
+      <table class="tbl" id="empTable">
+        <thead>
+          <tr><th>الاسم</th><th>اسم المستخدم</th><th>الصلاحية</th><th>الفرع</th><th>الحالة</th><th>أُنشئ</th><th></th></tr>
+        </thead>
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr style="<%= u.active ? '' : 'opacity:.6' %>" data-emp-row
+                data-name="<%= (u.display_name||'') + ' ' + (u.username||'') + ' ' + (u.job_title||'') %>"
+                data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>">
+              <td data-label="الاسم">
+                <div class="identity-chip">
+                  <span class="id-avatar" aria-hidden="true"><%= initials(u) %></span>
+                  <span class="id-meta">
+                    <span class="id-name"><%= u.display_name || u.username %><% if (u.id === user.id) { %> <span class="chip brass">أنت</span><% } %></span>
+                    <span class="id-sub"><%= u.job_title || '—' %></span>
+                    <% if (!u.profile_completed) { %><span class="chip warn" style="margin-top:2px">بياناته ناقصة</span><% } %>
+                  </span>
+                </div>
+              </td>
+              <td data-label="المستخدم"><span class="num"><%= u.username %></span></td>
+              <td data-label="الصلاحية"><span class="chip teal"><%= roleLabel[u.role] || u.role %></span></td>
+              <td data-label="الفرع"><%= u.branch_name || '—' %></td>
+              <td data-label="الحالة">
+                <% if (!u.active) { %>
+                  <span class="chip off">موقوف</span>
+                <% } else if (u.must_change_password) { %>
+                  <span class="chip warn">لسه مغيّرش كلمة السر</span>
+                <% } else { %>
+                  <span class="chip ok">شغّال</span>
+                <% } %>
+              </td>
+              <td data-label="أُنشئ" style="color:var(--muted);font-size:13px">
+                <%= fmtDate(u.created_at) %>
+                <% if (u.created_by) { %><br><span style="font-size:12px">بواسطة <%= u.created_by %></span><% } %>
+              </td>
+              <td data-label="إجراءات" class="row-actions">
+                <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
+                <% if (u.role !== 'admin') { %>
+                  <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">
+                    الصلاحيات
+                    <% if (u.exception_count) { %><span class="chip brass"><%= u.exception_count %></span><% } %>
+                  </a>
+                <% } %>
+                <button class="btn ghost sm" type="button" data-reset="tr-<%= u.id %>">كلمة سر جديدة</button>
+                <% if (u.id !== user.id) { %>
+                  <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle" style="display:inline"
+                        data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
+                    <%- csrfField %>
+                    <button class="btn <%= u.active ? 'danger' : 'ghost' %> sm" type="submit">
+                      <%= u.active ? 'إيقاف' : 'تفعيل' %>
+                    </button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+            <tr id="reset-tr-<%= u.id %>" hidden><td colspan="7" style="background:#fbfcfb"><%- resetForm(u, 'tr-' + u.id) %></td></tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="emp-grid" id="empGrid">
+      <% users.forEach(u => { %>
+        <div class="emp-card" data-emp-row
+             data-name="<%= (u.display_name||'') + ' ' + (u.username||'') + ' ' + (u.job_title||'') %>"
+             data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>"
+             style="<%= u.active ? '' : 'opacity:.65' %>">
+          <div class="identity-chip">
+            <span class="id-avatar lg" aria-hidden="true"><%= initials(u) %></span>
+            <span class="id-meta">
+              <span class="id-name"><%= u.display_name || u.username %></span>
+              <span class="id-sub"><%= u.job_title || u.username %></span>
+            </span>
+          </div>
+          <div class="emp-card-tags">
+            <span class="chip teal"><%= roleLabel[u.role] || u.role %></span>
+            <% if (!u.active) { %><span class="chip off">موقوف</span>
+            <% } else if (u.must_change_password) { %><span class="chip warn">لسه مغيّرش كلمة السر</span>
+            <% } else { %><span class="chip ok">شغّال</span><% } %>
+            <% if (u.branch_name) { %><span class="chip"><%= u.branch_name %></span><% } %>
+          </div>
+          <div class="emp-card-actions">
+            <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
+            <% if (u.role !== 'admin') { %><a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">الصلاحيات<% if (u.exception_count) { %> <span class="chip brass"><%= u.exception_count %></span><% } %></a><% } %>
+            <button class="btn ghost sm" type="button" data-reset="card-<%= u.id %>">كلمة سر جديدة</button>
+            <% if (u.id !== user.id) { %>
+              <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle"
+                    data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
                 <%- csrfField %>
-                <div class="field" style="margin-bottom:8px">
-                  <label>كلمة سر مؤقتة</label>
-                  <input name="password" type="text" required data-pw="new" dir="ltr"
-                         style="text-align:left" autocomplete="off">
-                </div>
-                <div class="pw-meter" data-pw-meter data-level="0">
-                  <span class="pw-track"><i></i><i></i><i></i><i></i></span>
-                  <span class="pw-label"></span>
-                </div>
-                <ul class="pw-rules" data-pw-rules></ul>
-                <div class="field" style="margin-bottom:6px">
-                  <label>اكتبها تاني</label>
-                  <input name="password_confirm" type="text" required data-pw="confirm" dir="ltr"
-                         style="text-align:left" autocomplete="off">
-                </div>
-                <p class="pw-match" data-pw-match></p>
-                <div class="pw-tools">
-                  <button class="btn ghost sm" type="button" data-pw-suggest>اقترح كلمة سر قوية</button>
-                </div>
-                <div class="btn-row">
-                  <button class="btn sm" type="submit">تعيين</button>
-                  <button class="btn ghost sm" type="button" data-close-reset="<%= u.id %>">إلغاء</button>
-                </div>
-                <p class="help" style="margin:8px 0 0">
-                  الموظف هيتطلب منه يغيّرها فوراً أول ما يدخل، وأي جلسة مفتوحة بحسابه هتتقفل.
-                </p>
+                <button class="btn <%= u.active ? 'danger' : 'ghost' %> sm" type="submit"><%= u.active ? 'إيقاف' : 'تفعيل' %></button>
               </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+            <% } %>
+          </div>
+          <div id="reset-card-<%= u.id %>" hidden><%- resetForm(u, 'card-' + u.id) %></div>
+        </div>
+      <% }) %>
+    </div>
+    <p class="empty" id="empNoResults" hidden style="padding:24px"><span>مفيش موظف مطابق للبحث.</span></p>
   </div>
 </div>
 
@@ -285,6 +330,38 @@
       if (r) r.hidden = true;
     }
   });
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var search = document.getElementById('empSearch');
+  var roleF = document.getElementById('empRoleFilter');
+  var statusF = document.getElementById('empStatusFilter');
+  var status = document.getElementById('empCountStatus');
+  var noResults = document.getElementById('empNoResults');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('[data-emp-row]'));
+  if (!search || !rows.length) return;
+
+  function apply() {
+    var q = (search.value || '').trim().toLowerCase();
+    var role = roleF.value, st = statusF.value;
+    var shown = 0;
+    rows.forEach(function (row) {
+      var okQ = !q || row.getAttribute('data-name').toLowerCase().indexOf(q) !== -1;
+      var okRole = !role || row.getAttribute('data-role') === role;
+      var okStatus = !st || row.getAttribute('data-status') === st;
+      var visible = okQ && okRole && okStatus;
+      row.style.display = visible ? '' : 'none';
+      if (visible) shown++;
+    });
+    status.textContent = shown + (shown === 1 ? ' نتيجة' : ' نتيجة');
+    noResults.hidden = shown !== 0;
+  }
+  search.addEventListener('input', apply);
+  roleF.addEventListener('change', apply);
+  statusF.addEventListener('change', apply);
+})();
 </script>
 
 <script src="/js/password.js" defer></script>

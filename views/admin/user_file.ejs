@@ -75,11 +75,11 @@
 
 <!-- =========================== compact context row =========================== -->
 <div class="ws-section ws-stagger">
-  <div class="kpi-hero-row" style="grid-template-columns:repeat(4,1fr)">
-    <div class="kpi-tile"><span class="kpi-ico ic-info stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></span><span><span class="kpi-label">شغل مفتوح</span><span class="kpi-value"><%= openCount %></span></span></div>
-    <div class="kpi-tile"><span class="kpi-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-lock"/></svg></span><span><span class="kpi-label">أجهزة مسجّلة</span><span class="kpi-value"><%= devices.length %></span></span></div>
-    <div class="kpi-tile"><span class="kpi-ico <%= custodyStatement.totals.remaining>0?'ic-warn':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></span><span><span class="kpi-label">متبقي من العهدة</span><span class="kpi-value"><%= money(custodyStatement.totals.remaining) %></span></span></div>
-    <div class="kpi-tile"><span class="kpi-ico <%= owed.amount>0?'ic-danger':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></span><span><span class="kpi-label">مستحق له</span><span class="kpi-value"><%= money(owed.amount) %></span></span></div>
+  <div class="kpi-quad">
+    <div class="kpi-tile"><span class="kpi-ico ic-info stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></span><span class="kpi-text"><span class="kpi-label">شغل مفتوح</span><span class="kpi-value"><%= openCount %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico ic-ok stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-lock"/></svg></span><span class="kpi-text"><span class="kpi-label">أجهزة مسجّلة</span><span class="kpi-value"><%= devices.length %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico <%= custodyStatement.totals.remaining>0?'ic-warn':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></span><span class="kpi-text"><span class="kpi-label">متبقي من العهدة</span><span class="kpi-value"><%= money(custodyStatement.totals.remaining) %></span></span></div>
+    <div class="kpi-tile"><span class="kpi-ico <%= owed.amount>0?'ic-danger':'ic-ok' %> stat-ico" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></span><span class="kpi-text"><span class="kpi-label">مستحق له</span><span class="kpi-value"><%= money(owed.amount) %></span></span></div>
   </div>
 </div>
 
@@ -108,15 +108,31 @@
                style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid var(--line)">
         </div>
       <% } %>
-      <table class="tbl">
-        <tr><td data-label="الاسم الرسمي">الاسم الرسمي</td><td><%= person.legal_name || '—' %></td></tr>
-        <tr><td data-label="الاسم المختصر">الاسم المختصر</td><td><%= person.display_name || '—' %></td></tr>
-        <tr><td data-label="البريد">البريد</td><td><span class="num"><%= person.email || '—' %></span></td></tr>
-        <tr><td data-label="الموبايل">الموبايل</td><td><span class="num"><%= person.phone || '—' %></span></td></tr>
-        <tr><td data-label="الرقم القومي">الرقم القومي</td><td><span class="num"><%= person.national_id || '—' %></span></td></tr>
-        <tr><td data-label="تاريخ الميلاد">تاريخ الميلاد</td><td><span class="num"><%= person.birth_date || '—' %></span></td></tr>
-        <tr><td data-label="تاريخ الإضافة">اتضاف</td><td><%= fmtDate(person.created_at) %><% if (person.created_by) { %> بواسطة <%= person.created_by %><% } %></td></tr>
-      </table>
+      <%
+        /* A real key/value definition list instead of a two-column .tbl
+           (label cell + value cell). The old markup put the label in its own
+           <td data-label="..."> that duplicated itself — the mobile
+           responsive-table rule reads data-label into a ::before AND the
+           cell's own text was that same label, so "الاسم الرسمي" rendered
+           twice per row on narrow widths. Found live, fixed here (Checkpoint
+           1 correction pass, item 2) rather than patching the duplication in
+           place, since a definition list is also the more honest structure
+           for one-field-per-row content. */
+        const kv = [
+          ['الاسم الرسمي', person.legal_name || '—'],
+          ['الاسم المختصر', person.display_name || '—'],
+          ['البريد', person.email || '—', true],
+          ['الموبايل', person.phone || '—', true],
+          ['الرقم القومي', person.national_id || '—', true],
+          ['تاريخ الميلاد', person.birth_date || '—', true],
+          ['اتضاف', fmtDate(person.created_at) + (person.created_by ? ' بواسطة ' + person.created_by : '')],
+        ];
+      %>
+      <dl class="kv-list">
+        <% kv.forEach(([label, value, isNum]) => { %>
+          <div class="kv-row"><dt><%= label %></dt><dd class="<%= isNum ? 'num' : '' %>"><%= value %></dd></div>
+        <% }) %>
+      </dl>
       <% if (idRequired && (person.id_front || person.id_back)) { %>
         <div class="id-sides" style="margin-top:16px">
           <% if (person.id_front) { %><a href="<%= adminPath %>/users/<%= person.id %>/id/front" target="_blank" rel="noopener"><img src="<%= adminPath %>/users/<%= person.id %>/id/front" alt="وجه البطاقة"><span>وجه البطاقة</span></a><% } %>

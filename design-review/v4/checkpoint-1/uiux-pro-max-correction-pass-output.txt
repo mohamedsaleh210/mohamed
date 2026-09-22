@@ -1,0 +1,188 @@
+=== Query 1: responsive KPI grid mobile 2x2 cards small viewport (--domain ux) ===
+## UI Pro Max Search Results
+**Domain:** ux | **Query:** responsive KPI grid mobile 2x2 cards small viewport
+**Source:** ux-guidelines.csv | **Found:** 4 results
+
+### Result 1
+- **Category:** Responsive
+- **Issue:** Viewport Meta
+- **Platform:** Web
+- **Description:** Set viewport for mobile devices
+- **Do:** Use width=device-width initial-scale=1
+- **Don't:** Missing or incorrect viewport
+- **Code Example Good:** <meta name='viewport'...>
+- **Code Example Bad:** No viewport meta tag
+- **Severity:** High
+
+### Result 2
+- **Category:** Layout
+- **Issue:** Viewport Units
+- **Platform:** Web
+- **Description:** 100vh can be problematic on mobile browsers
+- **Do:** Use dvh or account for mobile browser chrome
+- **Don't:** Use 100vh for full-screen mobile layouts
+- **Code Example Good:** min-h-dvh or min-h-screen
+- **Code Example Bad:** h-screen on mobile
+- **Severity:** Medium
+
+### Result 3
+- **Category:** Responsive
+- **Issue:** Mobile First
+- **Platform:** Web
+- **Description:** Design for mobile then enhance for larger
+- **Do:** Start with mobile styles then add breakpoints
+- **Don't:** Desktop-first causing mobile issues
+- **Code Example Good:** Default mobile + md: lg: xl:
+- **Code Example Bad:** Desktop default + max-width queries
+- **Severity:** Medium
+
+### Result 4
+- **Category:** Responsive
+- **Issue:** Table Handling
+- **Platform:** Web
+- **Description:** Tables can overflow on mobile
+- **Do:** Use horizontal scroll or card layout
+- **Don't:** Wide tables breaking layout
+- **Code Example Good:** overflow-x-auto wrapper
+- **Code Example Bad:** Table overflows viewport
+- **Severity:** Medium
+
+
+=== Query 2: employee roster directory pagination search filter (--domain ux) ===
+## UI Pro Max Search Results
+**Domain:** ux | **Query:** employee roster directory pagination search filter
+**Source:** ux-guidelines.csv | **Found:** 3 results
+
+### Result 1
+- **Category:** Search
+- **Issue:** No Results
+- **Platform:** Web
+- **Description:** Dead ends frustrate users
+- **Do:** Show 'No results' with suggestions
+- **Don't:** Blank screen or '0 results'
+- **Code Example Good:** Try searching for X instead
+- **Code Example Bad:** No results found.
+- **Severity:** Medium
+
+### Result 2
+- **Category:** Search
+- **Issue:** Autocomplete
+- **Platform:** Web
+- **Description:** Help users find results faster
+- **Do:** Show predictions as user types
+- **Don't:** Require full type and enter
+- **Code Example Good:** Debounced fetch + dropdown
+- **Code Example Bad:** No suggestions
+- **Severity:** Medium
+
+### Result 3
+- **Category:** Layout
+- **Issue:** Chip Collection Reflow
+- **Platform:** All
+- **Description:** Filter chips and editable value collections must preserve labels when space or text size changes
+- **Do:** Wrap the collection or use an operable +n disclosure for hidden overflow values
+- **Don't:** Force all chips into one clipped row or hide overflow values
+- **Code Example Good:** <div class='chip-list'>{chips}</div> with flex-wrap
+- **Code Example Bad:** <div class='chip-list' style='height:32px;overflow:hidden'>
+- **Severity:** High
+
+
+=== Query 3: master detail table expand row inline edit (--domain ux) ===
+## UI Pro Max Search Results
+**Domain:** ux | **Query:** master detail table expand row inline edit
+**Source:** ux-guidelines.csv | **Found:** 4 results
+
+### Result 1
+- **Category:** Responsive
+- **Issue:** Table Handling
+- **Platform:** Web
+- **Description:** Tables can overflow on mobile
+- **Do:** Use horizontal scroll or card layout
+- **Don't:** Wide tables breaking layout
+- **Code Example Good:** overflow-x-auto wrapper
+- **Code Example Bad:** Table overflows viewport
+- **Severity:** Medium
+
+### Result 2
+- **Category:** Forms
+- **Issue:** Inline Validation
+- **Platform:** All
+- **Description:** Validate as user types or on blur
+- **Do:** Validate on blur for most fields
+- **Don't:** Validate only on submit
+- **Code Example Good:** onBlur validation
+- **Code Example Bad:** Submit-only validation
+- **Severity:** Medium
+
+### Result 3
+- **Category:** Forms
+- **Issue:** Error Placement
+- **Platform:** All
+- **Description:** Each invalid field needs an inline error connected to that field
+- **Do:** Show a specific error below the input and reference it with aria-describedby
+- **Don't:** Show only a top-level error without identifying each invalid field
+- **Code Example Good:** <input aria-describedby="email-error"><p id="email-error">Enter an email address</p>
+- **Code Example Bad:** Red border or summary only
+- **Severity:** High
+
+### Result 4
+- **Category:** Forms / Accessibility
+- **Issue:** Focusable Error Summary
+- **Platform:** Web
+- **Description:** An error summary for failed validation complements inline field errors and must be easy to find by keyboard and screen reader users
+- **Do:** Place it at the top of the form; move focus to its heading or container after failed submit; link each item to its invalid field; retain inline errors
+- **Don't:** Replace inline errors with a visual-only summary or move focus on every blur
+- **Code Example Good:** <div role="alert" tabindex="-1" aria-labelledby="error-title"><h2 id="error-title">There is a problem</h2><a href="#email">Enter an email address</a></div>
+- **Code Example Bad:** Toast only with no field links or focus target
+- **Severity:** High
+
+
+=== Query 4: long form mobile progressive disclosure accordion sections (--domain ux) ===
+## UI Pro Max Search Results
+**Domain:** ux | **Query:** long form mobile progressive disclosure accordion sections
+**Source:** ux-guidelines.csv | **Found:** 4 results
+
+### Result 1
+- **Category:** Forms
+- **Issue:** Submit Feedback
+- **Platform:** All
+- **Description:** Confirm form submission status
+- **Do:** Show loading then success/error state
+- **Don't:** No feedback after submit
+- **Code Example Good:** Loading -> Success message
+- **Code Example Bad:** Button click with no response
+- **Severity:** High
+
+### Result 2
+- **Category:** Content
+- **Issue:** Truncation
+- **Platform:** All
+- **Description:** Handle long content gracefully
+- **Do:** Truncate with ellipsis and expand option
+- **Don't:** Overflow or broken layout
+- **Code Example Good:** line-clamp-2 with expand
+- **Code Example Bad:** Overflow or cut off
+- **Severity:** Medium
+
+### Result 3
+- **Category:** Accessibility
+- **Issue:** Form Labels
+- **Platform:** All
+- **Description:** Inputs must have associated labels
+- **Do:** Use label with for attribute or wrap input
+- **Don't:** Placeholder-only inputs
+- **Code Example Good:** <label for='email'>
+- **Code Example Bad:** placeholder='Email' only
+- **Severity:** High
+
+### Result 4
+- **Category:** Typography
+- **Issue:** Line Length
+- **Platform:** Web
+- **Description:** Long lines are hard to read
+- **Do:** Limit to 65-75 characters per line
+- **Don't:** Full-width text on large screens
+- **Code Example Good:** max-w-prose
+- **Code Example Bad:** Full viewport width text
+- **Severity:** Medium
+

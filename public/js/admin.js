@@ -28,6 +28,23 @@
     });
   }
 
+  // ------------------------------------------------------- workspace tab rail scroll-into-view
+  // The tabs themselves are plain radio+label — no JS needed to select one.
+  // This only keeps the chosen tab's label inside the visible, scrollable
+  // rail on narrow screens (Checkpoint 1 correction pass, item 1), so
+  // clicking/arrow-keying to a tab near the masked edge doesn't leave its
+  // label half-hidden under the fade.
+  var tabScrollReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.wtabs-input').forEach(function (input) {
+    input.addEventListener('change', function () {
+      if (!input.checked) return;
+      var label = document.querySelector('label[for="' + input.id + '"]');
+      if (label && label.scrollIntoView) {
+        label.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: tabScrollReduced ? 'auto' : 'smooth' });
+      }
+    });
+  });
+
   // ------------------------------------------------------------ drawer
   var sidebar = document.getElementById('sidebar');
   var scrim = document.getElementById('scrim');

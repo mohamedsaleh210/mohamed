@@ -84,12 +84,31 @@
     <span class="chip spacer"><%= users.filter(u => u.active).length %> شغّال</span>
   </div>
   <div class="panel-body">
-    <div class="emp-toolbar">
+    <%
+      /* Real branch names only — no invented list. With today's single-
+         office-branch demo data this select has one option, but the
+         markup/JS is the same regardless of how many real office_branches
+         exist, and is the natural slot a future searchable-branch combobox
+         (V4 audit §5) would drop into without changing this filter's
+         contract (a plain value match against data-branch). */
+      const branchNames = [...new Set(users.map(u => u.branch_name).filter(Boolean))].sort();
+    %>
+    <div class="emp-toolbar prominent">
       <div class="emp-search"><svg aria-hidden="true"><use href="/images/icons.svg#i-search"/></svg><input type="search" id="empSearch" placeholder="بحث بالاسم أو اسم المستخدم أو المسمى الوظيفي…" aria-label="بحث في الموظفين"></div>
       <select id="empRoleFilter" aria-label="فلترة حسب الصلاحية"><option value="">كل الصلاحيات</option><% Object.entries(roleLabel).forEach(([k,v]) => { %><option value="<%=k%>"><%=v%></option><% }) %></select>
       <select id="empStatusFilter" aria-label="فلترة حسب الحالة"><option value="">كل الحالات</option><option value="active">شغّال</option><option value="off">موقوف</option></select>
+      <% if (branchNames.length > 1) { %>
+        <select id="empBranchFilter" aria-label="فلترة حسب الفرع"><option value="">كل الفروع</option><% branchNames.forEach(b => { %><option value="<%=b%>"><%=b%></option><% }) %></select>
+      <% } %>
     </div>
-    <p class="emp-count-status" id="empCountStatus" role="status" aria-atomic="true"><%= users.length %> نتيجة</p>
+    <div class="emp-toolbar-status">
+      <p class="emp-count-status" id="empCountStatus" role="status" aria-atomic="true"><%= users.length %> نتيجة</p>
+      <div class="emp-pager" id="empPager" hidden>
+        <button type="button" class="btn ghost sm" id="empPagerPrev" aria-label="الصفحة السابقة">‹ السابق</button>
+        <span id="empPagerLabel" class="emp-pager-label"></span>
+        <button type="button" class="btn ghost sm" id="empPagerNext" aria-label="الصفحة التالية">التالي ›</button>
+      </div>
+    </div>
 
     <div class="tbl-wrap emp-table-wrap">
       <table class="tbl" id="empTable">
@@ -100,7 +119,7 @@
           <% users.forEach(u => { %>
             <tr style="<%= u.active ? '' : 'opacity:.6' %>" data-emp-row
                 data-name="<%= (u.display_name||'') + ' ' + (u.username||'') + ' ' + (u.job_title||'') %>"
-                data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>">
+                data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>" data-branch="<%= u.branch_name || '' %>">
               <td data-label="الاسم">
                 <div class="identity-chip">
                   <span class="id-avatar" aria-hidden="true"><%= initials(u) %></span>
@@ -157,7 +176,7 @@
       <% users.forEach(u => { %>
         <div class="emp-card" data-emp-row
              data-name="<%= (u.display_name||'') + ' ' + (u.username||'') + ' ' + (u.job_title||'') %>"
-             data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>"
+             data-role="<%= u.role %>" data-status="<%= u.active ? 'active' : 'off' %>" data-branch="<%= u.branch_name || '' %>"
              style="<%= u.active ? '' : 'opacity:.65' %>">
           <div class="identity-chip">
             <span class="id-avatar lg" aria-hidden="true"><%= initials(u) %></span>
@@ -338,29 +357,70 @@
   var search = document.getElementById('empSearch');
   var roleF = document.getElementById('empRoleFilter');
   var statusF = document.getElementById('empStatusFilter');
+  var branchF = document.getElementById('empBranchFilter');
   var status = document.getElementById('empCountStatus');
   var noResults = document.getElementById('empNoResults');
-  var rows = Array.prototype.slice.call(document.querySelectorAll('[data-emp-row]'));
-  if (!search || !rows.length) return;
+  var pager = document.getElementById('empPager');
+  var pagerLabel = document.getElementById('empPagerLabel');
+  var pagerPrev = document.getElementById('empPagerPrev');
+  var pagerNext = document.getElementById('empPagerNext');
+  if (!search) return;
 
-  function apply() {
+  /* Two parallel DOM representations (table rows, mobile cards) of the same
+     employees, in the same order — filtered and paged identically so
+     whichever one the current breakpoint shows always agrees with the
+     other. Client-side only: the 38-and-growing roster the route already
+     sends in full, no new request per page. */
+  var tableRows = Array.prototype.slice.call(document.querySelectorAll('#empTable tbody > tr[data-emp-row]'));
+  var cardRows = Array.prototype.slice.call(document.querySelectorAll('#empGrid > .emp-card[data-emp-row]'));
+  if (!tableRows.length && !cardRows.length) return;
+
+  var PAGE_SIZE = 12;
+  var page = 1;
+
+  function matches(row) {
     var q = (search.value || '').trim().toLowerCase();
-    var role = roleF.value, st = statusF.value;
-    var shown = 0;
-    rows.forEach(function (row) {
-      var okQ = !q || row.getAttribute('data-name').toLowerCase().indexOf(q) !== -1;
-      var okRole = !role || row.getAttribute('data-role') === role;
-      var okStatus = !st || row.getAttribute('data-status') === st;
-      var visible = okQ && okRole && okStatus;
-      row.style.display = visible ? '' : 'none';
-      if (visible) shown++;
-    });
-    status.textContent = shown + (shown === 1 ? ' نتيجة' : ' نتيجة');
-    noResults.hidden = shown !== 0;
+    var role = roleF.value, st = statusF.value, br = branchF ? branchF.value : '';
+    var okQ = !q || row.getAttribute('data-name').toLowerCase().indexOf(q) !== -1;
+    var okRole = !role || row.getAttribute('data-role') === role;
+    var okStatus = !st || row.getAttribute('data-status') === st;
+    var okBranch = !br || row.getAttribute('data-branch') === br;
+    return okQ && okRole && okStatus && okBranch;
   }
-  search.addEventListener('input', apply);
-  roleF.addEventListener('change', apply);
-  statusF.addEventListener('change', apply);
+
+  function apply(resetPage) {
+    if (resetPage) page = 1;
+    var matchedTable = tableRows.filter(matches);
+    var matchedCards = cardRows.filter(matches);
+    var total = Math.max(matchedTable.length, matchedCards.length);
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (page > totalPages) page = totalPages;
+    var start = (page - 1) * PAGE_SIZE, end = start + PAGE_SIZE;
+
+    tableRows.forEach(function (r) { r.style.display = 'none'; });
+    cardRows.forEach(function (r) { r.style.display = 'none'; });
+    matchedTable.slice(start, end).forEach(function (r) { r.style.display = ''; });
+    matchedCards.slice(start, end).forEach(function (r) { r.style.display = ''; });
+
+    status.textContent = total + ' نتيجة' + (totalPages > 1 ? ' — صفحة ' + page + ' من ' + totalPages : '');
+    noResults.hidden = total !== 0;
+
+    if (pager) {
+      pager.hidden = totalPages <= 1;
+      pagerLabel.textContent = page + ' / ' + totalPages;
+      pagerPrev.disabled = page <= 1;
+      pagerNext.disabled = page >= totalPages;
+    }
+  }
+
+  search.addEventListener('input', function () { apply(true); });
+  roleF.addEventListener('change', function () { apply(true); });
+  statusF.addEventListener('change', function () { apply(true); });
+  if (branchF) branchF.addEventListener('change', function () { apply(true); });
+  if (pagerPrev) pagerPrev.addEventListener('click', function () { if (page > 1) { page--; apply(false); window.scrollTo({ top: document.getElementById('roster').offsetTop - 12, behavior: 'auto' }); } });
+  if (pagerNext) pagerNext.addEventListener('click', function () { page++; apply(false); window.scrollTo({ top: document.getElementById('roster').offsetTop - 12, behavior: 'auto' }); });
+
+  apply(true);
 })();
 </script>
 

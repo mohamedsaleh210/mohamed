@@ -1972,11 +1972,11 @@ input,select,textarea,button{min-width:0;max-width:100%}
 .ws-section-head .ws-more { font-size: 12.5px; color: var(--muted); }
 
 .kpi-hero-row {
-  display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 14px;
+  display: grid; grid-template-columns: 1.3fr minmax(0,1fr) minmax(0,1fr); gap: 14px;
   margin-bottom: 14px;
 }
-@media (max-width: 900px) { .kpi-hero-row { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 560px) { .kpi-hero-row { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .kpi-hero-row { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+@media (max-width: 560px) { .kpi-hero-row { grid-template-columns: minmax(0,1fr); } }
 
 .kpi-primary {
   background: var(--hero-grad); color: #fff; border-radius: var(--radius);
@@ -1993,17 +1993,34 @@ input,select,textarea,button{min-width:0;max-width:100%}
 .kpi-primary .kpi-value small { font-size: 15px; font-weight: 600; color: #e7d9b8; }
 .kpi-primary .kpi-sub { font-size: 12.5px; color: #b9cbcb; }
 
-.kpi-secondary-col { display: flex; flex-direction: column; gap: 10px; }
+.kpi-secondary-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .kpi-tile {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm);
-  padding: 12px 14px; display: flex; align-items: center; gap: 11px;
+  padding: 12px 14px; display: flex; align-items: center; gap: 11px; min-width: 0;
   text-decoration: none; color: inherit; transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
 }
 .kpi-tile:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 .kpi-tile .kpi-ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
 .kpi-tile .kpi-ico svg { width: 17px; height: 17px; }
-.kpi-tile .kpi-label { font-size: 12px; color: var(--muted); font-weight: 600; }
-.kpi-tile .kpi-value { font-size: 20px; font-weight: 700; color: var(--ink-strong); }
+/* The label+value pair: an explicit column, not two bare inline spans, so it
+   has a real box to apply min-width:0 to — without this a flex item's
+   default min-width:auto refuses to shrink below its content's un-wrapped
+   size, and a fixed-width grid track (below) then has nowhere to put the
+   overflow except by breaking mid-word/mid-character. Found live on the
+   Employee Profile context row at 390px (Checkpoint 1 correction pass). */
+.kpi-tile .kpi-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.kpi-tile .kpi-label { font-size: 12px; color: var(--muted); font-weight: 600; overflow-wrap: normal; word-break: keep-all; }
+.kpi-tile .kpi-value {
+  font-size: 20px; font-weight: 700; color: var(--ink-strong);
+  font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* A fixed 2x2/1x4 KPI grid (Employee Profile's context row) — its own class
+   rather than an inline grid-template-columns override, so it stays subject
+   to real breakpoints instead of forcing 4 columns at every width. */
+.kpi-quad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 680px) { .kpi-quad { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 330px) { .kpi-quad { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---- Attention list: replaces a wall of identical stat cards ----------- */
 .attention-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
@@ -2066,7 +2083,20 @@ input,select,textarea,button{min-width:0;max-width:100%}
 .emp-toolbar .emp-search svg { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--muted); }
 .emp-toolbar .emp-search input { width: 100%; padding-inline-start: 34px; }
 .emp-toolbar select { min-width: 140px; }
-.emp-count-status { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+/* "More prominent" search/filter surface (Checkpoint 1 correction pass,
+   item 3) — its own bordered/tinted bar instead of bare controls floating
+   directly in the panel body, and a taller search field since it's the
+   primary way into a 38+-row roster. */
+.emp-toolbar.prominent {
+  background: var(--surface-sunken); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 12px; margin-bottom: 10px;
+}
+.emp-toolbar.prominent .emp-search input { height: 38px; font-size: 14px; }
+.emp-toolbar.prominent select { height: 38px; }
+.emp-toolbar-status { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.emp-count-status { font-size: 12.5px; color: var(--muted); margin: 0; }
+.emp-pager { display: flex; align-items: center; gap: 8px; }
+.emp-pager-label { font-size: 12.5px; color: var(--muted); font-weight: 700; min-width: 3.5em; text-align: center; }
 
 .emp-grid { display: none; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 @media (max-width: 820px) {
@@ -2091,13 +2121,31 @@ input,select,textarea,button{min-width:0;max-width:100%}
    log item 8. */
 .wtabs { --wt-count: 4; }
 .wtabs-input { position: absolute; opacity: 0; pointer-events: none; }
-.wtabs-nav { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; overflow-x: auto; }
+.wtabs-nav {
+  display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+  /* A scrollable rail with nothing past its edge looks like the whole list —
+     this fade is the visual affordance that says "more tabs this way",
+     found missing live on Employee Profile at 390px (Checkpoint 1
+     correction pass, item 1). RTL-safe: the gradient direction below is
+     flipped under [dir="ltr"]. */
+  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 22px, #000 calc(100% - 8px), transparent 100%);
+  mask-image: linear-gradient(to left, transparent 0, #000 22px, #000 calc(100% - 8px), transparent 100%);
+}
+[dir="ltr"] .wtabs-nav {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 22px, #000 calc(100% - 8px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 22px, #000 calc(100% - 8px), transparent 100%);
+}
+.wtabs-nav::-webkit-scrollbar { display: none; }
 .wtabs-nav label {
   padding: 9px 14px; font-size: 13px; font-weight: 700; color: var(--muted);
-  border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; flex: none;
+  scroll-snap-align: start;
   transition: color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
 }
 .wtabs-nav label:hover { color: var(--ink); }
+.wtabs-nav label:focus-visible { outline: 2px solid var(--brass-deep); outline-offset: -2px; border-radius: 4px; }
+@media (max-width: 480px) { .wtabs-nav label { padding: 9px 12px; font-size: 12.5px; } }
 .wtabs-panel { display: none; animation: wtab-in var(--motion-normal) var(--ease-decelerate) both; }
 @keyframes wtab-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .wtabs-input:nth-of-type(1):checked ~ .wtabs-nav label:nth-child(1),
@@ -2112,6 +2160,43 @@ input,select,textarea,button{min-width:0;max-width:100%}
 .wtabs-input:nth-of-type(4):checked ~ .wtabs-panels .wtabs-panel:nth-child(4),
 .wtabs-input:nth-of-type(5):checked ~ .wtabs-panels .wtabs-panel:nth-child(5),
 .wtabs-input:nth-of-type(6):checked ~ .wtabs-panels .wtabs-panel:nth-child(6) { display: block; }
+
+/* ---- Treasury's in/out/transfer tab-buttons: found genuinely clipped
+   (not just scrollable, actually unreachable — clipped by the outer
+   .panel's overflow:hidden) at 320px during the full 11-breakpoint sweep
+   (Checkpoint 1 correction pass, item 7). The existing rule sizes the pill
+   group to `width:max-content`, which defeats its own flex-wrap on any
+   viewport narrower than three buttons' combined width. Desktop is
+   untouched; only narrow widths get a horizontal scroll instead. */
+@media (max-width: 480px) {
+  .treasury-tabs .tab-buttons { width: 100%; max-width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .treasury-tabs .tab-buttons .btn { flex: none; }
+}
+
+/* ---- Payroll master/detail: one inline detail row per master row, not a
+   second parallel list (Checkpoint 1 correction pass, item 4) ------------ */
+.payroll-detail-row > td { background: var(--surface-sunken); padding: 16px !important; }
+.payroll-detail-row:not([hidden]) > td { animation: wtab-in var(--motion-normal) var(--ease-decelerate) both; }
+
+/* ---- Key/value definition list (one real field per row, no label
+   duplication — Checkpoint 1 correction pass, item 2) --------------------- */
+.kv-list { margin: 0; }
+.kv-row {
+  display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: baseline;
+  padding: 10px 0; border-bottom: 1px solid var(--line-soft); min-width: 0;
+}
+.kv-row:last-child { border-bottom: 0; }
+.kv-row dt { margin: 0; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.kv-row dd { margin: 0; color: var(--text); font-size: 14px; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .kv-row { grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 8px 0; }
+}
+
+/* ---- Nested progressive-disclosure section inside a form (optional fields
+   tucked away from the required-fields + submit flow — Checkpoint 1
+   correction pass, item 5) ------------------------------------------------ */
+.picker-box.sub-section { margin-top: 14px; background: var(--surface-sunken); }
+.picker-box.sub-section > summary { font-weight: 600; font-size: 13.5px; color: var(--muted); }
 
 /* ---- Side/detail panel (workspace two-col with a persistent context col) */
 .ws-layout { display: grid; grid-template-columns: 1fr; gap: 16px; }

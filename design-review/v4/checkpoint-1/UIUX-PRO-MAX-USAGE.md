@@ -126,3 +126,55 @@ the treasury/dashboard chart re-render when its own filter form resubmits.
 
 All ten queries and their real, unedited output are preserved in
 `design-review/v4/checkpoint-1/uiux-pro-max-raw-output.txt` for verification.
+
+---
+
+## Correction pass — re-run against the 4 flagged areas
+
+After the user's visual review, `ui-ux-pro-max` was re-run specifically against the four areas
+the correction request named: the employee-profile responsive KPI grid, the employee roster,
+the payroll master/detail table, and the treasury mobile form. Raw, unedited output for all four
+queries is preserved verbatim in `design-review/v4/checkpoint-1/uiux-pro-max-correction-pass-output.txt`.
+Below is which recommendations were adopted into this pass's fixes and which were deliberately
+rejected or deferred, with reasoning.
+
+### Adopted
+
+- **Chip Collection Reflow** (query 2, High) — "wrap the collection... don't force all chips into
+  one clipped row or hide overflow." This directly validates the fix already applied to the KPI
+  grid and the employee card tag row: `.kpi-quad`/`.emp-card-tags` use `flex-wrap`/responsive grid
+  with `min-width:0`, never a fixed-height `overflow:hidden` clip.
+- **Table Handling** (queries 1 and 3, Medium) — "horizontal scroll or card layout, not an
+  overflowing table." Matches the pattern already used site-wide and extended this pass: the
+  Employees list converts to cards at 820px, and dense tables that stay tables (payroll, treasury)
+  scroll horizontally inside a wrapper rather than breaking the page width.
+- **Submit Feedback** (query 4, High) — "show loading then success/error state... no feedback
+  after submit is bad." This is what motivated fixing the real gap found during motion
+  verification: treasury's `msg`/`err` query params were being passed by the route but never
+  rendered. The new `.alert.ok`/`.alert.danger` block closes exactly this gap.
+- **Truncation** (query 4, Medium) — "truncate with ellipsis... don't overflow or break layout."
+  Applied to `.kpi-value` (`text-overflow:ellipsis`) so an unexpectedly long formatted number
+  degrades gracefully instead of re-triggering the character-wrap bug this pass fixed.
+
+### Rejected / deferred (with reasoning)
+
+- **Mobile First** (query 1, Medium) — "design for mobile then enhance for larger." Correct as a
+  general methodology, but this is a *correction pass* retrofitting existing desktop-first
+  markup, not a rebuild; converting the whole admin panel to mobile-first CSS authoring is a much
+  larger change than "fix the visual regressions" and is out of scope here.
+- **Autocomplete** (query 2, Medium) — "show predictions as user types." The employee roster
+  already filters live as the user types (no debounce needed, dataset is small and local); adding
+  a separate suggestions dropdown on top of an already-instant live filter is a new UI affordance,
+  not a correction, so it was left out of this pass.
+- **Inline Validation / Error Placement / Focusable Error Summary / Form Labels** (queries 3 and
+  4, mixed Medium/High) — all legitimate, general form-accessibility guidance, but implementing
+  full per-field inline validation and error summaries, or reworking placeholder-only inputs,
+  touches form markup beyond a visual-structure correction pass, and some flagged inputs are
+  pre-existing fields the user explicitly asked to preserve verbatim (names, actions, contracts
+  unchanged). Flagged here as a candidate for a dedicated forms-accessibility pass, not silently
+  dropped.
+- **Line Length** (query 4, Medium) — "65-75 characters per line for readability." This targets
+  prose/paragraph content; the pages in scope are dense KPI/table admin workspaces, not long-form
+  reading content, so it doesn't apply.
+- **Viewport Meta / Viewport Units** (query 1) — already correctly set site-wide before this
+  checkpoint; re-confirmed unchanged, not a new decision.

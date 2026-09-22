@@ -15,37 +15,37 @@
 </form>
 
 <% if (showMoney) { %><div class="stat-grid">
-  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass" aria-hidden="true">◈</i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><%=financial.treasury.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok" aria-hidden="true">↓</i><div><div class="k">إجمالي الإيرادات</div><div class="v"><%=financial.revenue.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger" aria-hidden="true">↑</i><div><div class="k">إجمالي المصروفات</div><div class="v"><%=financial.expenses.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
-  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet" aria-hidden="true">◫</i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><%=financial.custody.toLocaleString('en-US')%> <small><%=site.currency%></small></div></div></a>
+  <a class="stat featured icon-stat" href="<%=adminPath%>/treasury"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></i><div><div class="k">رصيد الخزنة الحالي</div><div class="v"><span data-count-to="<%=financial.treasury%>">0</span> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/revenue"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-chevron-down"/></svg></i><div><div class="k">إجمالي الإيرادات</div><div class="v"><span data-count-to="<%=financial.revenue%>">0</span> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses"><i class="stat-ico ic-danger" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></i><div><div class="k">إجمالي المصروفات</div><div class="v"><span data-count-to="<%=financial.expenses%>">0</span> <small><%=site.currency%></small></div></div></a>
+  <a class="stat icon-stat" href="<%=adminPath%>/expenses/custodies"><i class="stat-ico ic-violet" aria-hidden="true"><svg><use href="/images/icons.svg#i-briefcase"/></svg></i><div><div class="k">إجمالي العهد على الموظفين</div><div class="v"><span data-count-to="<%=financial.custody%>">0</span> <small><%=site.currency%></small></div></div></a>
 </div><% } %>
 
 <div class="stat-grid">
   <a class="stat icon-stat" href="<%= adminPath %>/requests">
-    <i class="stat-ico ic-brass" aria-hidden="true">▤</i>
+    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></i>
     <div><div class="k"><%= user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات' %></div>
-    <div class="v"><%= total %></div></div>
+    <div class="v"><span data-count-to="<%= total %>">0</span></div></div>
   </a>
   <% if (showMoney) { %>
     <%# Collected belongs on the revenue page, where it can be read by period.
         What matters at a glance here is only what is still owed. %>
     <a class="stat icon-stat" href="<%= adminPath %>/revenue">
-      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true">%</i>
+      <i class="stat-ico <%= remaining > 0 ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true"><svg><use href="/images/icons.svg#i-receipt"/></svg></i>
       <div><div class="k">المتبقي على العملاء</div>
       <div class="v" style="color:<%= remaining > 0 ? 'var(--danger)' : 'var(--ok)' %>">
-        <%= remaining.toLocaleString('en-US') %> <small><%= site.currency %></small>
+        <span data-count-to="<%= remaining %>">0</span> <small><%= site.currency %></small>
       </div></div>
     </a>
   <% } %>
   <a class="stat icon-stat" href="<%= adminPath %>/notifications">
-    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true">🔔</i>
+    <i class="stat-ico <%= notifications.length ? 'ic-danger' : 'ic-ok' %>" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></i>
     <div><div class="k">إشعارات جديدة</div>
-    <div class="v" style="color:<%= notifications.length ? 'var(--danger)' : 'var(--ok)' %>"><%= notifications.length %></div></div>
+    <div class="v" style="color:<%= notifications.length ? 'var(--danger)' : 'var(--ok)' %>"><span data-count-to="<%= notifications.length %>">0</span></div></div>
   </a>
 </div>
 
-<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger" aria-hidden="true">🔔</i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn" aria-hidden="true">⟳</i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger" aria-hidden="true">⏱</i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info" aria-hidden="true">▦</i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
+<div class="stat-grid attention-grid"><a class="stat icon-stat" href="<%=adminPath%>/notifications"><i class="stat-ico ic-danger" aria-hidden="true"><svg><use href="/images/icons.svg#i-bell"/></svg></i><div><div class="k">الإشعارات الجديدة</div><div class="v"><%=unseenCount%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/renewals"><i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-refresh"/></svg></i><div><div class="k">الانتهاء والتجديد</div><div class="v"><%=attention.renewals%></div></div></a><a class="stat icon-stat" href="#due"><i class="stat-ico ic-danger" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></i><div><div class="k">المواعيد المتأخرة</div><div class="v"><%=attention.overdue%></div></div></a><a class="stat icon-stat" href="<%=adminPath%>/agenda"><i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></i><div><div class="k">مهام اليوم</div><div class="v"><%=attention.todayTasks%></div></div></a></div>
 
 <div class="stat-grid">
   <%# Finished work is not something anyone acts on from a dashboard, so the
@@ -70,7 +70,7 @@
         <% if (notifications.length) { %>
           <% notifications.forEach(n => { %>
             <div class="notif unseen">
-              <span class="ic"><%= { comment:'💬', assigned:'👤', status:'🔄', deadline:'📅', upload:'📎' }[n.type] || '🔔' %></span>
+              <span class="ic"><svg aria-hidden="true"><use href="/images/icons.svg#<%= { comment:'i-message', assigned:'i-user', status:'i-refresh', deadline:'i-calendar', upload:'i-paperclip' }[n.type] || 'i-bell' %>"/></svg></span>
               <div class="nb <%= n.priority === 'critical' ? 'critical' : '' %>">
                 <div class="m"><%= n.text %></div>
                 <div class="meta"><%= n.ref || '' %> · <%= timeAgo(n.created_at) %></div>
@@ -125,7 +125,7 @@
             </tbody>
           </table>
         <% } else { %>
-          <div class="empty"><span class="big">📋</span><p>مفيش طلبات لسه.</p></div>
+          <div class="empty"><span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-folder"/></svg></span><p>مفيش طلبات لسه.</p></div>
         <% } %>
       </div>
     </div>

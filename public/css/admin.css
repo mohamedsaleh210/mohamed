@@ -56,6 +56,18 @@
      same var() calls resolve to a sane value in both stylesheets. */
   --ink-deep: var(--ink-2);
   --paper: var(--brass-soft);
+
+  /* Phase 2 V3 integration — shared motion vocabulary, ported from the
+     approved design/sanad-phase1-preview branch (design-preview/assets/
+     tokens.css). Calm and fast, not decorative: existing ad hoc transition
+     durations already in this file (0.1s-0.24s) are left as they are —
+     these tokens are for new V3-derived motion (KPI count-up, card
+     entrance) so it doesn't invent a third timing scale. */
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+  --motion-slow: 320ms;
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, .2, 1);
 }
 
 * { box-sizing: border-box; }
@@ -179,7 +191,7 @@ a { color: inherit; text-decoration: none; }
   color: #c6d2d5;
   display: flex; flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.24s ease;
+  transition: transform var(--motion-normal) var(--ease-standard);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -200,7 +212,10 @@ a { color: inherit; text-decoration: none; }
   margin-inline-start: auto;
   background: none; border: 0; color: #8fa0a6;
   font-size: 26px; line-height: 1; cursor: pointer; padding: 4px 8px;
+  display: inline-flex; align-items: center; justify-content: center;
 }
+.sidebar-close svg { width: 20px; height: 20px; }
+.account-menu-toggle svg { width: 22px; height: 22px; }
 
 .side-nav { padding: 12px 10px; flex: 1; }
 .side-nav .group-label {
@@ -215,6 +230,7 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 2px;
   min-height: 44px;
 }
+.side-nav a { transition: background var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard); }
 .side-nav a:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
 .side-nav a.active { background: var(--brass); color: var(--ink); font-weight: 800; }
 .side-nav a svg { width: 19px; height: 19px; flex: none; opacity: 0.85; }
@@ -232,7 +248,7 @@ a { color: inherit; text-decoration: none; }
   position: fixed; inset: 0; z-index: 70;
   background: rgba(11, 32, 41, 0.55);
   opacity: 0; pointer-events: none;
-  transition: opacity 0.24s ease;
+  transition: opacity var(--motion-normal) var(--ease-standard);
   backdrop-filter: blur(2px);
 }
 .scrim.show { opacity: 1; pointer-events: auto; }
@@ -351,15 +367,33 @@ a.stat:hover { border-color: var(--brass); }
 /* ---------- stat card icon badge (optional; falls back cleanly if absent) ---------- */
 .stat.icon-stat { display: flex; align-items: center; gap: 13px; }
 .stat-ico {
-  width: 42px; height: 42px; border-radius: 12px; flex: none;
+  /* Phase 2 V3: rounded-square -> full circle, matching the approved
+     design-preview's KPI-card icon-in-circle language. Same box size, so
+     nothing in the surrounding flex layout shifts. */
+  width: 42px; height: 42px; border-radius: 50%; flex: none;
   display: grid; place-items: center; font-size: 18px; font-style: normal;
 }
+.stat-ico svg { width: 21px; height: 21px; }
 .stat-ico.ic-ok { background: var(--ok-bg); color: var(--ok); }
 .stat-ico.ic-danger { background: var(--danger-bg); color: var(--danger); }
 .stat-ico.ic-info { background: #e8f1fb; color: var(--info); }
 .stat-ico.ic-violet { background: #f1ecfa; color: #7c5cbf; }
 .stat-ico.ic-brass { background: var(--brass-soft); color: var(--brass-deep); }
 .stat-ico.ic-warn { background: var(--warn-bg); color: var(--warn); }
+
+/* Phase 2 V3: staggered entrance so a KPI-dense dashboard reads top-to-
+   bottom instead of dumping all at once. prefers-reduced-motion already
+   collapses animation-duration to .01ms globally (see :root media query
+   above), so this stays fully static — and instant — for anyone who asked
+   for reduced motion; nothing here is required for the card to be usable. */
+.stat-grid > .stat {
+  animation: stat-in var(--motion-slow) var(--ease-decelerate) both;
+}
+.stat-grid > .stat:nth-child(2) { animation-delay: 40ms; }
+.stat-grid > .stat:nth-child(3) { animation-delay: 80ms; }
+.stat-grid > .stat:nth-child(4) { animation-delay: 120ms; }
+.stat-grid > .stat:nth-child(n+5) { animation-delay: 160ms; }
+@keyframes stat-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 /* ---------- transaction summary card with mini donut ---------- */
 .tx-summary { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
@@ -407,6 +441,7 @@ table.tbl .row-actions { text-align: left; white-space: nowrap; }
   padding: 34px 20px; text-align: center; color: var(--muted);
 }
 .empty .big { font-size: 34px; opacity: 0.35; display: block; margin-bottom: 8px; }
+.empty .big svg { width: 34px; height: 34px; }
 .empty p { margin: 0 0 14px; }
 
 /*
@@ -1011,6 +1046,7 @@ svg:not([width]):not([height]) {
   width: 34px; height: 34px; border-radius: 50%; flex: none;
   display: grid; place-items: center; background: var(--bg); font-size: 15px;
 }
+.notif .ic svg { width: 17px; height: 17px; }
 .notif .nb { flex: 1; min-width: 0; }
 .notif .nb .m { font-size: 14.5px; }
 .notif .nb .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }

@@ -12,7 +12,7 @@
   <form class="dashboard-filters panel-body" method="get">
     <label>الفترة<select name="period"><%[['today','اليوم'],['week','هذا الأسبوع'],['month','هذا الشهر'],['custom','فترة مخصصة']].forEach(x=>{%><option value="<%=x[0]%>" <%=period===x[0]?'selected':''%>><%=x[1]%></option><%})%></select></label>
     <label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label>
-    <label>الفرع<select name="branch_id"><option value="">كل الفروع</option><%branches.forEach(b=>{%><option value="<%=b.id%>" <%=branchId===b.id?'selected':''%>><%=b.company_name%> — <%=b.name%></option><%})%></select></label>
+    <label>الفرع<select name="branch_id" data-searchable data-placeholder="كل الفروع"><option value="">كل الفروع</option><%branches.forEach(b=>{%><option value="<%=b.id%>" <%=branchId===b.id?'selected':''%>><%=b.company_name%> — <%=b.name%></option><%})%></select></label>
     <label>المسؤول<select name="staff_id"><option value="">كل المسؤولين</option><%staffFilter.forEach(u=>{%><option value="<%=u.id%>" <%=staffId===u.id?'selected':''%>><%=u.display_name%></option><%})%></select></label><button class="btn brass">تحديث البيانات</button>
   </form>
 </details>

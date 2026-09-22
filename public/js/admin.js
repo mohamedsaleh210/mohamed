@@ -321,4 +321,216 @@
       countEls.forEach(countUp);
     }
   }
+
+  // ------------------------------------------------------- searchable select
+  // Progressive enhancement over a real <select> (V4 Checkpoint 2). The
+  // <select> stays in the DOM as the single source of truth — its `value`
+  // and `change` event are what every existing page script (form submission,
+  // request_new.ejs's company->branch cascading filter, users.ejs's row
+  // filter) already reads, so none of that had to change. This only adds a
+  // type-to-filter input + listbox that read the select's *current* options
+  // (skipping ones a page has set `hidden` on, e.g. a cascading filter) and,
+  // on pick, set `select.value` + dispatch a real `change` event exactly as
+  // if the native control had fired it.
+  var sselIdSeq = 0;
+
+  function sselBuildList(state) {
+    state.list.innerHTML = '';
+    state.items = [];
+    var term = state.input.value.trim().toLowerCase();
+    var options = Array.prototype.filter.call(state.select.options, function (o) {
+      return !o.hidden && !o.disabled && o.value !== '';
+    });
+    var matches = options.filter(function (o) {
+      return !term || o.textContent.toLowerCase().indexOf(term) !== -1;
+    });
+    if (!matches.length) {
+      var empty = document.createElement('li');
+      empty.className = 'ssel-empty';
+      empty.textContent = term ? 'مفيش نتائج مطابقة' : 'مفيش خيارات متاحة';
+      state.list.appendChild(empty);
+      return;
+    }
+    matches.forEach(function (opt, i) {
+      var li = document.createElement('li');
+      li.className = 'ssel-opt';
+      li.id = state.id + '-opt-' + i;
+      li.setAttribute('role', 'option');
+      li.textContent = opt.textContent;
+      li.dataset.value = opt.value;
+      if (opt.value === state.select.value) li.setAttribute('aria-selected', 'true');
+      li.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        sselChoose(state, opt);
+      });
+      state.list.appendChild(li);
+      state.items.push({ el: li, opt: opt });
+    });
+  }
+
+  function sselSetActive(state, index) {
+    state.items.forEach(function (it) { it.el.classList.remove('active'); });
+    state.activeIndex = index;
+    if (index < 0 || index >= state.items.length) {
+      state.input.removeAttribute('aria-activedescendant');
+      return;
+    }
+    var it = state.items[index];
+    it.el.classList.add('active');
+    it.el.scrollIntoView({ block: 'nearest' });
+    state.input.setAttribute('aria-activedescendant', it.el.id);
+  }
+
+  function sselOpen(state) {
+    sselBuildList(state);
+    state.wrap.classList.add('open');
+    state.input.setAttribute('aria-expanded', 'true');
+    sselSetActive(state, -1);
+  }
+
+  function sselClose(state) {
+    state.wrap.classList.remove('open');
+    state.input.setAttribute('aria-expanded', 'false');
+    sselSetActive(state, -1);
+  }
+
+  function sselChoose(state, opt) {
+    var changed = state.select.value !== opt.value;
+    state.select.value = opt.value;
+    state.input.value = opt.value ? opt.textContent.trim() : '';
+    // Setting .value here is a direct property assignment, so no "input"
+    // event fires — the listener that clears a stale required-field
+    // validity message (set by an earlier failed submit) never runs on its
+    // own. Clear it here too, or a valid pick after one failed attempt
+    // would stay silently invalid and keep blocking submission.
+    state.input.setCustomValidity('');
+    state.wrap.classList.toggle('has-value', !!opt.value);
+    sselClose(state);
+    if (changed) state.select.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function sselSync(select) {
+    var state = select.__sselState;
+    if (!state) return;
+    var current = select.options[select.selectedIndex];
+    var isRealValue = current && current.value !== '' && !current.hidden;
+    state.input.value = isRealValue ? current.textContent.trim() : '';
+    state.wrap.classList.toggle('has-value', !!isRealValue);
+    if (state.wrap.classList.contains('open')) sselBuildList(state);
+  }
+
+  function initSearchableSelect(select) {
+    if (select.__sselState) return;
+    sselIdSeq += 1;
+    var id = 'ssel-' + sselIdSeq;
+
+    var labelText = select.getAttribute('aria-label') || '';
+    var labelEl = select.closest('label');
+    if (!labelText && labelEl) {
+      labelText = Array.prototype.slice.call(labelEl.childNodes)
+        .filter(function (n) { return n.nodeType === 3; })
+        .map(function (n) { return n.textContent.trim(); })
+        .join(' ').trim();
+    } else if (!labelText && select.id) {
+      var forLabel = document.querySelector('label[for="' + select.id + '"]');
+      if (forLabel) labelText = forLabel.textContent.trim();
+    }
+
+    var wrap = document.createElement('div');
+    wrap.className = 'ssel';
+    select.parentNode.insertBefore(wrap, select);
+    select.classList.add('ssel-native');
+    select.setAttribute('tabindex', '-1');
+    select.setAttribute('aria-hidden', 'true');
+    wrap.appendChild(select);
+
+    var inputWrap = document.createElement('div');
+    inputWrap.className = 'ssel-input-wrap';
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ssel-input';
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', id + '-list');
+    input.setAttribute('autocomplete', 'off');
+    input.placeholder = select.getAttribute('data-placeholder') || 'بحث…';
+    if (labelText) input.setAttribute('aria-label', labelText);
+    inputWrap.appendChild(input);
+
+    // The real <select> stays required for actual constraint validation
+    // (the browser still blocks submission on it), but it's visually a
+    // 1x1px transparent box, so its own native bubble would try to anchor
+    // there. The "invalid" event fires on the select itself before the
+    // browser shows that bubble — suppress it there and report on the
+    // visible input instead, which sits in the right place on screen.
+    if (select.required) {
+      select.addEventListener('invalid', function (e) {
+        e.preventDefault();
+        input.setCustomValidity('من فضلك اختر قيمة.');
+        input.reportValidity();
+        input.focus();
+      });
+      input.addEventListener('input', function () { input.setCustomValidity(''); select.setCustomValidity(''); });
+    }
+
+    var clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.className = 'ssel-clear';
+    clearBtn.setAttribute('aria-label', 'مسح الاختيار');
+    clearBtn.textContent = '×';
+    inputWrap.appendChild(clearBtn);
+    wrap.appendChild(inputWrap);
+
+    var list = document.createElement('ul');
+    list.className = 'ssel-list';
+    list.id = id + '-list';
+    list.setAttribute('role', 'listbox');
+    wrap.appendChild(list);
+
+    var state = {
+      id: id, select: select, wrap: wrap, input: input, list: list, items: [], activeIndex: -1,
+    };
+    select.__sselState = state;
+
+    var current = select.options[select.selectedIndex];
+    if (current && current.value !== '') {
+      input.value = current.textContent.trim();
+      wrap.classList.add('has-value');
+    }
+
+    input.addEventListener('focus', function () { sselOpen(state); });
+    input.addEventListener('input', function () { sselOpen(state); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!state.wrap.classList.contains('open')) { sselOpen(state); return; }
+        sselSetActive(state, Math.min(state.activeIndex + 1, state.items.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        sselSetActive(state, Math.max(state.activeIndex - 1, 0));
+      } else if (e.key === 'Enter') {
+        if (state.wrap.classList.contains('open') && state.activeIndex > -1) {
+          e.preventDefault();
+          sselChoose(state, state.items[state.activeIndex].opt);
+        }
+      } else if (e.key === 'Escape') {
+        if (state.wrap.classList.contains('open')) { e.preventDefault(); sselClose(state); }
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) sselClose(state);
+    });
+    clearBtn.addEventListener('click', function () {
+      var blank = Array.prototype.filter.call(select.options, function (o) { return o.value === ''; })[0];
+      sselChoose(state, blank || { value: '', textContent: '' });
+      input.focus();
+    });
+  }
+
+  document.querySelectorAll('select[data-searchable]').forEach(initSearchableSelect);
+  // Exposed so a page's own script can re-sync a searchable select's visible
+  // text/option list after it changes the underlying <select> directly
+  // (e.g. request_new.ejs resetting the branch when the company changes).
+  window.SanadSearchableSelect = { sync: sselSync };
 })();

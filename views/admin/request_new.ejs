@@ -31,7 +31,7 @@
       <div class="field req"><label>نوع صاحب الطلب</label><select name="party_type" id="partyType"><option value="person">فرد</option><option value="company" <%= selectedCompany?'selected':'' %>>شركة</option></select></div>
       <div id="companyFields" <%= selectedCompany?'':'hidden' %>>
         <div class="two-col"><div class="field req"><label>الشركة</label><select name="company_id" id="companyPick"><option value="">اختر الشركة</option><% companies.forEach(c=>{%><option value="<%=c.id%>" data-name="<%=c.contact_name||c.name%>" data-phone="<%=c.phone||''%>" data-email="<%=c.email||''%>" <%=selectedCompany===c.id?'selected':''%>><%=c.name%></option><%})%></select></div>
-        <div class="field req"><label>الفرع</label><select name="branch_id" id="branchPick"><option value="">اختر الفرع</option><% branches.forEach(b=>{%><option value="<%=b.id%>" data-company="<%=b.company_id%>" data-name="<%=b.manager||''%>" data-phone="<%=b.phone||''%>" data-email="<%=b.email||''%>" <%=selectedBranch===b.id?'selected':''%>><%=b.name%></option><%})%></select></div></div>
+        <div class="field req"><label>الفرع</label><select name="branch_id" id="branchPick" data-searchable data-placeholder="اختر الفرع"><option value="">اختر الفرع</option><% branches.forEach(b=>{%><option value="<%=b.id%>" data-company="<%=b.company_id%>" data-name="<%=b.manager||''%>" data-phone="<%=b.phone||''%>" data-email="<%=b.email||''%>" <%=selectedBranch===b.id?'selected':''%>><%=b.name%></option><%})%></select></div></div>
         <div class="help">طلبات الشركات لا تُحفظ إلا بعد اختيار فرع.</div>
       </div>
 
@@ -143,7 +143,7 @@
   var partyType=document.getElementById('partyType'), companyFields=document.getElementById('companyFields');
   var companyPick=document.getElementById('companyPick'), branchPick=document.getElementById('branchPick');
   function fillParty(opt){ if(!opt)return; document.getElementById('name').value=opt.dataset.name||''; document.getElementById('phone').value=opt.dataset.phone||''; document.getElementById('email').value=opt.dataset.email||''; }
-  function filterBranches(){ var cid=companyPick.value; Array.from(branchPick.options).forEach(function(o,i){if(i)o.hidden=o.dataset.company!==cid;}); if(branchPick.selectedOptions[0]&&branchPick.selectedOptions[0].hidden)branchPick.value=''; fillParty(companyPick.selectedOptions[0]); }
+  function filterBranches(){ var cid=companyPick.value; Array.from(branchPick.options).forEach(function(o,i){if(i)o.hidden=o.dataset.company!==cid;}); if(branchPick.selectedOptions[0]&&branchPick.selectedOptions[0].hidden)branchPick.value=''; if(window.SanadSearchableSelect)window.SanadSearchableSelect.sync(branchPick); fillParty(companyPick.selectedOptions[0]); }
   partyType.addEventListener('change',function(){companyFields.hidden=partyType.value!=='company';});
   companyPick.addEventListener('change',filterBranches); branchPick.addEventListener('change',function(){fillParty(branchPick.selectedOptions[0]);}); filterBranches();
   function toggleBeneficiary() {

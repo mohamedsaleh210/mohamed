@@ -266,6 +266,103 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
       await ctx.close();
     }
 
+    // ================================================== 6. Searchable branch select (CP2-3/4)
+    section('٦. القائمة القابلة للبحث للفروع (Checkpoint 2)');
+    {
+      const { ctx, page } = await loginPage(1280);
+      await page.goto(`${BASE}${ADMIN}/requests/new`, { waitUntil: 'networkidle' });
+      await page.selectOption('#partyType', 'company');
+      await page.waitForTimeout(100);
+
+      const wrapped = await page.evaluate(() => {
+        const select = document.getElementById('branchPick');
+        const wrap = select.closest('.ssel');
+        return { hasWrap: !!wrap, selectDisplay: getComputedStyle(select).display, selectOpacity: getComputedStyle(select).opacity };
+      });
+      check('السيلكت الأصلي اتغلف بمكوّن البحث وبقي مخفي بصريًا فقط (مش display:none)',
+        wrapped.hasWrap && wrapped.selectDisplay !== 'none' && wrapped.selectOpacity === '0', JSON.stringify(wrapped));
+
+      const companyVal = await page.locator('#companyPick option').nth(1).getAttribute('value');
+      await page.selectOption('#companyPick', companyVal);
+      await page.waitForTimeout(150);
+
+      const input = page.locator('.ssel:has(#branchPick) .ssel-input');
+      await input.click();
+      await page.waitForTimeout(100);
+      const listedOnOpen = await page.locator('.ssel:has(#branchPick) .ssel-opt').count();
+      const nativeVisible = await page.$$eval('#branchPick option', (opts) => opts.filter((o) => o.value !== '' && !o.hidden).length);
+      check('القائمة المنسدلة بتعرض نفس عدد الخيارات المفلترة في السيلكت الأصلي (متبعة فلتر الشركة)',
+        listedOnOpen === nativeVisible && nativeVisible > 0, `listed=${listedOnOpen} native=${nativeVisible}`);
+
+      await input.fill('غير موجود أصلاً 12345');
+      await page.waitForTimeout(150);
+      const emptyState = await page.locator('.ssel:has(#branchPick) .ssel-empty').count();
+      check('كتابة نص مش موجود بتظهر رسالة "مفيش نتائج"', emptyState === 1);
+
+      await input.fill('');
+      await page.waitForTimeout(150);
+      await input.press('ArrowDown');
+      const activeText = await page.locator('.ssel:has(#branchPick) .ssel-opt.active').textContent();
+      await input.press('Enter');
+      await page.waitForTimeout(150);
+      const selectValue = await page.locator('#branchPick').inputValue();
+      const selectedOptText = await page.evaluate(() => {
+        const s = document.getElementById('branchPick');
+        return s.selectedOptions[0] ? s.selectedOptions[0].textContent : '';
+      });
+      check('اختيار بالكيبورد (سهم لأسفل + Enter) بيحدّث قيمة السيلكت الأصلي فعليًا',
+        selectValue !== '' && selectedOptText.trim() === (activeText || '').trim(),
+        `value=${selectValue} selectedText=${selectedOptText} active=${activeText}`);
+
+      const clearBtn = page.locator('.ssel:has(#branchPick) .ssel-clear');
+      await clearBtn.click();
+      await page.waitForTimeout(100);
+      const afterClear = await page.locator('#branchPick').inputValue();
+      check('زرار المسح (×) بيرجّع السيلكت الأصلي لقيمة فاضية', afterClear === '', `value=${afterClear}`);
+
+      await ctx.close();
+    }
+
+    // Required-select regression: this guards a real bug found during manual
+    // QA — sselChoose() sets the visible proxy input's .value via a direct
+    // JS assignment, which never fires a real "input" event, so the listener
+    // that clears a stale required-field validity message never runs on its
+    // own. Without clearing it inside sselChoose() itself, one failed submit
+    // attempt permanently blocks the form even after a valid pick.
+    section('٧. التحقق من الحقل الإلزامي القابل للبحث (فرع هوية التقرير)');
+    {
+      const { ctx, page } = await loginPage(1280);
+      await page.goto(`${BASE}${ADMIN}/report-profiles`, { waitUntil: 'networkidle' });
+      await page.fill('input[name="name"]', 'CP2 regression identity');
+      await page.fill('input[name="company_name_ar"]', 'CP2 regression co');
+      const urlBefore = page.url();
+
+      await page.locator('form button.btn.brass.block').click({ timeout: 3000 }).catch(() => {});
+      await page.waitForTimeout(300);
+      check('إرسال الفورم من غير اختيار الفرع بيتمنع (يفضل في نفس الصفحة)', page.url() === urlBefore, page.url());
+
+      const msg = await page.locator('.ssel:has(select[name="office_branch_id"]) .ssel-input')
+        .evaluate((el) => el.validationMessage);
+      check('رسالة التحقق بتظهر على الحقل المرئي (مش على السيلكت المخفي 1×1px)', !!msg, JSON.stringify(msg));
+
+      const input = page.locator('.ssel:has(select[name="office_branch_id"]) .ssel-input');
+      await input.click();
+      await page.waitForTimeout(100);
+      await input.press('ArrowDown');
+      await input.press('Enter');
+      await page.waitForTimeout(150);
+
+      await Promise.all([
+        page.waitForNavigation({ timeout: 5000 }).catch(() => null),
+        page.locator('form button.btn.brass.block').click(),
+      ]);
+      await page.waitForTimeout(200);
+      check('اختيار فرع صحيح بعد محاولة فاشلة بيسمح بإرسال الفورم بنجاح (مش هيفضل معطّل)',
+        page.url() !== urlBefore, page.url());
+
+      await ctx.close();
+    }
+
     section('سلامة السيرفر');
     check('مفيش أخطاء في السيرفر', !/Error|error:/i.test(serverErrors), serverErrors.slice(0, 200));
   } catch (err) {

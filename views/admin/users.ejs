@@ -98,7 +98,7 @@
       <select id="empRoleFilter" aria-label="فلترة حسب الصلاحية"><option value="">كل الصلاحيات</option><% Object.entries(roleLabel).forEach(([k,v]) => { %><option value="<%=k%>"><%=v%></option><% }) %></select>
       <select id="empStatusFilter" aria-label="فلترة حسب الحالة"><option value="">كل الحالات</option><option value="active">شغّال</option><option value="off">موقوف</option></select>
       <% if (branchNames.length > 1) { %>
-        <select id="empBranchFilter" aria-label="فلترة حسب الفرع"><option value="">كل الفروع</option><% branchNames.forEach(b => { %><option value="<%=b%>"><%=b%></option><% }) %></select>
+        <select id="empBranchFilter" aria-label="فلترة حسب الفرع" data-searchable data-placeholder="كل الفروع"><option value="">كل الفروع</option><% branchNames.forEach(b => { %><option value="<%=b%>"><%=b%></option><% }) %></select>
       <% } %>
     </div>
     <div class="emp-toolbar-status">

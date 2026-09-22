@@ -437,6 +437,7 @@ input.pw-bad{border-color:#c15450 !important}
 .track-needed li{margin-bottom:7px;font-size:14.5px}
 
 .track-done{padding:7px 0;color:#3a9d6b;font-size:14.5px;font-weight:600}
+.track-done svg{vertical-align:-2px}
 
 .track-invite{background:var(--paper);border:1px solid var(--line);border-radius:14px;
   padding:22px;text-align:center}

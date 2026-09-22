@@ -11,6 +11,7 @@
     deleted: 'تم الحذف.',
     hours_saved: 'تم حفظ المواعيد والعنوان.',
   };
+  const kindIcons = { phone: 'i-phone', mobile: 'i-phone', whatsapp: 'i-message', email: 'i-mail', address: 'i-map-pin', fax: 'i-file' };
 %>
 
 <div class="page-head">
@@ -34,7 +35,7 @@
       <ul class="contact-list">
         <% contacts.forEach(c => { %>
           <li class="<%= c.active ? '' : 'off' %>">
-            <span class="contact-icon"><%= kinds[c.kind] ? kinds[c.kind].icon : '•' %></span>
+            <span class="contact-icon" aria-hidden="true"><svg><use href="/images/icons.svg#<%= kindIcons[c.kind] || 'i-info' %>"/></svg></span>
             <span class="contact-body">
               <b><%= c.label || c.kindLabel %></b>
               <span class="num"><%= c.value %></span>
@@ -108,7 +109,7 @@
             <label>النوع</label>
             <select name="kind" required>
               <% Object.entries(kinds).forEach(([key, k]) => { %>
-                <option value="<%= key %>"><%= k.icon %> <%= k.ar %></option>
+                <option value="<%= key %>"><%= k.ar %></option>
               <% }) %>
             </select>
           </div>

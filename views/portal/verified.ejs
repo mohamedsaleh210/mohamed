@@ -5,7 +5,9 @@
 <section class="section">
   <div class="wrap">
     <div class="form-card" style="max-width:440px;text-align:center">
-      <div style="font-size:46px;margin-bottom:10px"><%= ok ? '\u2705' : '\u26A0\uFE0F' %></div>
+      <div style="color:<%= ok ? '#1d7a48' : '#a1332e' %>;margin-bottom:10px" aria-hidden="true">
+        <svg width="46" height="46"><use href="/images/icons.svg#<%= ok ? 'i-check-circle' : 'i-alert-triangle' %>"/></svg>
+      </div>
       <h2 style="color:var(--ink);margin:0 0 10px">
         <%= ok ? (lang === 'ar' ? 'تم تأكيد بريدك الإلكتروني' : 'Your email is confirmed')
                : (lang === 'ar' ? 'الرابط غير صالح' : 'This link is not valid') %>

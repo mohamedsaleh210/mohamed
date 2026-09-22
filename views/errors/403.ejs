@@ -6,11 +6,12 @@
   <title><%= lang === 'ar' ? 'غير مسموح' : 'Not allowed' %></title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>.lock-ico{display:inline-flex}.lock-ico svg{width:44px;height:44px}</style>
 </head>
 <body>
   <section class="section">
     <div class="wrap" style="text-align:center;padding:70px 20px">
-      <div style="font-size:44px;opacity:.4">🔒</div>
+      <div class="lock-ico" style="opacity:.4" aria-hidden="true"><svg><use href="/images/icons.svg#i-lock"/></svg></div>
       <h1 style="color:var(--ink);margin:10px 0"><%= lang === 'ar' ? 'الملف ده مش من صلاحياتك' : 'You cannot access this file' %></h1>
       <a class="btn brass" href="/"><%= lang === 'ar' ? 'العودة للرئيسية' : 'Back to home' %></a>
     </div>

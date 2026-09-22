@@ -279,7 +279,7 @@
                   <td data-label="مستحق له">
                     <% if (s.owed > 0) { %>
                       <b class="num" style="color:var(--danger)"><%= money(s.owed) %></b>
-                    <% } else { %><span style="color:var(--ok)">✓</span><% } %>
+                    <% } else { %><span style="color:var(--ok);display:inline-flex" aria-hidden="true"><svg width="16" height="16"><use href="/images/icons.svg#i-check"/></svg></span><% } %>
                   </td>
                 </tr>
               <% }) %>

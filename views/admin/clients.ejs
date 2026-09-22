@@ -106,7 +106,7 @@
                   <% if (c.owed > 0.01) { %>
                     <b class="num" style="color:var(--danger)"><%= money(c.owed) %></b>
                   <% } else { %>
-                    <span style="color:var(--ok)">✓</span>
+                    <span style="color:var(--ok);display:inline-flex" aria-hidden="true"><svg width="16" height="16"><use href="/images/icons.svg#i-check"/></svg></span>
                   <% } %>
                 </td>
               <% } %>

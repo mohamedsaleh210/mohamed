@@ -72,6 +72,21 @@
 
 * { box-sizing: border-box; }
 
+/* The browser's own `[hidden]{display:none}` UA rule loses to ANY author
+   rule that sets `display` on the same element, regardless of specificity —
+   author origin always beats user-agent origin. This file (and
+   responsive-admin.css) has several such rules that were written before any
+   markup used the `hidden` attribute on an element they also match — e.g.
+   the ≤900px `.tbl-wrap:not(.table-scroll) table.tbl tr{display:block}`
+   card-transform rule silently re-shows a `hidden` payroll detail row or
+   reset-password row at mobile widths (Checkpoint 1 correction-pass finding,
+   pre-merge review). One global, `!important` rule closes every such case at
+   once instead of chasing each conflicting selector — the same fix shape
+   already used once in this codebase for `.mobile-nav-scrim[hidden]`
+   (style.css). Since this only matches elements that currently carry
+   `hidden`, it can never affect a visible element's own display value. */
+[hidden] { display: none !important; }
+
 html, body { margin: 0; padding: 0; }
 
 html { overflow-x: hidden; }

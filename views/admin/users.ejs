@@ -154,7 +154,7 @@
                     <% if (u.exception_count) { %><span class="chip brass"><%= u.exception_count %></span><% } %>
                   </a>
                 <% } %>
-                <button class="btn ghost sm" type="button" data-reset="tr-<%= u.id %>">كلمة سر جديدة</button>
+                <button class="btn ghost sm" type="button" data-reset="tr-<%= u.id %>" aria-expanded="false">كلمة سر جديدة</button>
                 <% if (u.id !== user.id) { %>
                   <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle" style="display:inline"
                         data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
@@ -195,7 +195,7 @@
           <div class="emp-card-actions">
             <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
             <% if (u.role !== 'admin') { %><a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">الصلاحيات<% if (u.exception_count) { %> <span class="chip brass"><%= u.exception_count %></span><% } %></a><% } %>
-            <button class="btn ghost sm" type="button" data-reset="card-<%= u.id %>">كلمة سر جديدة</button>
+            <button class="btn ghost sm" type="button" data-reset="card-<%= u.id %>" aria-expanded="false">كلمة سر جديدة</button>
             <% if (u.id !== user.id) { %>
               <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle"
                     data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
@@ -341,12 +341,19 @@
     var open = e.target.closest('[data-reset]');
     if (open) {
       var row = document.getElementById('reset-' + open.getAttribute('data-reset'));
-      if (row) { row.hidden = !row.hidden; if (!row.hidden) row.querySelector('input[name=password]').focus(); }
+      if (row) {
+        row.hidden = !row.hidden;
+        open.setAttribute('aria-expanded', String(!row.hidden));
+        if (!row.hidden) row.querySelector('input[name=password]').focus();
+      }
     }
     var close = e.target.closest('[data-close-reset]');
     if (close) {
-      var r = document.getElementById('reset-' + close.getAttribute('data-close-reset'));
+      var domId = close.getAttribute('data-close-reset');
+      var r = document.getElementById('reset-' + domId);
       if (r) r.hidden = true;
+      var trigger = document.querySelector('[data-reset="' + domId + '"]');
+      if (trigger) { trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); }
     }
   });
 </script>

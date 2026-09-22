@@ -1742,7 +1742,7 @@ ol.inner li, ul.inner li { margin-bottom: 6px; }
 @media(max-width:800px){.legal-row{grid-template-columns:1fr}.case-kpis{grid-template-columns:1fr 1fr}.legal-form{grid-template-columns:1fr}.legal-form .full{grid-column:auto}}
 .location-link{display:inline-block;margin-top:4px;color:var(--brass-deep);font-weight:800;font-size:12.5px}.location-missing{display:inline-block;margin-top:4px;color:var(--muted);font-size:12px}
 .custody-totals{grid-template-columns:repeat(4,1fr)}@media(max-width:700px){.custody-totals{grid-template-columns:1fr 1fr}}
-.filter-checks{position:relative}.filter-checks summary{list-style:none;cursor:pointer}.filter-checks summary::-webkit-details-marker{display:none}.filter-checks .check-menu{position:absolute;z-index:30;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px #0002;padding:10px;min-width:210px;max-height:310px;overflow:auto}.filter-checks .check-menu label{display:block;padding:7px 5px;white-space:nowrap}.filter-checks .check-menu input{margin-left:7px}
+.filter-checks{position:relative}.filter-checks summary{list-style:none;cursor:pointer}.filter-checks summary::-webkit-details-marker{display:none}.filter-checks .check-menu{position:absolute;z-index:85;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px #0002;padding:10px;min-width:210px;max-height:310px;overflow:auto}.filter-checks .check-menu label{display:block;padding:7px 5px;white-space:nowrap}.filter-checks .check-menu input{margin-left:7px}
 .report-profile-card{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.report-profile-card:last-child{border-bottom:0}.report-profile-card img{width:64px;height:64px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff}
 
 /* subscriptions */
@@ -1756,7 +1756,7 @@ ol.inner li, ul.inner li { margin-bottom: 6px; }
 .side-nav-organized summary:after{content:'⌄';transition:.2s}.side-nav-organized details[open] summary:after{transform:rotate(180deg)}
 .side-nav-organized a i{width:22px;text-align:center;font-style:normal;color:#aec0c5}.side-nav-organized .nav-group a{padding-block:10px}
 .dashboard-filters{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;background:#fff;border:1px solid var(--line);padding:14px;border-radius:14px;margin:0 0 18px;align-items:end}.dashboard-filters label{margin:0}
-.stat.featured{background:var(--ink);color:#fff;border-color:var(--ink)}.stat.featured .k,.stat.featured small{color:#d9e4e6}.stat.featured .v{color:var(--brass)}
+.stat.featured{background:var(--ink);color:#fff;border-color:var(--ink)}.stat.featured .k,.stat.featured small{color:#d9e4e6}.stat.featured .v{color:var(--brass);font-size:24px}
 .attention-grid .stat{border-inline-start:4px solid var(--brass)}
 .treasury-stats{grid-template-columns:repeat(3,1fr)}.treasury-tabs{margin:18px 0}.tab-buttons{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .receipt-row{display:grid;grid-template-columns:1.1fr 1fr 1.4fr 1fr 1fr 1fr auto;gap:8px;margin:10px 0}.receipt-row input,.receipt-row select{min-width:0}
@@ -1814,6 +1814,14 @@ body.admin input[type="checkbox"],body.admin input[type="radio"]{accent-color:va
 .toolbar{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;box-shadow:var(--shadow);align-items:end}
 .toolbar label{display:grid;gap:5px;color:var(--muted);font-size:12px;font-weight:700}.toolbar .btn{min-height:46px}
 .stat-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.stat{padding:18px;border-radius:14px}.stat .k{min-height:22px}.stat .v{font-size:28px}
+/* Phase 3: KPI values are numbers (+ an LTR currency code) inside an RTL
+   page. Without this, wrapping one onto two lines under width pressure
+   made the Unicode Bidi Algorithm reorder the wrapped fragment (a real
+   amount like "262,200 EGP" rendered as "262,20" / "EGP 0"). .num already
+   solves this the same way elsewhere (revenue.ejs); applying it to every
+   .stat .v here covers the KPI cards that were missing it, with no view
+   changes needed. */
+.stat .v{direction:ltr;unicode-bidi:isolate}
 .picker-box{padding:0;overflow:hidden;margin-bottom:12px;background:#fff}.picker-box>summary{display:flex;align-items:center;gap:10px;padding:15px 17px;background:#fbfcfb}.picker-box[open]>summary{border-bottom:1px solid var(--line);background:#fff}.picker-box>summary .spacer{margin-inline-start:auto}.picker-box>form,.picker-box>.performance-editor,.picker-box>.payroll-summary,.picker-box>.row{margin:0;padding:18px}
 .emp-avatar{width:36px;height:36px;border-radius:50%;background:var(--ink-deep);color:var(--brass);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
 .emp-id{display:flex;flex-direction:column;gap:1px;min-width:0}

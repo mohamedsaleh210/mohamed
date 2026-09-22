@@ -766,6 +766,104 @@ const { check, section, makeClient, loginStaff, loginClient, ADMIN, BASE, has, c
         .every((f) => /^[A-Za-z0-9._-]+$/.test(f.stored_name)),
       'فيه اسم مخزّن فيه حروف غريبة');
 
+    // ============================================ RC1.1 P2-02: rejected upload
+    // A disallowed file type on the request time-pause proof upload must be
+    // handled as an ordinary validation failure (a redirect back to the page
+    // with a friendly message), never as an unhandled server error.
+    section('رفع إثبات إيقاف المدة — أنواع ملفات مسموحة ومرفوضة');
+
+    const pauseRequestId = 1;
+    const pauseUrl = `${ADMIN}/requests/${pauseRequestId}/time-pauses`;
+
+    async function submitPause({ filename, mimeType, buffer, skipFile }) {
+      const tokenPage = await adam.client.get(`${ADMIN}/requests/${pauseRequestId}`);
+      const m = tokenPage.text.match(/name="_csrf" value="([^"]+)"/);
+      const fd = new FormData();
+      fd.append('_csrf', m ? m[1] : '');
+      fd.append('reason', 'administrative');
+      fd.append('note', `RC1.1 edge test ${Date.now()}`);
+      if (!skipFile) fd.append('proof', new Blob([buffer], { type: mimeType }), filename);
+      return fetch(BASE + pauseUrl, {
+        method: 'POST', body: fd, redirect: 'manual',
+        headers: { cookie: adam.client.cookieHeader() },
+      });
+    }
+
+    // A. allowed extension (real image bytes, image/png)
+    const goodPng = await sharp({ create: { width: 40, height: 30, channels: 3, background: '#eee' } }).png().toBuffer();
+    let r = await submitPause({ filename: 'proof.png', mimeType: 'image/png', buffer: goodPng });
+    check('أ. نوع ملف مسموح: يُقبل ويُعاد توجيه المستخدم (لا 500)',
+      r.status === 302 && (r.headers.get('location') || '').includes('msg=pause_added'), `status=${r.status} location=${r.headers.get('location')}`);
+
+    // B. disallowed extension — this is the exact defect: used to be an
+    // unhandled 500, must now be a controlled redirect with the app's own
+    // existing friendly message surfaced via ?msg=pause_bad_type.
+    r = await submitPause({ filename: 'malware.exe', mimeType: 'application/x-msdownload', buffer: Buffer.from('MZ not a real image') });
+    check('ب. نوع ملف مرفوض: لا يُرجع خطأ سيرفر عام 500',
+      r.status !== 500, `status=${r.status}`);
+    check('ب. نوع ملف مرفوض: يُعاد توجيه لصفحة الطلب برسالة واضحة',
+      r.status === 302 && (r.headers.get('location') || '').includes('msg=pause_bad_type'), `status=${r.status} location=${r.headers.get('location')}`);
+
+    // C. spoofed MIME (disallowed bytes, but declares an allowed content-type)
+    // — documents the CURRENT, unchanged behavior: the filter trusts the
+    // declared content-type, exactly as it did before this fix. This is not
+    // a new gap introduced here; it is recorded so a future change to that
+    // behavior shows up as an intentional diff, not a silent regression.
+    r = await submitPause({ filename: 'spoofed.png', mimeType: 'image/png', buffer: Buffer.from('MZ not really a png') });
+    check('ج. MIME مزوَّر (سلوك حالي غير متغيّر): يُقبل لأن الفحص يعتمد على النوع المُعلَن',
+      r.status === 302 && (r.headers.get('location') || '').includes('msg=pause_added'), `status=${r.status} location=${r.headers.get('location')}`);
+
+    // D. oversized file (pauseUpload's own limit is 10 MB)
+    r = await submitPause({ filename: 'huge.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(11 * 1024 * 1024) });
+    check('د. ملف أكبر من الحد المسموح: لا يُرجع 500',
+      r.status !== 500, `status=${r.status}`);
+    check('د. ملف أكبر من الحد المسموح: رسالة واضحة عن حجم الملف',
+      r.status === 302 && (r.headers.get('location') || '').includes('msg=pause_too_big'), `status=${r.status} location=${r.headers.get('location')}`);
+
+    // E. empty upload — the proof file is optional on this form; submitting
+    // without one must still work normally, exactly like before this fix.
+    r = await submitPause({ skipFile: true });
+    check('هـ. بدون ملف مرفق (اختياري): يكمل بنجاح',
+      r.status === 302 && (r.headers.get('location') || '').includes('msg=pause_added'), `status=${r.status} location=${r.headers.get('location')}`);
+
+    // F. unauthorized role: a lawyer with no access to this request must be
+    // stopped by the existing visibility gate before the upload code ever
+    // runs — proves this fix did not touch permission/access enforcement.
+    // The target request is looked up dynamically (a request khaled is not
+    // assigned to) rather than assumed, so this does not depend on exactly
+    // how the demo seed happens to be shuffled.
+    const khaled = await loginStaff('khaled', 'demo1234');
+    const khaledId = db.prepare("SELECT id FROM users WHERE username='khaled'").get()?.id;
+    const outOfReachRequestId = db.prepare(
+      `SELECT id FROM requests WHERE id NOT IN (SELECT request_id FROM request_assignees WHERE user_id=?) ORDER BY id LIMIT 1`
+    ).get(khaledId)?.id;
+    if (outOfReachRequestId) {
+      const deniedPage = await khaled.client.get(`${ADMIN}/requests/${outOfReachRequestId}`);
+      check('و. موظف بدون صلاحية رؤية الطلب: مرفوض 403 عند فتح صفحة الطلب',
+        deniedPage.status === 403, `status=${deniedPage.status} request=${outOfReachRequestId}`);
+      const fd = new FormData();
+      fd.append('_csrf', '');
+      fd.append('reason', 'administrative');
+      fd.append('note', 'should never be reached');
+      const rf = await fetch(BASE + `${ADMIN}/requests/${outOfReachRequestId}/time-pauses`, {
+        method: 'POST', body: fd, redirect: 'manual',
+        headers: { cookie: khaled.client.cookieHeader() },
+      });
+      check('و. موظف بدون صلاحية رؤية الطلب: يُمنع قبل الوصول لكود الرفع (لا يُقبل الملف)',
+        rf.status === 403, `status=${rf.status}`);
+    } else {
+      check('و. موظف بدون صلاحية رؤية الطلب: يُمنع قبل الوصول لكود الرفع', false,
+        'no request found that khaled is not assigned to in the current seed — cannot exercise this case');
+    }
+
+    // G. valid authorized upload — end to end, not just the redirect: the
+    // proof file must actually be stored and linked to a real row.
+    const beforeCount = db.prepare('SELECT COUNT(*) n FROM request_time_pauses WHERE request_id=? AND proof_path IS NOT NULL').get(pauseRequestId).n;
+    r = await submitPause({ filename: 'proof2.png', mimeType: 'image/png', buffer: goodPng });
+    const afterCount = db.prepare('SELECT COUNT(*) n FROM request_time_pauses WHERE request_id=? AND proof_path IS NOT NULL').get(pauseRequestId).n;
+    check('ز. رفع صحيح ومُصرَّح به: يُخزَّن فعليًا ويرتبط بالسجل',
+      r.status === 302 && afterCount === beforeCount + 1, `before=${beforeCount} after=${afterCount} status=${r.status}`);
+
     // ================================================== recovery
     section('التعافي');
 

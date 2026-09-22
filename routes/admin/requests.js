@@ -669,7 +669,19 @@ const pauseUpload = multer({
   },
 });
 
-router.post('/:id/time-pauses', loadRequest, pauseUpload.single('proof'), csrf.verifyDeferred, (req,res)=>{
+router.post('/:id/time-pauses', loadRequest, (req, res, next) => {
+  // Same reasoning as the /documents route below: multer's fileFilter/limits
+  // errors are real, expected user mistakes (wrong file type, file too big),
+  // not server faults — they must become a friendly redirect, never reach
+  // Express's default error handler (which would render a generic 500).
+  pauseUpload.single('proof')(req, res, (err) => {
+    if (err) {
+      const code = err.code === 'LIMIT_FILE_SIZE' ? 'pause_too_big' : 'pause_bad_type';
+      return res.redirect(`${req.adminPath}/requests/${req.params.id}?msg=${code}`);
+    }
+    next();
+  });
+}, csrf.verifyDeferred, (req,res)=>{
   const reasons=['awaiting_documents','awaiting_payment','government','manager_approval','administrative'];
   const reason=reasons.includes(req.body.reason)?req.body.reason:null,note=String(req.body.note||'').trim();
   if(!reason||!note)return res.redirect(`${req.adminPath}/requests/${req.reqRow.id}?msg=pause_invalid`);

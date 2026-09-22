@@ -35,7 +35,7 @@
         <h2><%= ar ? 'الأقسام' : 'Categories' %></h2>
       </div>
 
-      <div class="cat-grid">
+      <div class="cat-grid reveal-stagger">
         <% categories.forEach(c => { %>
           <a class="cat-card" href="/services/<%= c.id %>" style="--page: <%= page.colour %>">
             <div class="cat-card-top">

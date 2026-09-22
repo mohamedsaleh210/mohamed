@@ -109,4 +109,8 @@
 
 <symbol id="i-map-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.25"/></g></symbol>
 
+<!-- Phase 2 V3: public-site additions -->
+<symbol id="i-headset" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19v.5A3.5 3.5 0 0 1 15.5 23H13"/></g></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" d="m12 3 2.6 5.9 6.4.6-4.85 4.35L17.5 20 12 16.8 6.5 20l1.35-6.15L3 9.5l6.4-.6Z"/></symbol>
+
 </svg>

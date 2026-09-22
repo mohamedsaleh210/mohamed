@@ -23,9 +23,9 @@
     </div>
 
     <% if (contacts.length) { %>
-      <div class="contact-grid">
+      <div class="contact-grid reveal-stagger">
         <% contacts.forEach(c => {
-             const icons = { phone:'📞', mobile:'📱', whatsapp:'💬', email:'✉️', address:'📍', fax:'📠' };
+             const icons = { phone:'i-phone', mobile:'i-phone', whatsapp:'i-message', email:'i-mail', address:'i-map-pin', fax:'i-file' };
              let href = null;
              if (c.kind === 'email') href = 'mailto:' + c.value;
              else if (c.kind === 'whatsapp') href = waLink(c.value, ar ? 'مرحباً، أرغب في الاستفسار عن خدماتكم' : 'Hello, I would like to ask about your services');
@@ -37,7 +37,7 @@
           <% } else { %>
             <div class="contact-card">
           <% } %>
-              <span class="cc-icon" aria-hidden="true"><%= icons[c.kind] || '•' %></span>
+              <span class="cc-icon" aria-hidden="true"><svg><use href="/images/icons.svg#<%= icons[c.kind] || 'i-info' %>"/></svg></span>
               <span class="cc-body">
                 <span class="cc-label"><%= c.label %></span>
                 <span class="cc-value num"><%= c.value %></span>

@@ -589,7 +589,8 @@ input.pw-bad{border-color:#c15450 !important}
   border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-height:82px;
   transition:border-color .16s ease,transform .14s ease}
 a.contact-card:hover{border-color:var(--brass);transform:translateY(-2px)}
-.cc-icon{font-size:24px;flex:none}
+.cc-icon{font-size:24px;flex:none;display:grid;place-items:center;color:var(--brass-deep)}
+.cc-icon svg{width:24px;height:24px}
 .cc-body{display:grid;gap:3px;min-width:0}
 .cc-label{color:var(--muted);font-size:13px}
 .cc-value{color:var(--ink);font-weight:800;font-size:15.5px;
@@ -692,7 +693,18 @@ a.contact-card:hover{border-color:var(--brass);transform:translateY(-2px)}
   padding:13px 15px;background:var(--paper);border:1.5px dashed #d8cbb0;border-radius:12px;
   font:inherit;text-align:start;cursor:pointer;color:var(--ink);min-height:60px}
 .svc-describe:hover{border-color:var(--brass);background:#faf5eb}
-.svc-describe .sd-icon{font-size:19px;color:var(--brass-deep);flex:none}
+.svc-describe .sd-icon{font-size:19px;color:var(--brass-deep);flex:none;display:grid;place-items:center}
+.svc-describe .sd-icon svg{width:20px;height:20px}
+.consult-row .ic svg{width:22px;height:22px}
+
+/* .form-grid ships with column layout only (see the v10 block above) —
+   labels/inputs inside it had no styling of their own, borrowing whatever
+   the browser default gave them. Both the existing support-ticket form and
+   the new booking-detail update form use it, so this benefits both. */
+.form-grid>label{display:block;font-weight:700;margin-bottom:0;color:var(--ink);font-size:14px}
+.form-grid>label>input,.form-grid>label>select,.form-grid>label>textarea{display:block;width:100%;margin-top:6px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font:inherit;color:var(--ink);background:#fff}
+.form-grid>label>input:focus,.form-grid>label>select:focus,.form-grid>label>textarea:focus{outline:3px solid rgba(205,166,70,.35);outline-offset:1px;border-color:var(--brass)}
+.form-grid>.wide{grid-column:1/-1}
 .svc-describe b{display:block;font-size:14.5px;margin-bottom:2px}
 .svc-describe small{display:block;color:var(--muted);font-size:13px;line-height:1.6}
 
@@ -728,6 +740,56 @@ a.contact-card:hover{border-color:var(--brass);transform:translateY(-2px)}
 
 @media (prefers-reduced-motion: reduce){
   .svc-flash{animation:none}
+}
+
+/* Phase 2 V3: public-site scroll-reveal + icon-badge sizing.
+   .reveal starts hidden and fades/rises in once, the first time it enters
+   the viewport (public/js/site.js toggles .in-view via IntersectionObserver).
+   Kept out of the initial paint state under reduced motion / no-JS so the
+   page is never stuck invisible if the observer never runs. */
+/* Gated on a synchronous .js class (set in partials/head.ejs before first
+   paint) so a page with JS disabled/blocked never hides real content behind
+   an animation that would never run — the reveal is a progressive
+   enhancement, not a requirement for the content to be visible. */
+.js .reveal,.js .reveal-stagger>*{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in-view,.reveal-stagger>*.in-view{opacity:1;transform:none}
+.reveal-stagger>*:nth-child(2){transition-delay:.08s}
+.reveal-stagger>*:nth-child(3){transition-delay:.16s}
+.reveal-stagger>*:nth-child(4){transition-delay:.24s}
+.reveal-stagger>*:nth-child(5){transition-delay:.32s}
+.reveal-stagger>*:nth-child(n+6){transition-delay:.4s}
+@media (prefers-reduced-motion: reduce){
+  .js .reveal,.js .reveal-stagger>*{opacity:1;transform:none;transition:none}
+}
+
+/* Real SVG icons replacing the plain Unicode glyphs these badges used to
+   hold — badge container (background/radius/color) is unchanged, only the
+   glyph-as-font-size sizing is replaced with real icon sizing. */
+.hero-trust i svg,.metric-grid article i svg,.audience-card>i svg,.popular-card>i svg,.why-grid b svg,.scene-badge i svg,.scene-badge svg,.home-search label span svg{width:20px;height:20px}
+.metric-grid article i svg{width:26px;height:26px}
+.audience-card>i svg{width:24px;height:24px}
+.why-grid b svg{width:18px;height:18px}
+.hero-trust i,.scene-badge i{display:grid;place-items:center}
+.home-search label span{display:grid;place-items:center}
+.preview-progress i svg{width:12px;height:12px}
+.stars{display:inline-flex;gap:2px;color:var(--brass);margin-bottom:8px}
+.stars svg{width:15px;height:15px}
+.menu-btn svg{width:22px;height:22px}
+.mobile-nav-close svg{width:20px;height:20px}
+.nav-drop summary{display:inline-flex;align-items:center;gap:5px}
+.drop-chevron{width:13px;height:13px;transition:transform .2s ease}
+.nav-drop[open] .drop-chevron{transform:rotate(180deg)}
+
+.faq-item p,.home-faq details p{overflow:hidden;transition:max-height .3s ease}
+
+/* Hero is always above the fold, so it animates on load rather than via
+   scroll-reveal (same reasoning as the admin panel's .page-head). */
+.home-hero-copy{animation:hero-copy-in .7s cubic-bezier(.16,1,.3,1) both}
+.hero-photo-scene{animation:hero-photo-in .8s cubic-bezier(.16,1,.3,1) .1s both}
+@keyframes hero-copy-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes hero-photo-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .home-hero-copy,.hero-photo-scene{animation:none}
 }
 
 .portal-case h4{margin:0 0 12px;color:var(--ink)}.case-client-update{margin-top:12px;padding:12px 14px;background:#f6f2e8;border-inline-start:4px solid var(--gold);border-radius:8px;line-height:1.8}.portal-case-row{display:grid;grid-template-columns:minmax(110px,auto) 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #eee7da}.portal-case-row:last-child{border-bottom:0}.portal-case-row small{color:var(--muted)}@media(max-width:600px){.portal-case-row{grid-template-columns:1fr}.portal-case-row>*{display:block}}

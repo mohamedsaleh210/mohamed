@@ -1,1 +1,32 @@
-<%const bookingStatus={unassigned:'يحتاج تعيين',confirmed:'مؤكد',completed:'مغلق',cancelled:'ملغى'};%><%pageTitle='مواعيدي'%><%-include('../partials/head')%><%-include('../partials/header')%><main><section class="section"><div class="wrap"><h1>مواعيدي</h1><a class="btn brass" href="/appointments">حجز جديد</a><%items.forEach(i=>{%><p><a href="/appointments/mine/<%=i.id%>"><%=i.ref%> — <%=i.starts_at%> — <%=bookingStatus[i.status]||i.status%></a></p><%})%></div></section></main><%-include('../partials/footer')%>
+<%const bookingStatus={unassigned:'يحتاج تعيين',confirmed:'مؤكد',completed:'مغلق',cancelled:'ملغى'};const BOOKING_COLOR={unassigned:'#d98a3d',confirmed:'#3a9d6b',completed:'#6b7785',cancelled:'#c15450'};%><%pageTitle='مواعيدي'%><%-include('../partials/head')%><%-include('../partials/header')%><main>
+
+<section class="section">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px">
+      <h2 style="margin:0;color:var(--ink)">مواعيدي</h2>
+      <a class="btn brass" style="margin-inline-start:auto" href="/appointments">حجز جديد</a>
+    </div>
+
+    <% if (items.length) { %>
+      <div class="req-list">
+        <% items.forEach(i => { %>
+          <a class="req-card" href="/appointments/mine/<%=i.id%>">
+            <div class="req-top">
+              <span class="req-ref"><%=i.ref%></span>
+              <span class="req-status" style="background:<%=BOOKING_COLOR[i.status]||'#888'%>"><%=bookingStatus[i.status]||i.status%></span>
+            </div>
+            <div class="req-meta"><span>الموعد: <b class="ltr"><%=i.starts_at%></b></span></div>
+            <span class="req-go">التفاصيل ←</span>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="form-card" style="text-align:center">
+        <p style="color:var(--muted)">لا توجد مواعيد بعد.</p>
+        <a class="btn brass" href="/appointments">احجز موعدك الأول</a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+</main><%-include('../partials/footer')%>

@@ -1,1 +1,52 @@
-<%const bookingStatus={unassigned:'يحتاج تعيين',confirmed:'مؤكد',completed:'مغلق',cancelled:'ملغى'};%><%pageTitle='تفاصيل الموعد'%><%-include('../partials/head')%><%-include('../partials/header')%><main><section class="section"><div class="wrap narrow"><div class="panel panel-body"><h1><%=item.ref%></h1><p><b><%=slot.starts_at%> — <%=slot.ends_at%> UTC</b> — <%=slot.location%></p><span class="chip"><%=bookingStatus[item.status]||item.status%></span><p><%=item.notes%></p><%if(!guest){%><a class="btn" href="/portal/requests/<%=item.request_id%>">الطلب والمستندات والمالية</a><%}%><a class="btn" href="/upload/<%=item.request_id%>?t=<%=encodeURIComponent(request.upload_token)%>">إرفاق مستندات</a><%if(!['completed','cancelled'].includes(item.status)){%><form method="post" class="form-grid"><%-csrfField%><input type="hidden" name="version" value="<%=item.version%>"><label>الإجراء<select name="action"><option value="reschedule">إعادة الجدولة</option><option value="cancel">إلغاء الموعد</option></select></label><label>الموعد الجديد<select name="slot_id"><%slots.forEach(s=>{%><option value="<%=s.id%>"><%=s.starts_at%></option><%})%></select></label><label>السبب<input type="text" name="reason" required maxlength="500"></label><button class="btn brass">تنفيذ</button></form><%}%><%if(invoice&&!guest){%><a class="btn" href="/appointments/mine/<%=item.id%>/invoice">عرض الفاتورة</a><%}%><h2>تحديثات الموعد</h2><%updates.forEach(n=>{%><p><%=n.created_at%> — <%=n.text%></p><%})%></div></div></section></main><%-include('../partials/footer')%>
+<%const bookingStatus={unassigned:'يحتاج تعيين',confirmed:'مؤكد',completed:'مغلق',cancelled:'ملغى'};const BOOKING_COLOR={unassigned:'#d98a3d',confirmed:'#3a9d6b',completed:'#6b7785',cancelled:'#c15450'};%><%pageTitle='تفاصيل الموعد'%><%-include('../partials/head')%><%-include('../partials/header')%><main>
+
+<section class="section">
+  <div class="wrap" style="max-width:760px">
+    <% if (!guest) { %><a href="/appointments/mine" style="color:var(--muted);font-size:14px">← مواعيدي</a><% } %>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
+      <h2 style="margin:0;color:var(--ink);direction:ltr"><%=item.ref%></h2>
+      <span style="background:<%=BOOKING_COLOR[item.status]||'#888'%>;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800"><%=bookingStatus[item.status]||item.status%></span>
+    </div>
+
+    <div class="form-card" style="max-width:none;margin-bottom:18px">
+      <p style="margin:0 0 6px"><strong>الموعد:</strong> <span class="ltr"><%=slot.starts_at%> — <%=slot.ends_at%></span> UTC</p>
+      <% if (slot.location) { %><p style="margin:0"><strong>المكان:</strong> <%=slot.location%></p><% } %>
+      <% if (item.notes) { %><p style="margin:6px 0 0;color:var(--muted)"><%=item.notes%></p><% } %>
+    </div>
+
+    <div class="btn-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+      <% if (!guest) { %><a class="btn ghost" href="/portal/requests/<%=item.request_id%>">الطلب والمستندات والمالية</a><% } %>
+      <a class="btn ghost" href="/upload/<%=item.request_id%>?t=<%=encodeURIComponent(request.upload_token)%>">إرفاق مستندات</a>
+      <% if (invoice && !guest) { %><a class="btn ghost" href="/appointments/mine/<%=item.id%>/invoice">عرض الفاتورة</a><% } %>
+    </div>
+
+    <% if (!['completed','cancelled'].includes(item.status)) { %>
+      <div class="form-card" style="max-width:none;margin-bottom:18px">
+        <h4 style="margin:0 0 12px;color:var(--ink)">تحديث الموعد</h4>
+        <form method="post" class="form-grid">
+          <%-csrfField%>
+          <input type="hidden" name="version" value="<%=item.version%>">
+          <label>الإجراء<select name="action"><option value="reschedule">إعادة الجدولة</option><option value="cancel">إلغاء الموعد</option></select></label>
+          <label>الموعد الجديد<select name="slot_id"><%slots.forEach(s=>{%><option value="<%=s.id%>"><%=s.starts_at%></option><%})%></select></label>
+          <label class="wide">السبب<input type="text" name="reason" required maxlength="500"></label>
+          <button class="btn brass" type="submit">تنفيذ</button>
+        </form>
+      </div>
+    <% } %>
+
+    <% if (updates.length) { %>
+      <div class="form-card" style="max-width:none">
+        <h4 style="margin:0 0 12px;color:var(--ink)">تحديثات الموعد</h4>
+        <% updates.forEach(n => { %>
+          <div style="padding:9px 0;border-bottom:1px solid #f0ece2">
+            <span style="font-size:12.5px;color:var(--muted)"><%=n.created_at%></span>
+            <p style="margin:2px 0 0"><%=n.text%></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+</main><%-include('../partials/footer')%>

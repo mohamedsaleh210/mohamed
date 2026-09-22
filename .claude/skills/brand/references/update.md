@@ -46,18 +46,7 @@ Edit `docs/brand-guidelines.md`:
 
 Run the sync script:
 ```bash
-node scripts/sync-brand-to-tokens.cjs
-```
-
-If the script reports an existing token source, inspect the named file before
-continuing. Detection covers `:root` custom properties, Tailwind v4 `@theme`
-variables in common CSS entry points and their local imports, and Tailwind
-theme colors or presets. Do not create a parallel token system beside those
-sources. Use `--force` only when the detected source is the managed
-`assets/design-tokens.*` output from an earlier sync and replacing it is
-intentional:
-```bash
-node scripts/sync-brand-to-tokens.cjs --force
+node .claude/skills/brand/scripts/sync-brand-to-tokens.cjs
 ```
 
 This will:
@@ -69,7 +58,7 @@ This will:
 Confirm all files are updated:
 ```bash
 # Check brand context extraction
-node scripts/inject-brand-context.cjs --json | head -30
+node .claude/skills/brand/scripts/inject-brand-context.cjs --json | head -30
 
 # Check CSS variables
 grep "primary" assets/design-tokens.css | head -5

@@ -25,9 +25,9 @@
 
 <%if(tab==='branches'&&!isPlatformOwner){%>
   <%if(query.branch_error){%><div class="alert err"><span><%=query.branch_error==='duplicate'?'اسم الفرع موجود بالفعل.':query.branch_error==='main'?'لا يمكن إيقاف الفرع الرئيسي.':'اكتب اسم فرع صحيحًا.'%></span></div><%}%>
-  <div class="two-col"><div class="panel"><div class="panel-head"><h3>فروع المكتب أو الشركة</h3></div><div class="panel-body">
+  <div class="two-col"><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-building"/></svg> فروع المكتب أو الشركة</h3></div><div class="panel-body">
     <%officeBranches.forEach(b=>{%><div class="report-profile-card"><div><b><%=b.name%></b><br><small><%=b.code||'بدون كود'%> · <%=b.active?'مفعّل':'موقوف'%></small></div><div class="spacer"><%if(b.is_main){%><span class="chip ok">الفرع الرئيسي</span><%}else{%><form method="post" action="<%=adminPath%>/settings/office-branches/<%=b.id%>/toggle"><%-csrfField%><button class="btn ghost sm"><%=b.active?'إيقاف':'تفعيل'%></button></form><%}%></div></div><%})%>
-  </div></div><div class="panel"><div class="panel-head"><h3>إضافة فرع</h3></div><form class="panel-body" method="post" action="<%=adminPath%>/settings/office-branches"><%-csrfField%><div class="field req"><label>اسم الفرع</label><input type="text" name="name" required placeholder="مثال: فرع القاهرة"></div><div class="field"><label>كود الفرع</label><input type="text" name="code" dir="ltr" placeholder="CAI"></div><button class="btn brass">إضافة الفرع</button></form></div></div>
+  </div></div><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة فرع</h3></div><form class="panel-body" method="post" action="<%=adminPath%>/settings/office-branches"><%-csrfField%><div class="field req"><label>اسم الفرع</label><input type="text" name="name" required placeholder="مثال: فرع القاهرة"></div><div class="field"><label>كود الفرع</label><input type="text" name="code" dir="ltr" placeholder="CAI"></div><button class="btn brass">إضافة الفرع</button></form></div></div>
 <%}%>
 
 <!-- ============================================================ backup -->
@@ -35,10 +35,10 @@
   <% if (query.restore_ready === '1' || restorePending) { %><div class="alert warn"><span><b>النسخة سليمة والاستعادة مجدولة.</b> أوقف التشغيل بـ Ctrl+C ثم شغّل <span class="num">npm start</span> لتطبيقها. سيحتفظ النظام تلقائيًا بنسخة البيانات الحالية قبل الاستبدال.</span></div><% } %>
   <% if (query.backup_error) { %><div class="alert err"><span><%=query.backup_error==='confirm'?'اكتب كلمة «استعادة» للتأكيد.':query.backup_error==='reason'?'اكتب سببًا واضحًا للاستعادة.':query.backup_error==='file'?'اختر ملف ZIP أولًا.':'رُفضت النسخة: الملف غير صالح أو قاعدة البيانات غير سليمة أو توجد استعادة مجدولة.'%></span></div><% } %>
   <div class="two-col">
-    <div class="panel"><div class="panel-head"><h3>نسخة المكتب وملفات الشركات</h3></div><div class="panel-body"><p>تشمل قاعدة المكتب والعملاء والشركات والفروع والطلبات والإعدادات ومحتوى الموقع وجميع المستندات والمرفقات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/office">تنزيل نسخة المكتب كاملة</a></div></div>
-    <%if(isPlatformOwner){%><div class="panel"><div class="panel-head"><h3>نسخة منصة سند كاملة</h3></div><div class="panel-body"><p>تشمل قاعدة مالك سند وطلبات الاشتراك والباقات، وقاعدة المكتب الرئيسية، وجميع قواعد وملفات المكاتب والشركات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/full">تنزيل النسخة الكاملة للمنصة</a></div></div><%}%>
+    <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-download"/></svg> نسخة المكتب وملفات الشركات</h3></div><div class="panel-body"><p>تشمل قاعدة المكتب والعملاء والشركات والفروع والطلبات والإعدادات ومحتوى الموقع وجميع المستندات والمرفقات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/office">تنزيل نسخة المكتب كاملة</a></div></div>
+    <%if(isPlatformOwner){%><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-download"/></svg> نسخة منصة سند كاملة</h3></div><div class="panel-body"><p>تشمل قاعدة مالك سند وطلبات الاشتراك والباقات، وقاعدة المكتب الرئيسية، وجميع قواعد وملفات المكاتب والشركات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/full">تنزيل النسخة الكاملة للمنصة</a></div></div><%}%>
   </div>
-  <div class="panel"><div class="panel-head"><h3>استيراد واستعادة نسخة احتياطية</h3></div><div class="panel-body">
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-upload"/></svg> استيراد واستعادة نسخة احتياطية</h3></div><div class="panel-body">
     <div class="alert warn"><span>الاستعادة تستبدل البيانات عند التشغيل التالي. قبل الاستبدال يحتفظ النظام بالبيانات الحالية داخل مجلد <span class="num">backups/pre-restore-...</span>.</span></div>
     <form method="post" action="<%=adminPath%>/settings/restore" enctype="multipart/form-data"><%-csrfField%>
       <div class="field req"><label>ملف النسخة الاحتياطية ZIP</label><input type="file" name="backup_file" accept=".zip,application/zip" required></div>
@@ -52,7 +52,7 @@
 <!-- ============================================================ site -->
 <% if (tab === 'site') { %>
   <div class="panel">
-    <div class="panel-head"><h3>بيانات الموقع</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-globe"/></svg> بيانات الموقع</h3></div>
     <div class="panel-body">
       <form method="post" action="<%= adminPath %>/settings">
         <%- csrfField %>
@@ -113,7 +113,7 @@
 <!-- ============================================================ staff -->
 <% if (tab === 'staff') { %>
   <div class="panel">
-    <div class="panel-head"><h3>بيانات الموظفين المطلوبة</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> بيانات الموظفين المطلوبة</h3></div>
     <div class="panel-body">
       <form method="post" action="<%= adminPath %>/settings/staff">
         <%- csrfField %>
@@ -148,7 +148,7 @@
 <% if (tab === 'google') { %>
   <div class="panel">
     <div class="panel-head">
-      <h3>الدخول بحساب Google</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> الدخول بحساب Google</h3>
       <span class="chip spacer <%= googleOn ? 'ok' : 'off' %>">
         <%= googleOn ? 'مفعّل' : 'مش مفعّل' %>
       </span>
@@ -248,14 +248,14 @@
 
   <div class="stat-grid">
     <div class="stat icon-stat">
-      <i class="stat-ico ic-info">▣</i>
+      <i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-folder"/></svg></i>
       <div><span class="k">المساحة المستخدمة</span>
       <span class="v"><%= humanSize(storage.bytes) %></span>
       <span class="sub-k"><%= storage.files %> ملف</span></div>
     </div>
     <% if (storage.purgedFiles) { %>
       <div class="stat icon-stat">
-        <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)">🗑</i>
+        <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)" aria-hidden="true"><svg><use href="/images/icons.svg#i-trash"/></svg></i>
         <div><span class="k">ملفات اتحذفت قبل كده</span>
         <span class="v"><%= storage.purgedFiles %></span>
         <span class="sub-k">سجلها لسه محفوظ</span></div>
@@ -274,7 +274,7 @@
 
   <div class="panel">
     <div class="panel-head">
-      <h3>ملفات قابلة للحذف</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-file"/></svg> ملفات قابلة للحذف</h3>
       <span class="chip spacer">
         <%= purgeCandidates.totalFiles %> ملف · <%= humanSize(purgeCandidates.totalBytes) %>
       </span>
@@ -346,7 +346,7 @@
         </form>
       <% } else { %>
         <div class="empty">
-          <span class="big">✓</span>
+          <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg></span>
           <p>مفيش ملفات وصلت للمدة دي. مفيش حاجة تتحذف دلوقتي.</p>
         </div>
       <% } %>
@@ -389,7 +389,7 @@
   <% } %>
 
   <div class="panel">
-    <div class="panel-head"><h3>مزوّد الإيميل</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-mail"/></svg> مزوّد الإيميل</h3></div>
     <div class="panel-body">
       <form method="post" action="<%= adminPath %>/settings">
         <%- csrfField %>
@@ -471,7 +471,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-head"><h3>جرّب الإرسال</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-mail"/></svg> جرّب الإرسال</h3></div>
     <div class="panel-body">
       <form method="post" action="<%= adminPath %>/settings/test-email" style="display:flex;gap:8px;flex-wrap:wrap">
         <%- csrfField %>
@@ -487,7 +487,7 @@
 
   <div class="panel">
     <div class="panel-head">
-      <h3>سجل الرسائل</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> سجل الرسائل</h3>
       <span class="chip spacer"><%= mailLog.length %></span>
     </div>
     <div class="panel-body flush">
@@ -543,7 +543,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-head"><h3>دخول العملاء بحساب جوجل</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> دخول العملاء بحساب جوجل</h3></div>
     <div class="panel-body">
       <form method="post" action="<%= adminPath %>/settings">
         <%- csrfField %>

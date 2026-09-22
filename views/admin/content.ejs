@@ -52,7 +52,7 @@
 <!-- ============================================================ pages -->
 <div class="panel">
   <div class="panel-head">
-    <h3>الصفحات</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-folder"/></svg> الصفحات</h3>
     <span class="chip spacer"><%= pages.length %></span>
   </div>
   <div class="panel-body">
@@ -249,7 +249,7 @@
 <!-- ============================================================ categories -->
 <div class="panel">
   <div class="panel-head">
-    <h3>الأقسام</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> الأقسام</h3>
     <span class="chip spacer"><%= categories.length %> قسم</span>
   </div>
 
@@ -315,7 +315,7 @@
       </ul>
     <% } else { %>
       <div class="empty">
-        <span class="big">🗂</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-folder"/></svg></span>
         <p>مفيش أقسام لسه. ابدأ بإضافة قسم من تحت.</p>
       </div>
     <% } %>
@@ -324,7 +324,7 @@
 
 <!-- add category -->
 <div class="panel">
-  <div class="panel-head"><h3>إضافة قسم جديد</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة قسم جديد</h3></div>
   <div class="panel-body">
     <form method="post" action="<%= adminPath %>/content/categories">
       <%- csrfField %>

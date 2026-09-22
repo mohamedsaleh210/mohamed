@@ -343,6 +343,13 @@ a { color: inherit; text-decoration: none; }
    not scoped to .panel-head h3 specifically, so it also sizes correctly in
    .perm-group-head b and any other heading-like element that reuses it. */
 svg.h3-ico { width: 17px; height: 17px; flex: none; opacity: 0.75; vertical-align: -3px; }
+/* Phase 2 V3: every decorative icon this pass adds is aria-hidden, so it
+   should never be able to swallow a click meant for its parent control.
+   Most existing click handlers already use closest()/matches() and don't
+   need this, but at least one (treasury.ejs's tab switcher) reads
+   e.target directly — this single rule makes every such pattern safe
+   against an inserted icon without having to audit each one individually. */
+[aria-hidden="true"] { pointer-events: none; }
 .perm-group-head b { display: inline-flex; align-items: center; gap: 6px; }
 .panel-head .spacer { margin-inline-start: auto; }
 .panel-body { padding: 16px; }
@@ -545,6 +552,7 @@ table.tbl .row-actions { text-align: left; white-space: nowrap; }
   display: grid; place-items: center; font-style: normal;
   background: var(--brass); color: #fff; font-size: 14px;
 }
+.form-section-head i svg { width: 16px; height: 16px; }
 .form-section-head b { color: var(--ink); font-size: 14.5px; font-weight: 800; }
 .form-section-head span { color: var(--muted); font-size: 12.5px; margin-inline-start: auto; }
 

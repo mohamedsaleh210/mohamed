@@ -1,0 +1,533 @@
+{
+  "version": 1,
+  "skills": {
+    "affirmations": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/agent/affirmations/SKILL.md",
+      "computedHash": "0ac9a224c5101e03276c0ff07388b96af83ef468858854c1c10425f613b18579"
+    },
+    "agent-browser": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/utilities/agent-browser/SKILL.md",
+      "computedHash": "79b1fcbdd43bfdf56780c31daac551b6c28734afef3ec37816122ba1e6fb4cfa"
+    },
+    "agent-tools": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/agent-tools/SKILL.md",
+      "computedHash": "d4388bd70a41006288d8aa3db6f4132e38a26e3ddd725162aca1ef34b1aad6fb"
+    },
+    "agent-ui": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "ui/agent-ui/SKILL.md",
+      "computedHash": "1e36948c369c99b810acc80e17f843a6e5691280695b37ec3a8860d03b164eee"
+    },
+    "ai-automation-workflows": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/content/ai-automation-workflows/SKILL.md",
+      "computedHash": "1840a53cc472429ffb513bfe64c9031205340a64740da7fe5379c22752c18c12"
+    },
+    "ai-avatar-video": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/ai-avatar-video/SKILL.md",
+      "computedHash": "fb79eb46607746eb3666903766873f2d2d2ef8c7c5371046b0b91d60b23da8cb"
+    },
+    "ai-content-pipeline": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/content/ai-content-pipeline/SKILL.md",
+      "computedHash": "52a87f0a092c8e33c0a55d2f0c8f1b1dcbcb172a94cec8aea4abfd5eb1540d57"
+    },
+    "ai-image-generation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/ai-image-generation/SKILL.md",
+      "computedHash": "82eca9e2eadda210d66433497ff9d31bc1c0ea2dfcd7f0be4710e9b4ef53addd"
+    },
+    "ai-marketing-videos": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/video/ai-marketing-videos/SKILL.md",
+      "computedHash": "928f1b524bda9d9bc2b33813bddb209c0763dd689c99e33d78c1c344e4104cb5"
+    },
+    "ai-music-generation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/ai-music-generation/SKILL.md",
+      "computedHash": "5f581e5c9f961e67f1a928507ebc8691bca17467ddc3ab7ba9435668bd4126ce"
+    },
+    "ai-podcast": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/content/ai-podcast/SKILL.md",
+      "computedHash": "1ff39211eae6ebb2c7516b8473f1d7b851b6cfa380891e6da2bca45aebe52040"
+    },
+    "ai-podcast-creation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/content/ai-podcast-creation/SKILL.md",
+      "computedHash": "02367ae60a2208804028a1706114ccf4d3f47e0b7dd72aafb4bcba19645e02e3"
+    },
+    "ai-product-photography": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/photo/ai-product-photography/SKILL.md",
+      "computedHash": "84a018d69da88f19dd02fa865a3f2caf37f0ae3fc2dd8bc9677e1ef75a6f16f4"
+    },
+    "ai-rag-pipeline": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/llm/ai-rag-pipeline/SKILL.md",
+      "computedHash": "279c26a6499410b5c72022866202325d7e21e2ab5c0879ba5cb6f9747607553b"
+    },
+    "ai-social-media-content": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/social/ai-social-media-content/SKILL.md",
+      "computedHash": "f1f4026f2803efa668c34eff9292ebdbf0c4468b9ded50c626f17f25c0a17f0b"
+    },
+    "ai-video-generation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/ai-video-generation/SKILL.md",
+      "computedHash": "8524cc49ad3dca2a4502903234061b307636e44b08496e982747cdb9590f5556"
+    },
+    "ai-voice-cloning": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/ai-voice-cloning/SKILL.md",
+      "computedHash": "224c1ed77ac7936204727c890a0a4ea52f4fd197963f34da3b9081149472ea1e"
+    },
+    "app-store-screenshots": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/app-store-screenshots/SKILL.md",
+      "computedHash": "528a965bb79118a30c52f82c781cc45b4c27b7cfb9e37fa300c1a4f086cfcd1c"
+    },
+    "background-removal": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/background-removal/SKILL.md",
+      "computedHash": "c3ddcfc3f52bc84fe3a30c0c12e77e6ab5985c950598e2d0c6c867cf55940977"
+    },
+    "belt": {
+      "source": "belt-sh/cli",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/belt/SKILL.md",
+      "computedHash": "ca4ce5eac764749f1f0cc67a94d464c3f66ba687bc9fa315949174770e5fc172"
+    },
+    "book-cover-design": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/book-cover-design/SKILL.md",
+      "computedHash": "2f891143db02e0a2973e052281d16331e34ac175c115732526eed3991208d1f6"
+    },
+    "building-inferencesh-apps": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "sdk/building-apps/SKILL.md",
+      "computedHash": "a31ff32325a5a5a9beb38e6b3fe1e855aafce0f7e3026d278a928e06a80362e8"
+    },
+    "case-study-writing": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/writing/case-study-writing/SKILL.md",
+      "computedHash": "fee8b5ed09e9795d7d5b01a866f41464a30cd7fd30a1d825873a67eccc1f4e8e"
+    },
+    "character-design-sheet": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/character-design-sheet/SKILL.md",
+      "computedHash": "903efdb9da49e68a939f3c016e7352f0c352cb593c049e955f62f8f41b64b2d7"
+    },
+    "chat-ui": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "ui/chat-ui/SKILL.md",
+      "computedHash": "5ad5d98943af1ae7b0fd3c292de1b516014b3d4bb61aeb9c1df135e6e6f9d750"
+    },
+    "competitor-teardown": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/product/competitor-teardown/SKILL.md",
+      "computedHash": "525dbf4cdc206dc46fec4b44f198fb856c35212b651f60b81f1702dbf6f818ea"
+    },
+    "content-repurposing": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/content/content-repurposing/SKILL.md",
+      "computedHash": "0376e9e4d00b5563ce5698592769b9177afb9d388954bf03f94635581a3ff190"
+    },
+    "customer-persona": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/product/customer-persona/SKILL.md",
+      "computedHash": "1774b3f3011442be2a7b2ad91f447306bf890e7cc6c087f0baf6f506237d633b"
+    },
+    "data-visualization": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/data-visualization/SKILL.md",
+      "computedHash": "e2a06239863cc375126aa1e37cacf5dc2693276840397c7080dd468212379270"
+    },
+    "dialogue-audio": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/dialogue-audio/SKILL.md",
+      "computedHash": "b0ef6daf20b468e438a2035c3b645b6f17fcd0ef7e8728d001798376a03487f9"
+    },
+    "elevenlabs-dialogue": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-dialogue/SKILL.md",
+      "computedHash": "13262f943d5e1853f1f3221856f392572b81f167f55e2514b63b976aeb01f1a4"
+    },
+    "elevenlabs-dubbing": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-dubbing/SKILL.md",
+      "computedHash": "8037a586c794a47251eec100f5c7cf1b83e6618f5461a3a7aa250a487decb36b"
+    },
+    "elevenlabs-music": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-music/SKILL.md",
+      "computedHash": "df7b84a69544f8f11df2938f085d4eaf08c958420ee245db230a17cfdb78e4ac"
+    },
+    "elevenlabs-sound-effects": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-sound-effects/SKILL.md",
+      "computedHash": "d982ac22b0ec3af1d97f7b5e7237e45f52bada22f1e585d94094f04ef2792d48"
+    },
+    "elevenlabs-stt": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-stt/SKILL.md",
+      "computedHash": "5f90d7b578a3320a8526b4467064442544015e5091fe90f5020c7e79b89a72ce"
+    },
+    "elevenlabs-tts": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-tts/SKILL.md",
+      "computedHash": "870d252d6a9138af4c73a662d749bb04a867978113ff04cb4a5ae930ae92ecb8"
+    },
+    "elevenlabs-voice-changer": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-voice-changer/SKILL.md",
+      "computedHash": "f58ec86bdfe5ae0d6362def75a7841fc7d5901b40cd86539bce816a274e232b8"
+    },
+    "elevenlabs-voice-isolator": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/elevenlabs-voice-isolator/SKILL.md",
+      "computedHash": "8e760898695d987cc2af9f57525d98e1473567dddf20f04402a1c39b94df6f25"
+    },
+    "email-design": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/email-design/SKILL.md",
+      "computedHash": "81d6aee71914763dbdb7477642da188d147dba5a24c5913edab37718d475b4b5"
+    },
+    "explainer-video-guide": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/video/explainer-video-guide/SKILL.md",
+      "computedHash": "cb465806f18db940beba7664cb59481479d41fba0483e90b45a463f5a0cd32b8"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "913b9d37d0d54047dd65222bb8c67b2bf04e3cb87dcad1729068d7a8b2c8c396"
+    },
+    "flux-image": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/flux-image/SKILL.md",
+      "computedHash": "844dd4bd2320b7944f69aaf0bbf10104f510a0c85c5b1876c0770952e1c0e6b8"
+    },
+    "google-veo": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/google-veo/SKILL.md",
+      "computedHash": "f407ca9539c34c382f72a5e37f13ed664645d0c2ada11c5d0dca6237022d75a7"
+    },
+    "gpt-image": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/gpt-image/SKILL.md",
+      "computedHash": "a23eb1952f8cf42d13774e6822769885bcd413ffabb794b1778fae0aa32f2be6"
+    },
+    "happyhorse": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/happyhorse/SKILL.md",
+      "computedHash": "8d62f68dc130e36922c6e4d44acecde848460eeeb0a2ec677fae2c1984877aa8"
+    },
+    "image-to-video": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/image-to-video/SKILL.md",
+      "computedHash": "43cbc7d2e8fbd674ff6d4844098fd7ca4c5a087c9cbfd96e47316d3f8b558273"
+    },
+    "image-upscaling": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/image-upscaling/SKILL.md",
+      "computedHash": "8eaf33508630b9bf7c5d3a82e189971b588d6849dfcaff033b5e326ce53458a4"
+    },
+    "infsh-cli": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/infsh-cli/SKILL.md",
+      "computedHash": "9a86e795a3ec189cbabf3f822ee55369f6fa962ab617b99ed5536b4b6bb66181"
+    },
+    "javascript-sdk": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "sdk/javascript-sdk/SKILL.md",
+      "computedHash": "596c724bba3ebf30f926cd506806f249357655e911b28e98ae2517b0c06e37bc"
+    },
+    "landing-page-design": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/landing-page-design/SKILL.md",
+      "computedHash": "435af3919183e91ded83197f9238740593cac886f45067dc729d8a7095fbfb5a"
+    },
+    "linkedin-content": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/social/linkedin-content/SKILL.md",
+      "computedHash": "cddbe5f32a78d24d1b5f0a715e2cb983a5ab5adc9138fce8654508f6af64bca2"
+    },
+    "llm-models": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/llm/llm-models/SKILL.md",
+      "computedHash": "a4fd7bba32dc3b229a9e7859b1b1129da93ac26f3fcb5a7d1b98741b51d1a34f"
+    },
+    "logo-design-guide": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/logo-design-guide/SKILL.md",
+      "computedHash": "e650f96a4756edb0767d1bf28bad72ecda932dd62bdbac42d01ba975313d322a"
+    },
+    "nano-banana": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/nano-banana/SKILL.md",
+      "computedHash": "d8021272d2b0512f7334a0a227bc7b79cae2536780c91b9b83844a317c7419f2"
+    },
+    "nano-banana-2": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/nano-banana-2/SKILL.md",
+      "computedHash": "8ce15025c31bbf32fd13781bb4d737908a636955f1ce4604550fa1eb5b00e097"
+    },
+    "newsletter-curation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/writing/newsletter-curation/SKILL.md",
+      "computedHash": "d45f4baba4359ede6c8fbc46b58699bf3625ffbb02b6807d22b2856d3a4220ea"
+    },
+    "og-image-design": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/og-image-design/SKILL.md",
+      "computedHash": "100e68e3ddd077c497e03616f1991fd88fc84c567786cda188e7b42ec0608911"
+    },
+    "p-image": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/p-image/SKILL.md",
+      "computedHash": "4ac3b0a7b6f387f4eeedeb3645ac34ce5a4039a9a660b20c267e6f6e17986ea3"
+    },
+    "p-video": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/p-video/SKILL.md",
+      "computedHash": "0e1bc0cac9aa57377623ed9fdfffdf5729b9770ccf57bdc7e8871ffd2a1a8683"
+    },
+    "p-video-avatar": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/p-video-avatar/SKILL.md",
+      "computedHash": "fc41574f38de9529a81d9326cda52cd2b74a9353e6f4fc9dcf2fda3f6255007e"
+    },
+    "pitch-deck-visuals": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/pitch-deck-visuals/SKILL.md",
+      "computedHash": "21b5e9eeef27b164d6b09aa3f8371675ab3dbc6549f6739c9b3ecbffa232b51a"
+    },
+    "press-release-writing": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/writing/press-release-writing/SKILL.md",
+      "computedHash": "27dda1edfe7a58e11795a53e47d94446fcfa96370119372d9afbf5eaed254ff7"
+    },
+    "product-changelog": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/product/product-changelog/SKILL.md",
+      "computedHash": "52a3512d06295bda053da253a7762d238a09e7a16a3c64d53696a1fbf3f234b3"
+    },
+    "product-hunt-launch": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/product/product-hunt-launch/SKILL.md",
+      "computedHash": "fc782d778a2a1624aebd645fd0377c4a2557f70cdfb3b70b2a051104f992cf14"
+    },
+    "product-photography": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/photo/product-photography/SKILL.md",
+      "computedHash": "7553fa76097f15bebbeaa01e9db720c0437e0732412a6e739f6d16df21370700"
+    },
+    "prompt-engineering": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/prompting/prompt-engineering/SKILL.md",
+      "computedHash": "557eeb9af0e5320e4b600786858f8cd089c8bf4ada517c0e289f7d899fab2262"
+    },
+    "python-executor": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/utilities/python-executor/SKILL.md",
+      "computedHash": "e2af7331b64414f0902dfffd0d603b5f16db746947fd172be4f8c55f6ba8f192"
+    },
+    "python-sdk": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "sdk/python-sdk/SKILL.md",
+      "computedHash": "f4068c27d05308a6e782dbb5c2c72e72125acc63b9e630d30c9580cb61b6544b"
+    },
+    "qwen-image-2": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/qwen-image-2/SKILL.md",
+      "computedHash": "bec28fbba52bddac205e13d6b7f535906f7ad39eb9519ee58b3be56bb37967f7"
+    },
+    "qwen-image-2-pro": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/image/qwen-image-2-pro/SKILL.md",
+      "computedHash": "3066ea080373d00cd45581263b5ebb917009838536bcefa27b7f1d30556cfb53"
+    },
+    "related-skill": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/utilities/related-skill/SKILL.md",
+      "computedHash": "413cb6d9a924c304ef1836a68a8f21cb990dfadb4de2a28c39aaa0f9a15b01d5"
+    },
+    "remotion-render": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/remotion-render/SKILL.md",
+      "computedHash": "5ad33a6307b48a8e756be722ea26e39467cd1713f87fc5a8eff5480ac873eeaf"
+    },
+    "seedance": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/video/seedance/SKILL.md",
+      "computedHash": "406632992062e50e267bb8352543e7a63909358ac8dc975c3c2a64465df06c70"
+    },
+    "seo-content-brief": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/writing/seo-content-brief/SKILL.md",
+      "computedHash": "71fb2a55dcbdc10d51d7dd93ac11e45b9b032fff8811a5b9458c398136b09035"
+    },
+    "social-media-carousel": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/social/social-media-carousel/SKILL.md",
+      "computedHash": "f1577f43b6d9b0d692f89fd063c7043e6f518ca8a5e0e5ee115f260ea926e863"
+    },
+    "speech-to-text": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/speech-to-text/SKILL.md",
+      "computedHash": "051995d4d5a8f396d64b528ddbe10bb4e97c6b590c7c4740f5bae44a70da5eb0"
+    },
+    "storyboard-creation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/video/storyboard-creation/SKILL.md",
+      "computedHash": "6848d2b5a89a3648f7f528a0c08a91e6f4be659a7c233c1e6ebf8ed316fb5561"
+    },
+    "talking-head-production": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/video/talking-head-production/SKILL.md",
+      "computedHash": "5269c56bb80ec5a1663d68aab180d3f39200d17ed5fe8b38fb0f42e4427878a7"
+    },
+    "technical-blog-writing": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/writing/technical-blog-writing/SKILL.md",
+      "computedHash": "0b361da4b0681b3f2918544a63e12f9a35b9d9e189d86ec277180ffea3f25d57"
+    },
+    "text-to-speech": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/audio/text-to-speech/SKILL.md",
+      "computedHash": "04735e05d966d2fe23f21c55009d588be683eca77c3a7c9bbf27cb657270abaf"
+    },
+    "tools-ui": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "ui/tools-ui/SKILL.md",
+      "computedHash": "4d99474dc0ade4bc349151b1ae48cafb724fc87203d4bf62fe77d1bd007be9e6"
+    },
+    "twitter-automation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/social/twitter-automation/SKILL.md",
+      "computedHash": "5ff34a47686831f4ce2e3cbafbe1c031c46ea210126d827476c4c096150fe548"
+    },
+    "twitter-thread-creation": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/social/twitter-thread-creation/SKILL.md",
+      "computedHash": "a3d0d58f2b2d51798b2fd0e22b1627d50ffe7e884987d493c042b42f10af39b9"
+    },
+    "video-ad-specs": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/video/video-ad-specs/SKILL.md",
+      "computedHash": "ca5bec9f5b90f2d7caab06b7a30a6b3497c25d585412b3aeb1ab981488f828ab"
+    },
+    "video-prompting-guide": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/prompting/video-prompting-guide/SKILL.md",
+      "computedHash": "335c7367bfc1c8c9af721005a8e5c42b6e6b984fcad6379a5e79736e101afc2c"
+    },
+    "web-search": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "tools/llm/web-search/SKILL.md",
+      "computedHash": "3eef0d8ed249bc1ac663edc3d3b3b821b4eb35cae5b53cd943747f0d8dd9550b"
+    },
+    "widgets-ui": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "ui/widgets-ui/SKILL.md",
+      "computedHash": "358255ebb3811867ae54f3dcfc884d89bc5c3bb3506a9214d686b1c7b09e8c58"
+    },
+    "youtube-thumbnail-design": {
+      "source": "101-skills/superpowers",
+      "sourceType": "github",
+      "skillPath": "guides/design/youtube-thumbnail-design/SKILL.md",
+      "computedHash": "281aff200fd5b4f0cea0afa3b3547097173f45730774309287e605c2370b4d21"
+    }
+  }
+}

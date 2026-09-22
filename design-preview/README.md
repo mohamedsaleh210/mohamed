@@ -1,4 +1,4 @@
-# Sanad Design System Preview — Phase 1 (V2)
+# Sanad Design System Preview — Phase 1 (V2 + V3)
 
 **Status: preview only. Nothing in this directory is wired into the Sanad application.**
 No EJS, CSS, JS, route, database, auth, permission, API, responsive, or business-logic file
@@ -55,6 +55,7 @@ design-preview/
   settings-cms-security.html — V2 addition
   screenshots/          — Phase 1 + refinement-pass screenshots (390/768/1440, AR+EN)
   screenshots-v2/        — V2 screenshots for every prototype above + _v2-quality-report.json
+  screenshots-v3/        — V3 screenshots (11-breakpoint overflow matrix + AR/EN shots) + _v3-quality-report.json
 ```
 
 ---
@@ -396,3 +397,321 @@ rendered pages in this directory (not mocked):
   `lawyer-dashboard`, `accountant-dashboard` (14 shots)
 - EN desktop for `requests`, `portal` (2 shots, broadening the RTL/LTR comparison set)
 - Mobile drawer open states for admin and public (2 shots)
+
+---
+
+## V3 — Selective Visual Refinement (this pass)
+
+**V2's foundation is preserved, not rebuilt.** Same navy/teal/brass identity, same tokens, same
+Tajawal type scale, same spacing/radius/shadow system, same SVG icon sprite, same button/form/
+table→card components, same RTL/LTR logical-property mirroring, same sidebar/drawer mechanics,
+same portal shell. V3 adds a restrained, institutional **motion system** on top of that
+foundation, and applies **selective visual refinement** page by page — not a uniform redesign —
+based on an explicit tier classification: pages judged already close to their real-Sanad ceiling
+get polish only; pages with more headroom get moderate or major refinement. As in V2, three
+sources feed every decision, with a strict priority order when they conflict: (1) real Sanad
+functionality/data, (2) the approved visual references (principles only, never pixel-copied),
+(3) the V2 design system already built, (4) this V3 brief, (5) general UI/UX judgment. No Sanad
+service, field, workflow, role, route, or business rule was added, renamed, or removed to make a
+page look more like a reference image.
+
+**KPI rule applied throughout:** every KPI added or changed in this pass has a real Sanad field
+behind it and a stated business question it answers — see the per-page log below. **Chart rule
+applied throughout:** every chart is a `data-count-to` value, `.dist-list` split, `.bar-chart`
+trend, or `.donut` composition drawn from data already present elsewhere on the same page (or an
+adjacent page), never a decorative or invented series.
+
+### Tier classification
+
+| Tier | Treatment | Pages |
+|---|---|---|
+| A — keep V2, polish only | KPI-strip motion, spacing/typography micro-polish; **no structural change** | `admin-dashboard.html`, `revenue-expenses.html`, `permissions.html`, `lawyer-dashboard.html`, `accountant-dashboard.html` |
+| B — V2 structure + moderate enrichment | KPI count-up added; existing V2 component (e.g. `cases.html`'s old `.stat-card`) brought onto the current `.kpi-card` system; light cross-page data consistency fixes | `requests.html`, `request-detail.html`, `cases.html`, `reports.html`, `portal.html` |
+| C — major V3 refinement | New panels/interactions added, still composed entirely from existing V2 components + tokens | `public-home.html`, `clients-companies.html`, `employee-profile.html`, `treasury.html`, `payroll.html`, `settings-cms-security.html` |
+| Light pass | Motion polish only, no tier-C interactions since these are reference/index pages, not workflow pages | `employees.html`, `sidebar-full-nav.html` |
+
+### Motion system
+
+New tokens in `tokens.css`: `--motion-fast:120ms`, `--motion-normal:200ms`, `--motion-slow:320ms`,
+`--ease-standard`/`--ease-decelerate`/`--ease-accelerate` (cubic-béziers) — one shared vocabulary,
+used everywhere instead of ad hoc durations. Philosophy: calm and fast (nothing bouncy, glowing,
+or gaming-style), every pattern answers a real "what does this communicate" question, and
+`prefers-reduced-motion: reduce` is honored globally (`transition-duration:0s!important;
+animation-duration:.01ms!important` — see "Known issues found and fixed" below for why the
+duration value itself mattered).
+
+**Motion decision log**
+
+| Pattern | Purpose | Trigger | Duration | RTL/LTR aware | Reduced motion | Performance |
+|---|---|---|---|---|---|---|
+| KPI count-up (`data-count-to`) | Draws the eye to the number that answers the page's headline question, once | Scroll into view (IntersectionObserver, once) | 700ms ease-out-cubic | N/A (numeric, `tabular-nums`) | Final value set immediately, no animation | `requestAnimationFrame`, text-only, no layout thrash |
+| Bar/donut/dist-bar chart reveal | Chart "grows from baseline" so scale reads before value | Page load / scroll into view | `--motion-slow` (320ms), `--ease-decelerate` | `.dist-fill` transform-origin flips for RTL (`right` vs `left`) | Final state (full bar/value) is what's rendered — chart is equally readable static | `transform`/`opacity` only, CSS-only, no JS per frame |
+| KPI card entrance | Signals "this is fresh data," light staggering guides top-to-bottom reading order | Page load | `--motion-slow`, staggered 40ms per card (`:nth-child`) | N/A | Opacity/transform collapse to instant | Pure CSS keyframes, `both` fill-mode (paints correctly from frame 0, no FOUC) |
+| Section/card scroll-reveal (`[data-reveal]`) | Homepage-only pacing so the page doesn't dump everything at once | Scroll into view (IntersectionObserver, once) | `--motion-normal`, staggered by index mod 6 | N/A | `.revealed` applied immediately | CSS transition + one class toggle, no per-frame JS |
+| Sidebar/mobile-drawer open/close | Standard slide-in wayfinding | Menu button click / Escape / scrim click | `--motion-normal`, `.2s` transform | Drawer slides from the correct inline-start edge per `dir` | Instant open/close, same focus management | `transform` only; focus moves in/out, scroll-locked while open |
+| Sidebar group collapse | Shows/hides secondary nav without reflow jank | Group label click | CSS Grid `auto 1fr → auto 0fr` trick | N/A | Instant | Grid-track animation, no JS height measuring |
+| Dropdown / dialog open-close | Confirms an action target before executing | Trigger click / Escape / scrim or close-button click | `--motion-fast` (dropdown) / `--motion-normal` (dialog) | Dropdown anchors to `inset-inline-end` (flips in RTL) | Instant open, **focus still moves synchronously** (see fix below) | opacity+visibility+transform only |
+| Button hover/press/loading | Standard interactive feedback | Hover / active / `.loading` class | `--motion-fast` | N/A | Instant | `background`/`border-color`/`box-shadow`/`transform` only |
+| Tab underline / active state | Confirms selection | Tab click | `--motion-fast` | N/A | Instant | class toggle, no animation needed beyond existing transitions |
+| Table-row hover | Affordance that rows are interactive where applicable | Mouse hover | `--motion-fast` | N/A | Instant | `background` only |
+
+**"If an animation cannot answer 'what useful purpose does this serve?': remove it."** Nothing in
+this pass animates continuously (no blinking/pulsing "urgent" badges — urgency is communicated by
+icon/label/color, exactly as the brief requires) and nothing depends on an animation completing to
+be usable (every reduced-motion path was verified independently, not assumed).
+
+### V3 quality gate — results
+
+Full detail in `screenshots-v3/_v3-quality-report.json`, generated by a Playwright/Chromium script
+that loads every page in a real browser (not a static analysis) and checks, per page, across an
+**11-point responsive matrix** (320/360/375/390/414/430/768/820/1024/1280/1440px):
+
+- **Horizontal overflow:** `document.documentElement.scrollWidth > innerWidth` at every
+  breakpoint, for all 19 prototypes + `design-system.html` — **0 overflow instances**, after the
+  two fixes below.
+- **Console/page errors + failed requests:** captured across every page load — **0 real errors**.
+  The only entry that appears is `net::ERR_CERT_AUTHORITY_INVALID` on the Google Fonts `<link>`,
+  identical to every prior phase of this project — this is the sandboxed session's proxy
+  intercepting TLS for an external CDN, not an application defect (verified: the page still
+  renders correctly with the system font-stack fallback).
+- **Broken images:** `img.complete && naturalWidth>0` check on every `<img>` — **0 broken**.
+- **SVG `<use>` symbol resolution:** the script's own `document.getElementById(id)` check flagged
+  every icon on every page as "missing," which is a **false positive in the test script itself**,
+  not a real defect — Sanad's icons are referenced via `href="assets/icons.svg#i-name"` (an
+  *external*-file sprite reference), which browsers resolve at paint time rather than via
+  `getElementById` on the current document, so this check can never succeed for this pattern.
+  Re-verified with an authoritative check instead: `grep -ohrE '#i-[a-z0-9-]+' *.html | sort -u`
+  compared against every `symbol id="i-..."` in `icons.svg` via `comm -23` — **empty output,
+  confirming zero real missing icons**. Documented here honestly rather than silently discarded.
+
+**Real screenshots captured:** AR desktop 1440 + AR mobile 390 for all 19 prototypes (+ AR 768 for
+`public-home`/`admin-dashboard`); EN desktop 1440 + EN mobile 390 additionally for the 7 pages the
+brief marks critical (`public-home`, `admin-dashboard`, `requests`, `employee-profile`,
+`treasury`, `payroll`, `settings-cms-security`); `design-system.html` captured as 5 scrolled
+segments (AR) + AR mobile 390, given its length.
+
+**Motion/interaction QA (Playwright, real browser interaction — not just static screenshots):**
+sidebar drawer open/close, public-site mobile nav drawer, dropdown open/close, dialog/modal
+open/close, tab switching, KPI count-up final value, chart reveal final opacity/state, a
+loading→success feedback demo, live form recalculation (treasury balance-before/delta/after), and
+RTL vs. LTR directional icon mirroring — **all run twice, once under normal motion and once under
+emulated `prefers-reduced-motion: reduce`**, per the explicit requirement that motion QA must pass
+in both modes with no layout shift, focus loss, hidden functionality, console errors, or RTL/LTR
+regressions. Final result: **46/46 real checks pass in both modes** (the only non-passing lines in
+a raw run are the same benign font-CDN cert message, once per interaction block, not a functional
+failure).
+
+### Known issues found and fixed during this pass
+
+Three real bugs were caught by the checks above — analyzed to a root cause and fixed, not papered
+over, per the review discipline established since Phase 0:
+
+1. **1024px KPI-strip overflow** (7 pages: `admin-dashboard`, `treasury`, `payroll`, `reports`,
+   `lawyer-dashboard`, `accountant-dashboard`, `design-system`) — `.kpi-card` is both a CSS Grid
+   item (inside `.kpi-strip{grid-template-columns:repeat(4,1fr)}`) *and* a flex container
+   internally. Grid items get an implicit `min-width:auto` (= their content's min-content) unless
+   overridden; at exactly 1024px — just above the sidebar's dock breakpoint, where the 4-column
+   row is tightest — the cards' combined min-content exceeded the available track width, and in
+   this RTL layout the excess bled off the *left* edge of the viewport (grid overflow direction
+   follows the inline-start/end axis, so it's invisible unless you scroll left, not right). Fixed
+   with one line — `min-width:0` on `.kpi-card` in `components.css` — the same
+   automatic-minimum-size fix already applied to `.stack` in the V2 pass, now applied at the grid
+   level too. The card's existing `.role-kpi-label{overflow:hidden;text-overflow:ellipsis}` then
+   truncates gracefully instead of forcing the track wider.
+2. **320/360px overflow from off-canvas drawers** (`public-home`, `treasury`,
+   `settings-cms-security`, `design-system`) — the mobile nav/sidebar drawers are correctly
+   positioned off-canvas via `transform:translateX(...)` when closed, but Chromium includes a
+   transformed element's *painted* position in `scrollWidth`'s scrollable-overflow calculation
+   even though it's invisible — so a closed drawer could still make the page horizontally
+   scrollable at narrow widths. Fixed with `overflow-x:hidden` on `html`/`body` in
+   `components.css` — the standard, low-risk fix for this exact CSS transform/scrollable-overflow
+   interaction; it clips the scrollable region without affecting any visible layout (verified:
+   still 0 overflow-matrix failures after the fix, all drawers still visually correct open and
+   closed).
+3. **Dialog focus-trap silently failing under `prefers-reduced-motion: reduce`** — found by the
+   motion/interaction QA the mid-task review explicitly asked for, not by the static screenshot
+   pass. Root cause: the reduced-motion override was `transition-duration:.01ms!important`. `.01ms`
+   is *not* exactly zero, so the browser still schedules it as a real (if extremely short)
+   animated transition rather than an instant style change — meaning `getComputedStyle` queried
+   synchronously in the same JS tick (as the dialog-open handler does, right after
+   `classList.add('show')`, before calling `.focus()`) still read the pre-transition
+   `visibility:hidden` value, and the subsequent `focusTarget.focus()` call silently failed because
+   the browser considered the target not-yet-focusable. Under normal motion this wasn't a problem
+   because the `.dialog`/`.scrim`/`.dropdown-menu` visibility transitions are declared with a
+   literal `0s` duration already (only their *delay* uses a token), so the value flips
+   synchronously. **Fix:** changed the reduced-motion override from `.01ms` to a literal `0s`
+   (`components.css`) — confirmed no code anywhere depends on a `transitionend` event firing (grepped
+   `app.js`/`components.css`, zero matches), so there was no reason to avoid exact zero. Re-verified
+   with the same Playwright script: dialog focus now moves correctly into the dialog under both
+   normal and reduced motion, with no other regression across the other 9 motion/interaction checks.
+
+### V3 per-prototype decision log
+
+Fields follow the brief's required format. `RESPONSIVE`/`RTL-LTR` are stated once here as the
+**baseline** verified for every page (11-breakpoint clean, sidebar/drawer/table/chart mirror
+correctly in both `dir`s) — only exceptions are called out per page.
+
+**1. Public homepage (`public-home.html`) — Tier C**
+- *Real Sanad source:* `views/public/home.ejs` + real service/category/testimonial content (unchanged from V2).
+- *Preserved:* full V2 section order, content model, product-preview mockup, floating notification cards, search panel, journey steps.
+- *Reference principles:* a dark "office solution" band is a common SaaS marketing pattern for the admin-tool half of a dual-audience product (client-facing + staff-facing) — used here because Sanad genuinely has both a customer portal and a staff admin app to advertise.
+- *V3 changes:* stats-band numbers converted to count-up; hero floating cards and category/service/company cards and journey steps get scroll-reveal; new `.office-band` dark-navy two-column section — left: heading + 3-item checklist of real Sanad admin capabilities (request/case management, treasury/accounting, fine-grained permissions) + CTA; right: a mini admin-dashboard mockup reusing the exact same `.kpi-card`/`.dist-list` components as `admin-dashboard.html`, not a new visual language.
+- *Not copied:* no stock photography or decorative imagery (brief explicitly disallows it for the admin app; the homepage mockup is a UI screenshot-style illustration, consistent with what's allowed for marketing pages).
+- *KPI source:* the office-band mockup's 3 mini-KPIs (all-requests / treasury-balance / employees) and completion-rate bar are the *same* numbers already shown on `admin-dashboard.html`, not new invented figures.
+- *Chart purpose:* completion-rate dist-bar answers "is the office keeping up with requests" — the exact metric a prospective office-manager buyer would want to see.
+- *Responsive/RTL-LTR:* baseline; hero product-preview mockup deliberately excluded from scroll-reveal (stays always visible, no JS dependency for primary hero content).
+
+**2. Admin dashboard (`admin-dashboard.html`) — Tier A (polish only)**
+- *Real Sanad source:* `views/admin/dashboard.ejs`.
+- *Preserved:* full V2 widget set and layout — no structural change, per tier-A rule.
+- *Reference principles:* none newly applied (already applied in V2).
+- *V3 changes:* KPI values converted to count-up, including the featured treasury-balance card (`data-count-suffix=" EGP"` replacing the old nested `<small>EGP</small>` markup — same displayed value, cleaner DOM).
+- *Not copied:* n/a.
+- *KPI source:* unchanged from V2 (real `status`/`flag_urgent` fields).
+- *Chart purpose:* unchanged from V2 (status distribution).
+- *Responsive/RTL-LTR:* baseline (this page was the site of the 1024px bug — now fixed, see above).
+
+**3. Requests (`requests.html`) — Tier B**
+- *Real Sanad source:* `views/admin/requests.ejs`.
+- *Preserved:* filter set, tabs-for-archive, table→card collapse — all unchanged from V2.
+- *Reference principles:* none newly applied.
+- *V3 changes:* all 4 KPI cards converted to count-up.
+- *Not copied:* n/a. *KPI source/chart purpose:* unchanged from V2 (total/open/urgent/completion, all from `status`/`flag_urgent`).
+- *Responsive/RTL-LTR:* baseline.
+
+**4. Request detail (`request-detail.html`) — Tier B**
+- *Real Sanad source:* `views/admin/request_detail.ejs`.
+- *Preserved:* the full V2 tab structure (Details/Documents/Messages/Timeline/Quotation/Payments/Subtasks/Visits) and fee summary — reviewed this pass and left structurally unchanged; already comprehensive.
+- *V3 changes:* none (motion tokens apply automatically via shared components, e.g. tab-switch transitions).
+- *Not copied / KPI / chart:* n/a — a single request has no series to plot, unchanged reasoning from V2.
+- *Responsive/RTL-LTR:* baseline; 8 tabs remain horizontally scrollable with no overflow.
+
+**5. Cases (`cases.html`) — Tier B**
+- *Real Sanad source:* `views/admin/cases.ejs`.
+- *Preserved:* case-detail tabs, team stack, court/hearing columns.
+- *V3 changes:* the KPI strip's old, inconsistent `.stat-card`/`.value`/`.label` markup (a V1-era component never migrated to V2's system) was replaced with the current `.kpi-strip`/`.kpi-card` component, all 4 cards converted to count-up — a consistency fix, not a new metric.
+- *Not copied:* n/a. *KPI source:* unchanged real case-status tallies (active/filed/judgment/hearings-this-week).
+- *Responsive/RTL-LTR:* baseline.
+
+**6. Reports (`reports.html`) — Tier B**
+- *Real Sanad source:* audit-identified reports module.
+- *Preserved:* KPI/filter/chart/table organization, report-identity panel, weekly trend + requests-by-service charts.
+- *V3 changes:* 3 of 4 KPI cards converted to count-up (the 4th, "متوسط زمن الإنجاز," has a nested `<small>يوم</small>` unit suffix and was left as-is rather than forcing it into the count-up utility's simpler suffix model).
+- *Not copied / KPI / chart:* unchanged from V2.
+- *Responsive/RTL-LTR:* baseline.
+
+**7. Portal (`portal.html`) — Tier B**
+- *Real Sanad source:* `views/portal/*.ejs`.
+- *Preserved:* deliberately simpler than staff pages, visual-shell-only (no routing/auth touched), per V2's explicit scope.
+- *V3 changes:* added a second `.doc-pill` to the first request card ("مدفوع 2,000 من 4,700") that deliberately matches the *same* SND-1048 request's fee data already shown in `request-detail.html` — a cross-page data-consistency improvement, not a new feature.
+- *Not copied / KPI / chart:* n/a. *Responsive/RTL-LTR:* baseline.
+
+**8. Cases-adjacent Tier-A pages: Revenue/Expenses, Permissions, Lawyer dashboard, Accountant dashboard**
+- *Revenue/Expenses (`revenue-expenses.html`):* real source = audit-identified module; V2's daily bar chart, payment-method distribution, top-services rank list, receivables table all preserved unchanged; **no structural V3 change**, per tier-A rule (reviewed this pass, judged already at its appropriate density).
+- *Permissions (`permissions.html`):* real source = `lib/permissions.js`, Sanad's real 4 roles only; has no KPI cards (role cards + toggle switches), so reviewed and **left untouched** — nothing to polish that wouldn't risk the tier-A "no restructuring" rule.
+- *Lawyer dashboard (`lawyer-dashboard.html`):* real source = role-scoped dashboard; KPI cards converted to count-up only; workload distribution (requests/cases/consultations) preserved unchanged from V2.
+- *Accountant dashboard (`accountant-dashboard.html`):* real source = same; KPI cards converted to count-up only; revenue-vs-expenses distribution preserved unchanged.
+- *Responsive/RTL-LTR:* baseline for all four.
+
+**9. Clients & Companies (`clients-companies.html`) — Tier C**
+- *Real Sanad source:* audit-identified clients/companies module.
+- *Preserved:* the compact list + representative profile-card pattern from V2.
+- *Reference principles:* avatar-circle-plus-name row identity, a live-updating detail panel driven by row selection (common CRM pattern), applied here because Sanad's client list already implies a "select a client, see their detail" workflow.
+- *V3 changes:* added a 4-card KPI strip (total clients/companies/open requests/total outstanding, all count-up); rewrote table rows with avatar circles + rich `data-*` attributes; rewrote the right-column profile panel to update dynamically via row click (`select(row)` JS) instead of being static.
+- *Not copied:* no client photography — avatar circles use initials, consistent with the rest of the app's avatar pattern (topbar `who` avatar, employee list).
+- *KPI source:* total clients/companies/open requests are direct counts of the table's own rows; total outstanding sums the same per-row balance figures already displayed.
+- *Chart purpose:* n/a (no chart on this page — a client list doesn't have a meaningful trend/split beyond what the KPI strip already states).
+- *Responsive/RTL-LTR:* baseline; verified row-click updates the profile panel correctly in both directions.
+
+**10. Employee list (`employees.html`) — light pass**
+- *Real Sanad source:* audit-identified module (`lib/permissions.js` roles).
+- *Preserved:* status-dot list, department/role columns — unchanged from V2.
+- *V3 changes:* KPI strip (total/active/on-leave/inactive) converted to count-up. No structural change — this is an index/reference page, not a priority tier-C target.
+- *Not copied / chart:* n/a. *KPI source:* simple status tallies of the same rows shown in the table.
+- *Responsive/RTL-LTR:* baseline.
+
+**11. Employee profile (`employee-profile.html`) — Tier C**
+- *Real Sanad source:* same module as employee list.
+- *Preserved:* the full V2 3-column layout (personal info / workload+payroll / permissions+devices).
+- *Reference principles:* a compact "recent performance" summary panel, common in HR-profile references — added only because Sanad already tracks a task list for each employee, so it's a real derived view, not an invented metric.
+- *V3 changes:* new "إنجاز المهام — آخر 30 يومًا" panel with a 3-row `.dist-list` (completed-on-time / completed-late / currently-open), with an explicit `role-metadata` note on the page stating this is derived from the same task list shown elsewhere, not a new data source.
+- *Not copied:* no invented "performance score" or rating — just a count split of existing task states.
+- *KPI source/chart purpose:* task counts and their completion split answer "is this employee keeping up with their workload," directly from the same task list already on the page.
+- *Responsive/RTL-LTR:* baseline; verified at 3-column desktop and 1-column mobile.
+
+**12. Permissions** — see item 8 above (Tier A, untouched).
+
+**13. Treasury (`treasury.html`) — Tier C**
+- *Real Sanad source:* `views/admin/treasury.ejs`.
+- *Preserved:* deposit/withdraw/transfer tab model, balance-by-method breakdown, pending-approval panel — all from V2.
+- *Reference principles:* a live transaction-entry form showing balance-before → delta → resulting-balance is a standard treasury/ledger UI pattern — used here because Sanad's real treasury already has exactly this deposit/withdraw/transfer operation, just not previously shown as a live preview form.
+- *V3 changes:* KPI values converted to count-up (both rows); "Net flow" card replaced with a "Pending approval" count+amount card; new "حركة جديدة" panel — tabs (Deposit/Withdraw/Transfer) driving a live-recalculating balance-before/delta/after summary (wired to the account `<select>` and amount `<input>`); new "تركيب الرصيد الحالي" donut chart + legend; expanded transaction table with a "الطريقة" (method) column.
+- *Not copied:* no real submit/persistence logic — the form recalculates a preview only, consistent with this being a design preview, not a functional treasury.
+- *KPI source:* pending-approval count/amount and balance composition are drawn from the same transaction/method data already in the table below.
+- *Chart purpose:* balance-composition donut answers "how much of the treasury sits in which method" — a real reconciliation question, not decorative.
+- *Responsive/RTL-LTR:* baseline; this page's RTL `i-arrow-end` flow-arrow mirroring bug (see below) was found and fixed here, then verified to also benefit `public-home.html`'s pre-existing use of the same icon.
+
+**14. Payroll (`payroll.html`) — Tier C**
+- *Real Sanad source:* audit-identified payroll module.
+- *Preserved:* KPI strip, payroll-history table, vertical workflow steps, per-employee breakdown, net-composition distribution — all from V2.
+- *Reference principles:* a "selected employee" detail panel next to the payroll table (select-a-row-see-detail), same CRM-list pattern used on `clients-companies.html`, applied because payroll review is inherently a per-employee task.
+- *V3 changes:* KPI strip converted to count-up; employee table expanded to 4 rows with a status column; new "بيانات الموظف المحدد" panel showing base/allowances/deductions/net/note/status for whichever row was last clicked, wired via a `select(row)` JS function.
+- *Not copied:* no invented pay components — base/allowances/deductions are the same fields already in the table row.
+- *KPI source/chart purpose:* the selected-employee panel's net figure reconciles the same base+allowances−deductions=net relationship shown 3 ways (KPI, table, panel) from one consistent dataset, unchanged from V2's reasoning.
+- *Responsive/RTL-LTR:* baseline; row-click-to-panel interaction verified working correctly.
+
+**15. Settings / CMS / Security (`settings-cms-security.html`) — Tier C**
+- *Real Sanad source:* audit-identified settings/CMS/security module.
+- *Preserved:* the sticky secondary settings nav, grouped panels, integration status cards, activity-log table, danger-zone pattern from V2.
+- *Reference principles:* single-focused-panel workspace (only one settings section visible at a time, switched via the side nav) rather than one long stacked scroll — a standard settings-app pattern, applied because the brief explicitly calls for settings to feel like "a focused single-panel workspace, not an endless stacked page."
+- *V3 changes:* added `data-settings-panel="svc|site|mail|cms|activity"` to each panel (all but the first start `hidden`); wired a new generic `.settings-nav`/`[data-settings-panel]` switcher in `app.js` (mirrors the existing `[data-tabs]` mechanism, but nav-driven) — no HTML restructuring beyond the panel-switching attributes.
+- *Not copied:* n/a. *KPI/chart:* n/a (this page has no KPIs/charts, by design — it's a configuration workspace).
+- *Responsive/RTL-LTR:* baseline; this page's nav-stretch layout bug (`align-items:stretch` default ballooning the short nav column to the tall content column's height) was found and fixed here (`align-items:start` + `position:sticky`).
+
+**16–19. Full-navigation sidebar (`sidebar-full-nav.html`) — light pass**
+- *Real Sanad source:* `views/partials/admin_nav.ejs` + `lib/permissions.js` module list — all 18 real modules, unchanged from V2.
+- *Preserved:* the collapsible-group mechanism and module list exactly as V2 built it.
+- *V3 changes:* the collapsible-group animation was rewritten from a JS height-measuring approach to a pure-CSS `grid-template-rows: auto 1fr → auto 0fr` trick (scoped via `:has()` so it only applies where this page's `.side-group-body` wrapper exists, leaving every other page's plain `.side-group` untouched); `aria-expanded`/`inert` wired on the toggle/body for correct assistive-tech state.
+- *Not copied / KPI / chart:* n/a — this is a navigation reference page.
+- *Responsive/RTL-LTR:* baseline; group collapse/expand verified to correctly remove collapsed content from the tab order via `inert`.
+
+### Deliberately not copied from the reference images (V3-specific)
+
+- No decorative photography anywhere in the admin app (staff/office/handshake imagery some SaaS
+  references use) — the brief explicitly restricts the admin app to icons/charts/avatars/compact
+  empty-state illustrations; only the public homepage may use abstract product-UI mockups.
+- No continuously blinking/pulsing "urgent" indicators, even though several references use them
+  for overdue items — Sanad's urgency is communicated through the existing icon/label/color
+  system instead, per the brief's explicit motion restriction.
+- No confetti/celebratory animation on the loading→success demo, even though some references use
+  it for a completed action — kept to a simple fade-in message, consistent with "professional,
+  restrained, institutional" motion.
+- No new KPIs that would require data Sanad doesn't expose (e.g. no "employee performance score,"
+  no "predicted churn," no "NPS") — every new KPI in this pass traces to a field or count already
+  shown elsewhere on the same or an adjacent page; anything that would need new data is a
+  **possible future enhancement**, not built into this preview (see below).
+
+### Possible future-functional ideas discovered during this pass (not implemented)
+
+These surfaced naturally while designing V3 pages but require real backend/data work beyond a
+visual-preview scope, so they were **not** built — noted here for future consideration, kept
+separate from anything actually implemented:
+- A real "selected employee"/"selected client" detail-panel pattern (built visually in
+  `payroll.html`/`clients-companies.html`) could generalize into a shared reusable partial if
+  Sanad wanted this interaction pattern elsewhere (e.g. cases, requests).
+- The treasury transaction-entry preview only recalculates a display value; a real implementation
+  would need actual balance validation, an audit trail, and permission checks before persisting.
+- The settings single-panel-workspace pattern could be extended with a "search settings" input if
+  the number of real settings sections grows.
+
+### V3 accessibility notes
+
+No regressions to Phase 0B's contrast/focus/aria work — verified specifically because this pass
+added interactive motion (drawers, dialogs, dropdowns) that could easily have broken it:
+`aria-live`/`role="status"`/`role="alert"` on alerts unchanged; `main` landmarks unchanged; every
+drawer/dialog/dropdown open moves focus in and every close returns it to the opener (verified by
+the Playwright motion QA above, in both normal and reduced motion); `aria-hidden`/`inert` correctly
+remove closed drawer/collapsed-group content from the tab order; all motion respects
+`prefers-reduced-motion: reduce` with no feature depending on an animation completing.
+
+---

@@ -68,6 +68,7 @@
     <a href="#typeroles" data-ar="أدوار الطباعة (V2)" data-en="Typographic roles (V2)">أدوار الطباعة (V2)</a>
     <a href="#kpiv2" data-ar="مؤشرات ورسوم (V2)" data-en="KPIs & charts (V2)">مؤشرات ورسوم (V2)</a>
     <a href="#permv2" data-ar="الصلاحيات وخطوات سير العمل (V2)" data-en="Permissions & workflow steps (V2)">الصلاحيات وخطوات سير العمل (V2)</a>
+    <a href="#motion" data-ar="الحركة والتفاعل (V3)" data-en="Motion & interaction (V3)">الحركة والتفاعل (V3)</a>
   </nav>
 
   <main>
@@ -492,7 +493,7 @@
     </section>
 
     <!-- ============================================================ V2: PERMISSIONS & WORKFLOW STEPS -->
-    <section class="ds-section" style="border-bottom:0" id="permv2">
+    <section class="ds-section" id="permv2">
       <h2><span class="n">19</span> <span data-ar="الصلاحيات وخطوات سير العمل — V2" data-en="Permissions & vertical workflow steps — V2">الصلاحيات وخطوات سير العمل — V2</span></h2>
       <div class="grid grid-2">
         <div>
@@ -517,6 +518,66 @@
       </div>
     </section>
 
+    <!-- ============================================================ V3: MOTION & INTERACTION -->
+    <section class="ds-section" style="border-bottom:0" id="motion">
+      <h2><span class="n">20</span> <span data-ar="الحركة والتفاعل — V3" data-en="Motion & interaction — V3">الحركة والتفاعل — V3</span></h2>
+      <p style="color:var(--color-text-muted);max-width:74ch" data-ar="نظام حركة واحد يُستخدم في كل شاشات سند بدل أن تخترع كل صفحة توقيتها الخاص. هادئ ومؤسسي وسريع — لا ارتداد (bounce)، ولا حركة زخرفية مستمرة. كل حركة أدناه إما CSS بحت (transition/animation على transform وopacity فقط) أو JS خفيف عند الحاجة لتنسيق حالة (العد التصاعدي، الكشف عند التمرير)." data-en="One motion system used across every Sanad screen instead of each page inventing its own timing. Calm, institutional, fast — no bounce, no continuous decorative movement. Everything below is either pure CSS (transition/animation on transform+opacity only) or light JS only where state orchestration genuinely needs it (count-up, scroll reveal).">نظام حركة واحد يُستخدم في كل شاشات سند بدل أن تخترع كل صفحة توقيتها الخاص. هادئ ومؤسسي وسريع — لا ارتداد (bounce)، ولا حركة زخرفية مستمرة. كل حركة أدناه إما CSS بحت (transition/animation على transform وopacity فقط) أو JS خفيف عند الحاجة لتنسيق حالة (العد التصاعدي، الكشف عند التمرير).</p>
+
+      <h3 data-ar="رموز الحركة (Motion tokens)" data-en="Motion tokens">رموز الحركة (Motion tokens)</h3>
+      <table class="ratio-table">
+        <thead><tr><th data-ar="الرمز" data-en="Token">الرمز</th><th data-ar="القيمة" data-en="Value">القيمة</th><th data-ar="يُستخدم في" data-en="Used for">يُستخدم في</th></tr></thead>
+        <tbody>
+          <tr><td class="num">--motion-fast</td><td class="num">120ms</td><td data-ar="أزرار، تبويبات، صفوف جدول، قوائم منسدلة" data-en="Buttons, tabs, table rows, dropdowns">أزرار، تبويبات، صفوف جدول، قوائم منسدلة</td></tr>
+          <tr><td class="num">--motion-normal</td><td class="num">200ms</td><td data-ar="نوافذ منبثقة، درج جانبي، طي المجموعات" data-en="Dialogs, drawer, group collapse">نوافذ منبثقة، درج جانبي، طي المجموعات</td></tr>
+          <tr><td class="num">--motion-slow</td><td class="num">320ms</td><td data-ar="ظهور المؤشرات (KPI)، الرسوم البيانية، أقسام الصفحة الرئيسية" data-en="KPI/chart reveal, homepage section reveal">ظهور المؤشرات (KPI)، الرسوم البيانية، أقسام الصفحة الرئيسية</td></tr>
+          <tr><td class="num">--ease-standard</td><td class="num" dir="ltr">cubic-bezier(.2,0,0,1)</td><td data-ar="أغلب تغييرات الحالة (hover/focus)" data-en="Most state changes (hover/focus)">أغلب تغييرات الحالة (hover/focus)</td></tr>
+          <tr><td class="num">--ease-decelerate</td><td class="num" dir="ltr">cubic-bezier(0,0,.2,1)</td><td data-ar="عناصر تدخل الشاشة (درج، نافذة، ظهور)" data-en="Things entering the screen (drawer, dialog, reveal)">عناصر تدخل الشاشة (درج، نافذة، ظهور)</td></tr>
+          <tr><td class="num">--ease-accelerate</td><td class="num" dir="ltr">cubic-bezier(.3,0,1,1)</td><td data-ar="عناصر تغادر الشاشة" data-en="Things leaving the screen">عناصر تغادر الشاشة</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="أزرار: hover / press / تحميل" data-en="Buttons: hover / press / loading">أزرار: hover / press / تحميل</h3>
+      <p class="role-secondary" data-ar="مرّر الفأرة أو اضغط — ارتفاع ظل خفيف عند hover، وانضغاطة 1px عند الضغط، بلا حركة على البطاقات الثابتة (انظر التباين أدناه)." data-en="Hover or press — a subtle shadow lift on hover, a 1px press on click. No motion on static info cards (contrast below).">مرّر الفأرة أو اضغط — ارتفاع ظل خفيف عند hover، وانضغاطة 1px عند الضغط.</p>
+      <div class="ds-row">
+        <button class="btn btn-accent" data-ar="جرّب hover/press" data-en="Try hover/press">جرّب hover/press</button>
+        <button class="btn btn-primary btn-loading" data-ar="جارٍ الحفظ" data-en="Saving">جارٍ الحفظ<svg class="icon spin"><use href="assets/icons.svg#i-spinner"/></svg></button>
+        <button class="btn btn-ghost" id="motionSuccessBtn" data-ar="أظهر تأكيد نجاح" data-en="Show success feedback">أظهر تأكيد نجاح</button>
+        <span id="motionSuccessMsg" class="badge badge-solid badge-success" style="opacity:0;transition:opacity var(--motion-normal) var(--ease-standard)" data-ar="✓ تم الحفظ" data-en="✓ Saved">✓ تم الحفظ</span>
+      </div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="بطاقات: تفاعلية مقابل ثابتة" data-en="Cards: interactive vs. static">بطاقات: تفاعلية مقابل ثابتة</h3>
+      <div class="grid grid-2">
+        <a class="category-card" href="#" style="display:block"><span class="stat-icon ic-accent" style="width:44px;height:44px"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><h4 style="margin-top:10px" data-ar="بطاقة قابلة للنقر" data-en="Clickable card">بطاقة قابلة للنقر</h4><p style="color:var(--color-text-muted);font-size:13px;margin:0" data-ar="ترتفع بلطف عند hover — لأنها رابط فعلي." data-en="Lifts gently on hover — because it's a real link.">ترتفع بلطف عند hover — لأنها رابط فعلي.</p></a>
+        <div class="panel"><div class="panel-body"><h4 data-ar="بطاقة معلومات ثابتة" data-en="Static info card">بطاقة معلومات ثابتة</h4><p style="color:var(--color-text-muted);font-size:13px;margin:0" data-ar="بلا أي حركة عند hover — لأنها ليست قابلة للنقر، وفق القاعدة ٣٣.ب." data-en="No hover motion at all — it isn't clickable, per brief §33.B.">بلا أي حركة عند hover — لأنها ليست قابلة للنقر.</p></div></div>
+      </div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="مؤشرات KPI: عدّ تصاعدي عند الظهور" data-en="KPIs: count-up on reveal">مؤشرات KPI: عدّ تصاعدي عند الظهور</h3>
+      <p class="role-secondary" data-ar="أعِد تحميل الصفحة لرؤيتها — تعمل مرة واحدة فقط عند الكشف، وتُعطَّل بالكامل تحت prefers-reduced-motion (تظهر القيمة النهائية فورًا)." data-en="Reload the page to see it run — fires once on reveal only, fully disabled under prefers-reduced-motion (final value shown immediately).">أعِد تحميل الصفحة لرؤيتها — تعمل مرة واحدة فقط عند الكشف.</p>
+      <div class="kpi-strip" style="max-width:600px">
+        <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مثال" data-en="Example">مثال</span><div class="role-kpi-value num" data-count-to="1284">0</div></div></div>
+        <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مثال" data-en="Example">مثال</span><div class="role-kpi-value num" data-count-to="262200" data-count-suffix=" EGP">0</div></div></div>
+      </div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="الرسوم البيانية: نمو عند التحميل" data-en="Charts: grow on load">الرسوم البيانية: نمو عند التحميل</h3>
+      <div class="grid grid-2">
+        <div class="bar-chart"><div class="bc-plot" aria-hidden="true"><div class="bc-bar" style="height:40%"></div><div class="bc-bar" style="height:65%"></div><div class="bc-bar" style="height:50%"></div><div class="bc-bar" style="height:85%"></div><div class="bc-bar" style="height:100%"></div></div></div>
+        <div class="flex" style="justify-content:center"><div class="donut" style="--donut-stops:var(--chart-1) 0 57%, var(--chart-2) 57% 82%, var(--chart-3) 82% 100%"><div class="donut-hole"><div class="donut-value num">100٪</div><div class="donut-label" data-ar="توزيع" data-en="Split">توزيع</div></div></div></div>
+      </div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="حالة تحميل (Skeleton)" data-en="Loading state (skeleton)">حالة تحميل (Skeleton)</h3>
+      <p class="role-secondary" data-ar="وميض shimmer مستمر بلطف أثناء انتظار البيانات — انظر القسم ١٥ أعلاه لنسخة كاملة." data-en="A gentle continuous shimmer while data is pending — see §15 above for the full version.">وميض shimmer مستمر أثناء انتظار البيانات.</p>
+      <div class="flex"><div class="skeleton" style="width:100%;max-width:320px;height:16px"></div></div>
+
+      <h3 style="margin-top:var(--space-8)" data-ar="مرجع سريع للأنماط الأخرى" data-en="Quick reference to other patterns">مرجع سريع للأنماط الأخرى</h3>
+      <p style="color:var(--color-text-muted)" data-ar="التبويبات والقوائم المنسدلة والنوافذ المنبثقة موضحة حيّة في القسم ١٤ أعلاه؛ الشريط الجانبي/الدرج في القسم ١٦؛ التنبيهات في القسم ١١. جميعها تستخدم رموز الحركة نفسها أعلاه." data-en="Tabs, dropdowns, and dialogs are demonstrated live in §14 above; the sidebar/drawer in §16; alerts in §11. All of them use the same motion tokens above.">التبويبات والقوائم المنسدلة والنوافذ المنبثقة موضحة حيّة في القسم ١٤ أعلاه؛ الشريط الجانبي/الدرج في القسم ١٦.</p>
+
+      <div class="alert alert-info" role="status" style="margin-top:var(--space-4)">
+        <svg class="icon"><use href="assets/icons.svg#i-info"/></svg>
+        <div><strong data-ar="prefers-reduced-motion" data-en="prefers-reduced-motion">prefers-reduced-motion</strong>
+        <p data-ar="عند تفعيله من نظام التشغيل: كل مدد الحركة أعلاه تنهار إلى ~0 (سطر واحد في components.css)، فيظهر كل شيء في حالته النهائية فورًا — لا عدّ تصاعدي، لا نمو رسوم بيانية، لا انزلاق. لا وظيفة تعتمد على اكتمال حركة لتعمل." data-en="When enabled at the OS level: every duration above collapses to ~0 (one line in components.css), so everything appears in its final state immediately — no count-up, no chart growth, no slide. No functionality depends on an animation completing.">عند تفعيله من نظام التشغيل: كل مدد الحركة أعلاه تنهار إلى ~0، فيظهر كل شيء في حالته النهائية فورًا.</p></div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -532,6 +593,16 @@
   document.getElementById('iconGrid').innerHTML = icons.map(function(i){
     return '<div class="icon-tile"><svg class="icon"><use href="assets/icons.svg#'+i+'"/></svg>'+i.replace('i-','')+'</div>';
   }).join('');
+  // §20 motion demo: success-feedback transition (fade in, auto fade out)
+  var motionBtn = document.getElementById('motionSuccessBtn');
+  var motionMsg = document.getElementById('motionSuccessMsg');
+  if (motionBtn && motionMsg) {
+    motionBtn.addEventListener('click', function () {
+      motionMsg.style.opacity = '1';
+      clearTimeout(motionBtn._t);
+      motionBtn._t = setTimeout(function () { motionMsg.style.opacity = '0'; }, 2200);
+    });
+  }
 </script>
 </body>
 </html>

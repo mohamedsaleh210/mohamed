@@ -27,43 +27,85 @@
   <div class="page-head"><div class="title-row"><div><h1 data-ar="الخزنة" data-en="Treasury">الخزنة</h1><p data-ar="النقدية والبنك وإنستاباي — حركات وموافقات." data-en="Cash, bank, and Instapay — transactions and approvals.">النقدية والبنك وإنستاباي — حركات وموافقات.</p></div><div class="flex"><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-print"/></svg> <span data-ar="تقرير" data-en="Report">تقرير</span></button><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg> <span data-ar="تصدير" data-en="Export">تصدير</span></button><button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="حركة جديدة" data-en="New transaction">حركة جديدة</span></button></div></div></div>
 
   <div class="kpi-strip" style="margin-bottom:var(--space-3)">
-    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرصيد" data-en="Total balance">إجمالي الرصيد</span><div class="role-kpi-value num">262,200 <small style="font-size:11px;font-weight:600">EGP</small></div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نقدي" data-en="Cash">نقدي</span><div class="role-kpi-value num">84,500</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بنكي" data-en="Bank">بنكي</span><div class="role-kpi-value num">150,300</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إنستاباي" data-en="Instapay">إنستاباي</span><div class="role-kpi-value num">27,400</div></div></div>
+    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرصيد" data-en="Total balance">إجمالي الرصيد</span><div class="role-kpi-value num" data-count-to="262200" data-count-suffix=" EGP">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نقدي" data-en="Cash">نقدي</span><div class="role-kpi-value num" data-count-to="84500">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بنكي" data-en="Bank">بنكي</span><div class="role-kpi-value num" data-count-to="150300">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إنستاباي" data-en="Instapay">إنستاباي</span><div class="role-kpi-value num" data-count-to="27400">0</div></div></div>
   </div>
   <div class="kpi-strip" style="margin-bottom:var(--space-5)">
-    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-download"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إيرادات الشهر" data-en="Monthly revenue">إيرادات الشهر</span><div class="role-kpi-value num">217,885</div><div class="kpi-period trend-up" data-ar="↑ 6.1٪" data-en="↑ 6.1%">↑ 6.1٪</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-upload"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مصروفات الشهر" data-en="Monthly expenses">مصروفات الشهر</span><div class="role-kpi-value num">14,610</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عهد قائمة" data-en="Outstanding custody">عهد قائمة</span><div class="role-kpi-value num">4,300</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="صافي التدفق (وارد/منصرف)" data-en="Net flow (in/out)">صافي التدفق (وارد/منصرف)</span><div class="role-kpi-value num trend-up">+ 22,650</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-download"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="وارد الشهر" data-en="Incoming this month">وارد الشهر</span><div class="role-kpi-value num" data-count-to="217885">0</div><div class="kpi-period trend-up" data-ar="↑ 6.1٪" data-en="↑ 6.1%">↑ 6.1٪</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-upload"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="منصرف الشهر" data-en="Outgoing this month">منصرف الشهر</span><div class="role-kpi-value num" data-count-to="14610">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عهد قائمة" data-en="Outstanding custody">عهد قائمة</span><div class="role-kpi-value num" data-count-to="4300">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span><div class="role-kpi-value">2</div><div class="kpi-period" data-ar="بقيمة 1,550" data-en="totaling 1,550">بقيمة 1,550</div></div></div>
   </div>
 
   <div class="two-col">
     <div class="stack">
-      <div class="tabs" data-tabs="tr"><span class="tab active" data-ar="إيداع" data-en="Deposit">إيداع</span><span class="tab" data-ar="سحب" data-en="Withdraw">سحب</span><span class="tab" data-ar="تحويل" data-en="Transfer">تحويل</span></div>
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="حركة جديدة" data-en="New transaction">حركة جديدة</h3></div>
+        <div class="panel-body">
+          <div class="tabs" data-tabs="tr" id="trxTabs">
+            <span class="tab active" data-tab="deposit" data-ar="إيداع" data-en="Deposit">إيداع</span>
+            <span class="tab" data-tab="withdraw" data-ar="سحب" data-en="Withdraw">سحب</span>
+            <span class="tab" data-tab="transfer" data-ar="تحويل" data-en="Transfer">تحويل</span>
+          </div>
+          <div class="grid grid-2">
+            <div class="field"><label class="field-label" data-ar="الخزنة" data-en="Account">الخزنة</label>
+              <select class="select" id="trxAccount"><option value="84500" data-ar="نقدي" data-en="Cash">نقدي</option><option value="150300" data-ar="بنكي" data-en="Bank">بنكي</option><option value="27400" data-ar="إنستاباي" data-en="Instapay">إنستاباي</option></select>
+            </div>
+            <div class="field"><label class="field-label" data-ar="المبلغ" data-en="Amount">المبلغ</label>
+              <input class="input num" id="trxAmount" type="number" value="1000" dir="ltr">
+            </div>
+            <div class="field" style="grid-column:1/-1"><label class="field-label" data-ar="البيان" data-en="Description">البيان</label>
+              <input class="input" data-ar-ph="مثال: سداد رسوم طلب" data-en-ph="e.g. request fee payment" placeholder="مثال: سداد رسوم طلب">
+            </div>
+          </div>
+          <div class="flex-between" style="background:var(--color-bg-app);border-radius:var(--radius-sm);padding:12px 14px;margin-top:4px">
+            <span class="role-secondary" data-ar="الرصيد قبل" data-en="Balance before">الرصيد قبل</span>
+            <span class="num" id="trxBefore" style="font-weight:700">84,500</span>
+            <svg class="icon-sm" style="color:var(--color-text-muted)"><use href="assets/icons.svg#i-arrow-end"/></svg>
+            <span class="num" id="trxDelta" style="font-weight:700;color:var(--color-success)">+ 1,000</span>
+            <svg class="icon-sm" style="color:var(--color-text-muted)"><use href="assets/icons.svg#i-arrow-end"/></svg>
+            <span class="role-secondary" data-ar="الرصيد الناتج" data-en="Resulting balance">الرصيد الناتج</span>
+            <span class="num" id="trxAfter" style="font-weight:800;color:var(--navy-800)">85,500</span>
+          </div>
+        </div>
+        <div class="panel-foot"><button class="btn btn-accent btn-sm" id="trxSubmit"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="إضافة الحركة" data-en="Add transaction">إضافة الحركة</span></button></div>
+      </div>
+
       <div class="panel"><div class="panel-head"><h3 data-ar="آخر الحركات" data-en="Recent transactions">آخر الحركات</h3></div>
         <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
-          <thead><tr><th data-ar="المرجع" data-en="Reference">المرجع</th><th data-ar="التاريخ" data-en="Date">التاريخ</th><th data-ar="البيان" data-en="Description">البيان</th><th data-ar="الطلب المرتبط" data-en="Linked request">الطلب المرتبط</th><th data-ar="النوع" data-en="Type">النوع</th><th data-ar="القيمة" data-en="Amount">القيمة</th><th data-ar="الحالة" data-en="Status">الحالة</th></tr></thead>
+          <thead><tr><th data-ar="المرجع" data-en="Reference">المرجع</th><th data-ar="التاريخ" data-en="Date">التاريخ</th><th data-ar="البيان" data-en="Description">البيان</th><th data-ar="الطريقة" data-en="Method">الطريقة</th><th data-ar="الطلب المرتبط" data-en="Linked request">الطلب المرتبط</th><th data-ar="النوع" data-en="Type">النوع</th><th data-ar="القيمة" data-en="Amount">القيمة</th><th data-ar="الحالة" data-en="Status">الحالة</th><th></th></tr></thead>
           <tbody>
-            <tr><td data-label="المرجع" class="num">TRX-8821</td><td data-label="التاريخ" class="num">21 سبتمبر</td><td data-label="البيان" data-ar="سداد رسوم SND-1046" data-en="Fee payment SND-1046">سداد رسوم SND-1046</td><td data-label="الطلب المرتبط"><a class="row-link num" href="request-detail.html">SND-1046</a></td><td data-label="النوع" data-ar="إيداع" data-en="Deposit">إيداع</td><td data-label="القيمة" class="num" style="color:var(--color-success);font-weight:700">+ 2,000</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td></tr>
-            <tr><td data-label="المرجع" class="num">TRX-8820</td><td data-label="التاريخ" class="num">21 سبتمبر</td><td data-label="البيان" data-ar="مصروفات مشوار — عهدة عمرو" data-en="Errand expense — Amr's custody">مصروفات مشوار — عهدة عمرو</td><td data-label="الطلب المرتبط"><span style="color:var(--color-text-muted)" data-ar="—" data-en="—">—</span></td><td data-label="النوع" data-ar="سحب" data-en="Withdraw">سحب</td><td data-label="القيمة" class="num" style="color:var(--color-danger);font-weight:700">− 350</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span></td></tr>
-            <tr><td data-label="المرجع" class="num">TRX-8817</td><td data-label="التاريخ" class="num">20 سبتمبر</td><td data-label="البيان" data-ar="تحويل من نقدي لبنكي" data-en="Cash to bank transfer">تحويل من نقدي لبنكي</td><td data-label="الطلب المرتبط"><span style="color:var(--color-text-muted)" data-ar="—" data-en="—">—</span></td><td data-label="النوع" data-ar="تحويل" data-en="Transfer">تحويل</td><td data-label="القيمة" class="num" style="font-weight:700">20,000</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td></tr>
-            <tr><td data-label="المرجع" class="num">TRX-8811</td><td data-label="التاريخ" class="num">19 سبتمبر</td><td data-label="البيان" data-ar="رسوم حكومية SND-1048" data-en="Government fee SND-1048">رسوم حكومية SND-1048</td><td data-label="الطلب المرتبط"><a class="row-link num" href="request-detail.html">SND-1048</a></td><td data-label="النوع" data-ar="سحب" data-en="Withdraw">سحب</td><td data-label="القيمة" class="num" style="color:var(--color-danger);font-weight:700">− 1,200</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td></tr>
+            <tr><td data-label="المرجع" class="num">TRX-8821</td><td data-label="التاريخ" class="num">21 سبتمبر</td><td data-label="البيان" data-ar="سداد رسوم SND-1046" data-en="Fee payment SND-1046">سداد رسوم SND-1046</td><td data-label="الطريقة" data-ar="إنستاباي" data-en="Instapay">إنستاباي</td><td data-label="الطلب المرتبط"><a class="row-link num" href="request-detail.html">SND-1046</a></td><td data-label="النوع" data-ar="إيداع" data-en="Deposit">إيداع</td><td data-label="القيمة" class="num" style="color:var(--color-success);font-weight:700">+ 2,000</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+            <tr><td data-label="المرجع" class="num">TRX-8820</td><td data-label="التاريخ" class="num">21 سبتمبر</td><td data-label="البيان" data-ar="مصروفات مشوار — عهدة عمرو" data-en="Errand expense — Amr's custody">مصروفات مشوار — عهدة عمرو</td><td data-label="الطريقة" data-ar="نقدي" data-en="Cash">نقدي</td><td data-label="الطلب المرتبط"><span style="color:var(--color-text-muted)" data-ar="—" data-en="—">—</span></td><td data-label="النوع" data-ar="سحب" data-en="Withdraw">سحب</td><td data-label="القيمة" class="num" style="color:var(--color-danger);font-weight:700">− 350</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span></td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+            <tr><td data-label="المرجع" class="num">TRX-8817</td><td data-label="التاريخ" class="num">20 سبتمبر</td><td data-label="البيان" data-ar="تحويل من نقدي لبنكي" data-en="Cash to bank transfer">تحويل من نقدي لبنكي</td><td data-label="الطريقة" data-ar="بنكي" data-en="Bank">بنكي</td><td data-label="الطلب المرتبط"><span style="color:var(--color-text-muted)" data-ar="—" data-en="—">—</span></td><td data-label="النوع" data-ar="تحويل" data-en="Transfer">تحويل</td><td data-label="القيمة" class="num" style="font-weight:700">20,000</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
+            <tr><td data-label="المرجع" class="num">TRX-8811</td><td data-label="التاريخ" class="num">19 سبتمبر</td><td data-label="البيان" data-ar="رسوم حكومية SND-1048" data-en="Government fee SND-1048">رسوم حكومية SND-1048</td><td data-label="الطريقة" data-ar="نقدي" data-en="Cash">نقدي</td><td data-label="الطلب المرتبط"><a class="row-link num" href="request-detail.html">SND-1048</a></td><td data-label="النوع" data-ar="سحب" data-en="Withdraw">سحب</td><td data-label="القيمة" class="num" style="color:var(--color-danger);font-weight:700">− 1,200</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td><td class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></button></td></tr>
           </tbody>
         </table></div></div>
       </div>
     </div>
 
     <div class="stack">
-      <div class="panel"><div class="panel-head"><h3 data-ar="توزيع طرق التحصيل" data-en="Collection method split">توزيع طرق التحصيل</h3></div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="تركيب الرصيد الحالي" data-en="Current balance composition">تركيب الرصيد الحالي</h3></div>
+        <div class="panel-body flex" style="gap:var(--space-4);align-items:center;justify-content:center;flex-wrap:wrap">
+          <div class="donut" style="--donut-stops:var(--chart-2) 0 32%, var(--chart-1) 32% 89%, var(--chart-3) 89% 100%"><div class="donut-hole"><div class="donut-value num">262,200</div><div class="donut-label" data-ar="إجمالي" data-en="Total">إجمالي</div></div></div>
+          <div class="stack" style="gap:6px">
+            <span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="نقدي — 32٪" data-en="Cash — 32%">نقدي — 32٪</span></span>
+            <span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="بنكي — 57٪" data-en="Bank — 57%">بنكي — 57٪</span></span>
+            <span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="إنستاباي — 11٪" data-en="Instapay — 11%">إنستاباي — 11٪</span></span>
+          </div>
+        </div>
+        <p class="role-metadata" style="padding:0 var(--space-4-5) var(--space-4)" data-ar="سؤال العمل: هل توزيع سيولتنا الحالي متوازن بين القنوات؟" data-en="Business question: is our current liquidity balanced across channels?">سؤال العمل: هل توزيع سيولتنا الحالي متوازن بين القنوات؟</p>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="توزيع طرق التحصيل — هذا الشهر" data-en="Collection method split — this month">توزيع طرق التحصيل — هذا الشهر</h3></div>
         <div class="panel-body">
           <div class="dist-list">
             <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="نقدي" data-en="Cash">نقدي</span></span><div class="dist-track"><div class="dist-fill" style="width:32%;background:var(--chart-2)"></div></div><span class="dist-value num">32٪</span></div>
             <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="بنكي" data-en="Bank">بنكي</span></span><div class="dist-track"><div class="dist-fill" style="width:57%;background:var(--chart-1)"></div></div><span class="dist-value num">57٪</span></div>
             <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="إنستاباي" data-en="Instapay">إنستاباي</span></span><div class="dist-track"><div class="dist-fill" style="width:11%;background:var(--chart-3)"></div></div><span class="dist-value num">11٪</span></div>
           </div>
-          <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: هل نعتمد على قناة تحصيل واحدة بشكل مبالغ فيه؟" data-en="Business question: are we over-reliant on a single collection channel?">سؤال العمل: هل نعتمد على قناة تحصيل واحدة بشكل مبالغ فيه؟</p>
+          <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: أي قناة تحصيل نعتمد عليها فعليًا؟" data-en="Business question: which collection channel do we actually rely on?">سؤال العمل: أي قناة تحصيل نعتمد عليها فعليًا؟</p>
         </div>
       </div>
       <div class="panel"><div class="panel-head"><h3 data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</h3></div>
@@ -76,6 +118,29 @@
     </div>
   </div>
 </main>
+<script>
+(function(){
+  var acc = document.getElementById('trxAccount'), amt = document.getElementById('trxAmount');
+  var before = document.getElementById('trxBefore'), delta = document.getElementById('trxDelta'), after = document.getElementById('trxAfter');
+  var mode = 'deposit';
+  document.querySelectorAll('#trxTabs .tab').forEach(function(t){
+    t.addEventListener('click', function(){ mode = t.getAttribute('data-tab'); recalc(); });
+  });
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function recalc(){
+    var b = parseFloat(acc.value) || 0;
+    var a = parseFloat(amt.value) || 0;
+    var sign = mode === 'withdraw' ? -1 : 1;
+    var d = sign * a;
+    before.textContent = fmt(b);
+    delta.textContent = (d >= 0 ? '+ ' : '− ') + fmt(Math.abs(d));
+    delta.style.color = d >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+    after.textContent = fmt(b + d);
+  }
+  if (acc && amt) { acc.addEventListener('input', recalc); amt.addEventListener('input', recalc); recalc(); }
+})();
+</script>
+
 </div>
 <script src="assets/app.js"></script>
 </body>

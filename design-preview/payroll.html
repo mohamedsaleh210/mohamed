@@ -10,7 +10,10 @@
 <style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
 .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4)}
-@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.pr-row{transition:background var(--motion-fast) var(--ease-standard)}
+.pr-row.active{background:var(--brass-100)}
+.pr-row.active:hover{background:var(--brass-100)}</style>
 </head>
 <body>
 <div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — المرتبات والمسير" data-en="Design preview V2 — payroll">معاينة تصميم V2 — المرتبات والمسير</span><button id="langToggle"><span data-lang-label>English</span></button></div>
@@ -29,10 +32,10 @@
   </div></div>
 
   <div class="kpi-strip" style="margin-bottom:var(--space-5)">
-    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="صافي الرواتب" data-en="Net payroll">صافي الرواتب</span><div class="role-kpi-value num">21,300</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الاستقطاعات" data-en="Total deductions">إجمالي الاستقطاعات</span><div class="role-kpi-value num">3,200</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرواتب الأساسية" data-en="Total base salaries">إجمالي الرواتب الأساسية</span><div class="role-kpi-value num">24,500</div></div></div>
-    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="الموظفون في هذا المسير" data-en="Employees in this run">الموظفون في هذا المسير</span><div class="role-kpi-value">27</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="صافي الرواتب" data-en="Net payroll">صافي الرواتب</span><div class="role-kpi-value num" data-count-to="21300">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الاستقطاعات" data-en="Total deductions">إجمالي الاستقطاعات</span><div class="role-kpi-value num" data-count-to="3200">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرواتب الأساسية" data-en="Total base salaries">إجمالي الرواتب الأساسية</span><div class="role-kpi-value num" data-count-to="24500">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="الموظفون في هذا المسير" data-en="Employees in this run">الموظفون في هذا المسير</span><div class="role-kpi-value" data-count-to="27">0</div><div class="kpi-period" data-ar="26 مدفوعة سابقًا" data-en="26 previously paid">26 مدفوعة سابقًا</div></div></div>
   </div>
 
   <div class="two-col">
@@ -49,18 +52,31 @@
         </table></div>
       </div>
 
-      <div class="panel"><div class="panel-head"><h3 data-ar="تفاصيل مسير يونيو — حسب الموظف" data-en="June run detail — by employee">تفاصيل مسير يونيو — حسب الموظف</h3></div>
-        <div class="panel-body flush"><table class="tbl responsive">
-          <thead><tr><th data-ar="الموظف" data-en="Employee">الموظف</th><th data-ar="الأساسي" data-en="Base">الأساسي</th><th data-ar="البدلات" data-en="Allowances">البدلات</th><th data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</th><th data-ar="الصافي" data-en="Net">الصافي</th><th></th></tr></thead>
+      <div class="panel"><div class="panel-head"><h3 data-ar="تفاصيل مسير يونيو — حسب الموظف" data-en="June run detail — by employee">تفاصيل مسير يونيو — حسب الموظف</h3><span class="role-metadata" data-ar="انقر صفًا لعرض تفاصيله" data-en="Click a row to view its detail">انقر صفًا لعرض تفاصيله</span></div>
+        <div class="panel-body flush"><table class="tbl responsive" id="payrollEmpTable">
+          <thead><tr><th data-ar="الموظف" data-en="Employee">الموظف</th><th data-ar="الأساسي" data-en="Base">الأساسي</th><th data-ar="البدلات" data-en="Allowances">البدلات</th><th data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</th><th data-ar="الصافي" data-en="Net">الصافي</th><th data-ar="الحالة" data-en="Status">الحالة</th><th></th></tr></thead>
           <tbody>
-            <tr><td data-label="الموظف" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</td><td data-label="الأساسي" class="num">4,900</td><td data-label="البدلات" class="num">800</td><td data-label="الاستقطاعات" class="num">420</td><td data-label="الصافي" class="num" style="font-weight:700">5,280</td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
-            <tr><td data-label="الموظف" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</td><td data-label="الأساسي" class="num">3,600</td><td data-label="البدلات" class="num">400</td><td data-label="الاستقطاعات" class="num">310</td><td data-label="الصافي" class="num" style="font-weight:700">3,690</td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+            <tr class="pr-row active" style="cursor:pointer" data-name-ar="عز الدين محمود" data-name-en="Ezz Eldeen Mahmoud" data-base="4900" data-allow="800" data-ded="420" data-note-ar="بدل مواصلات وتأمين إضافي" data-note-en="Transport allowance + extra insurance"><td data-label="الموظف" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</td><td data-label="الأساسي" class="num">4,900</td><td data-label="البدلات" class="num">800</td><td data-label="الاستقطاعات" class="num">420</td><td data-label="الصافي" class="num" style="font-weight:700">5,280</td><td data-label="الحالة"><span class="badge badge-info" data-ar="قيد الاعتماد" data-en="Awaiting approval">قيد الاعتماد</span></td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+            <tr class="pr-row" style="cursor:pointer" data-name-ar="سارة أحمد" data-name-en="Sara Ahmed" data-base="3600" data-allow="400" data-ded="310" data-note-ar="—" data-note-en="—"><td data-label="الموظف" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</td><td data-label="الأساسي" class="num">3,600</td><td data-label="البدلات" class="num">400</td><td data-label="الاستقطاعات" class="num">310</td><td data-label="الصافي" class="num" style="font-weight:700">3,690</td><td data-label="الحالة"><span class="badge badge-info" data-ar="قيد الاعتماد" data-en="Awaiting approval">قيد الاعتماد</span></td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+            <tr class="pr-row" style="cursor:pointer" data-name-ar="خالد محمد" data-name-en="Khaled Mohamed" data-base="3200" data-allow="250" data-ded="280" data-note-ar="خصم غياب يومين" data-note-en="2-day absence deduction"><td data-label="الموظف" data-ar="خالد محمد" data-en="Khaled Mohamed">خالد محمد</td><td data-label="الأساسي" class="num">3,200</td><td data-label="البدلات" class="num">250</td><td data-label="الاستقطاعات" class="num">280</td><td data-label="الصافي" class="num" style="font-weight:700">3,170</td><td data-label="الحالة"><span class="badge badge-info" data-ar="قيد الاعتماد" data-en="Awaiting approval">قيد الاعتماد</span></td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+            <tr class="pr-row" style="cursor:pointer" data-name-ar="لينا عبدالله" data-name-en="Lina Abdullah" data-base="3800" data-allow="350" data-ded="340" data-note-ar="—" data-note-en="—"><td data-label="الموظف" data-ar="لينا عبدالله" data-en="Lina Abdullah">لينا عبدالله</td><td data-label="الأساسي" class="num">3,800</td><td data-label="البدلات" class="num">350</td><td data-label="الاستقطاعات" class="num">340</td><td data-label="الصافي" class="num" style="font-weight:700">3,810</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مُعتمَد" data-en="Approved">مُعتمَد</span></td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
           </tbody>
         </table></div>
       </div>
     </div>
 
     <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="بيانات الموظف المحدد" data-en="Selected employee">بيانات الموظف المحدد</h3></div>
+        <div class="panel-body stack">
+          <div class="flex-between"><span style="font-weight:800" id="pdName">عز الدين محمود</span><span class="badge badge-info" id="pdStatus" data-ar="قيد الاعتماد" data-en="Awaiting approval">قيد الاعتماد</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="الراتب الأساسي" data-en="Base salary">الراتب الأساسي</span><span class="num" id="pdBase" style="font-weight:700">4,900</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="البدلات" data-en="Allowances">البدلات</span><span class="num" id="pdAllow" style="font-weight:700;color:var(--color-success)">+ 800</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</span><span class="num" id="pdDed" style="font-weight:700;color:var(--color-danger)">− 420</span></div>
+          <div class="flex-between" style="border-top:1px solid var(--color-border);padding-top:10px"><span style="font-weight:800" data-ar="الصافي" data-en="Net">الصافي</span><span class="num" id="pdNet" style="font-weight:800;color:var(--navy-800)">5,280</span></div>
+          <div><span class="role-secondary" data-ar="ملاحظات" data-en="Notes">ملاحظات</span><p id="pdNote" style="margin:4px 0 0;font-size:13px">بدل مواصلات وتأمين إضافي</p></div>
+        </div>
+        <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="رفض" data-en="Reject">رفض</button><button class="btn btn-accent btn-sm" data-ar="اعتماد" data-en="Approve">اعتماد</button></div>
+      </div>
       <div class="panel"><div class="panel-head"><h3 data-ar="إجراءات المسير" data-en="Payroll run actions">إجراءات المسير</h3></div>
         <div class="panel-body">
           <div class="steps-v">
@@ -94,5 +110,33 @@
 </main>
 </div>
 <script src="assets/app.js"></script>
+<script>
+(function(){
+  var table = document.getElementById('payrollEmpTable');
+  if (!table) return;
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function select(row){
+    table.querySelectorAll('.pr-row').forEach(function(r){ r.classList.remove('active'); });
+    row.classList.add('active');
+    var lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'ar';
+    var base = parseFloat(row.getAttribute('data-base')) || 0;
+    var allow = parseFloat(row.getAttribute('data-allow')) || 0;
+    var ded = parseFloat(row.getAttribute('data-ded')) || 0;
+    document.getElementById('pdName').textContent = row.getAttribute('data-name-' + lang);
+    document.getElementById('pdBase').textContent = fmt(base);
+    document.getElementById('pdAllow').textContent = '+ ' + fmt(allow);
+    document.getElementById('pdDed').textContent = '− ' + fmt(ded);
+    document.getElementById('pdNet').textContent = fmt(base + allow - ded);
+    document.getElementById('pdNote').textContent = row.getAttribute('data-note-' + lang);
+    var statusBadge = row.querySelector('.badge').cloneNode(true);
+    var pdStatus = document.getElementById('pdStatus');
+    pdStatus.className = statusBadge.className;
+    pdStatus.textContent = statusBadge.textContent;
+  }
+  table.querySelectorAll('.pr-row').forEach(function(row){
+    row.addEventListener('click', function(e){ if (!e.target.closest('a')) select(row); });
+  });
+})();
+</script>
 </body>
 </html>

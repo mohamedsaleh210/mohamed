@@ -7,11 +7,11 @@
    ========================================================================== */
 
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-x:hidden}
 body{
   margin:0;font-family:var(--font-family);color:var(--color-text);
   background:var(--color-bg-app);font-size:var(--text-base);line-height:var(--leading-relaxed);
-  -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 body.marketing{background:var(--color-bg-marketing)}
 a{color:inherit;text-decoration:none}
@@ -21,11 +21,28 @@ h1{font-size:var(--text-3xl)} h2{font-size:var(--text-2xl)} h3{font-size:var(--t
 p{margin:0 0 var(--space-3)}
 .wrap{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--space-6)}
 .icon{width:var(--icon-size);height:var(--icon-size);flex:none;stroke:currentColor}
+/* i-arrow-end is drawn pointing right (correct for "end" in LTR). Mirror it
+   under RTL so it still points toward the reading-end direction (left) —
+   otherwise every "ابدأ الآن ←"-style CTA and flow arrow would point the
+   wrong way in Arabic. i-chevron-start/-end are unaffected: those are only
+   ever used in already-direction-aware contexts (pagination) that don't use
+   this icon. V3 correctness fix, applies to the existing V1/V2 usages too. */
+[dir="rtl"] use[href$="i-arrow-end"]{transform:scaleX(-1);transform-origin:center;transform-box:fill-box}
 .icon-lg{width:28px;height:28px}
 .icon-sm{width:16px;height:16px}
 
 :focus-visible{outline:2.5px solid var(--brass-500);outline-offset:2px;border-radius:4px}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* V3 motion system, reduced-motion path: every transition/animation in this
+   file (KPI entrance, bar/dist/donut reveal, dialog/dropdown open-close,
+   sidebar-group collapse, tab/button/row hover, [data-reveal]) is built with
+   plain `transition`/`animation` on transform+opacity — collapsing every
+   duration to ~0 here makes all of them resolve to their end state instantly,
+   with no separate "disable" rule needed per component. The one intentional
+   exception is `.spin` (loading spinners): WCAG treats an in-progress loading
+   indicator as essential feedback, not decoration, so it keeps spinning even
+   under reduced motion — see app.js for the equivalent JS-side check that
+   skips the count-up/stagger timers instead of just speeding them up. */
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:0s!important;scroll-behavior:auto!important}}
 
 /* ---------------------------------------------------------------- grid */
 .container{max-width:var(--container-max);margin-inline:auto;padding-inline:var(--space-6)}
@@ -43,9 +60,11 @@ p{margin:0 0 var(--space-3)}
   font-family:inherit;font-weight:var(--weight-bold);font-size:var(--text-sm);
   padding:11px 18px;min-height:44px;border-radius:var(--radius-sm);
   border:1.5px solid transparent;cursor:pointer;white-space:nowrap;
-  transition:background .15s ease,border-color .15s ease,transform .1s ease,box-shadow .15s ease;
+  transition:background var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),transform var(--motion-fast) var(--ease-standard);
 }
-.btn:active{transform:translateY(1px)}
+.btn:active{transform:translateY(1px);transition-duration:60ms}
+.btn:hover:not([disabled]){box-shadow:var(--shadow-xs)}
 .btn-primary{background:var(--color-primary);border-color:var(--color-primary);color:var(--color-primary-contrast)}
 .btn-primary:hover{background:var(--color-primary-hover);border-color:var(--color-primary-hover)}
 .btn-accent{background:var(--color-accent-bg);border-color:var(--color-accent-bg);color:var(--color-text-on-accent)}
@@ -177,7 +196,8 @@ p{margin:0 0 var(--space-3)}
 
 /* =============================================================== tabs */
 .tabs{display:flex;gap:var(--space-1);border-bottom:1px solid var(--color-border);margin-bottom:var(--space-5);overflow-x:auto}
-.tab{padding:12px 6px;font-weight:var(--weight-bold);font-size:var(--text-sm);color:var(--color-text-muted);border-bottom:2.5px solid transparent;white-space:nowrap;cursor:pointer;margin-inline-end:var(--space-5)}
+.tab{padding:12px 6px;font-weight:var(--weight-bold);font-size:var(--text-sm);color:var(--color-text-muted);border-bottom:2.5px solid transparent;white-space:nowrap;cursor:pointer;margin-inline-end:var(--space-5);
+  transition:color var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard)}
 .tab:hover{color:var(--color-text-strong)}
 .tab.active{color:var(--color-accent-text);border-color:var(--brass-500)}
 .tab .badge{margin-inline-start:6px}
@@ -209,6 +229,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
 table.tbl thead th{text-align:start;background:var(--color-bg-app);color:var(--color-text-muted);font-size:var(--text-xs);font-weight:var(--weight-bold);text-transform:uppercase;letter-spacing:.03em;padding:10px 16px;border-bottom:1px solid var(--color-border)}
 table.tbl tbody td{padding:12px 16px;border-bottom:1px solid var(--color-border)}
 table.tbl tbody tr:last-child td{border-bottom:0}
+table.tbl tbody tr{transition:background var(--motion-fast) var(--ease-standard)}
 table.tbl tbody tr:hover{background:var(--color-bg-app)}
 table.tbl .row-link{display:flex;align-items:center;gap:8px;font-weight:var(--weight-bold);color:var(--color-text-strong)}
 table.tbl .num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
@@ -225,18 +246,28 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
   table.tbl.responsive .row-actions{justify-content:flex-end}
 }
 
-/* =============================================================== dialogs/dropdowns */
-.scrim{display:none;position:fixed;inset:0;background:rgba(11,32,41,.45);backdrop-filter:blur(2px);z-index:80}
-.scrim.show{display:block}
-.dialog{display:none;position:fixed;inset:0;margin:auto;z-index:90;background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:min(92vw,520px);max-height:88vh;overflow:auto;height:fit-content}
-.dialog.show{display:block}
+/* =============================================================== dialogs/dropdowns
+   Shown/hidden via opacity+visibility (not display:none) so the open/close can
+   transition. visibility still removes the element from the tab order and a11y
+   tree when closed — same guarantee display:none gave, but animatable: it flips
+   to "visible" instantly on open and to "hidden" only after the close transition
+   finishes (transition-delay), so nothing is briefly focusable while invisible. */
+.scrim{position:fixed;inset:0;background:rgba(11,32,41,.45);backdrop-filter:blur(2px);z-index:80;
+  opacity:0;visibility:hidden;transition:opacity var(--motion-normal) var(--ease-standard),visibility 0s linear var(--motion-normal)}
+.scrim.show{opacity:1;visibility:visible;transition-delay:0s}
+.dialog{position:fixed;inset:0;margin:auto;z-index:90;background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:min(92vw,520px);max-height:88vh;overflow:auto;height:fit-content;
+  opacity:0;visibility:hidden;transform:translateY(10px) scale(.98);
+  transition:opacity var(--motion-normal) var(--ease-standard),transform var(--motion-normal) var(--ease-decelerate),visibility 0s linear var(--motion-normal)}
+.dialog.show{opacity:1;visibility:visible;transform:none;transition-delay:0s}
 .dialog-head{display:flex;justify-content:space-between;align-items:center;padding:var(--space-5);border-bottom:1px solid var(--color-border)}
 .dialog-body{padding:var(--space-5)}
 .dialog-foot{padding:var(--space-4) var(--space-5);border-top:1px solid var(--color-border);display:flex;justify-content:flex-end;gap:var(--space-2)}
 
 .dropdown{position:relative;display:inline-block}
-.dropdown-menu{display:none;position:absolute;inset-inline-end:0;top:calc(100% + 6px);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:200px;padding:6px;z-index:40}
-.dropdown-menu.show{display:block}
+.dropdown-menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);min-width:200px;padding:6px;z-index:40;
+  opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity var(--motion-fast) var(--ease-standard),transform var(--motion-fast) var(--ease-decelerate),visibility 0s linear var(--motion-fast)}
+.dropdown-menu.show{opacity:1;visibility:visible;transform:none;transition-delay:0s}
 .dropdown-menu a,.dropdown-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border-radius:var(--radius-sm);font-size:var(--text-sm);text-align:start;background:none;border:0;cursor:pointer;color:var(--color-text)}
 .dropdown-menu a:hover,.dropdown-menu button:hover{background:var(--color-bg-app)}
 .dropdown-menu .div{height:1px;background:var(--color-border);margin:6px 0}
@@ -259,7 +290,8 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 
 /* =============================================================== progress */
 .progress{height:8px;border-radius:var(--radius-full);background:var(--gray-100);overflow:hidden}
-.progress > span{display:block;height:100%;background:var(--brass-500);border-radius:var(--radius-full)}
+.progress > span{display:block;height:100%;background:var(--brass-500);border-radius:var(--radius-full);
+  transition:width var(--motion-slow) var(--ease-decelerate)}
 .steps{display:flex;gap:0}
 .step{flex:1;text-align:center;position:relative;font-size:var(--text-xs);color:var(--color-text-muted)}
 .step::before{content:'';position:absolute;top:14px;inset-inline-start:-50%;width:100%;height:2px;background:var(--gray-100);z-index:0}
@@ -293,7 +325,7 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 
 /* ---- KPI card v2: icon in a pastel circle + value + period caption ----- */
 .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3)}
-.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow-xs)}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow-xs);min-width:0}
 .kpi-card .kpi-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
 .kpi-card .kpi-body{min-width:0}
 .kpi-card .role-kpi-label{display:block;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -305,12 +337,24 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 @media (max-width:999px){.kpi-strip{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:620px){.kpi-strip{grid-template-columns:1fr}}
 
+/* KPI entrance: runs once on paint (not gated by JS/scroll — safe for above-
+   the-fold content and for screenshot capture timing). Staggered per card so
+   a 4-up strip reads left-to-right (mirrors automatically under RTL because
+   nth-child order follows DOM order, and DOM order already matches reading
+   direction via logical properties elsewhere in the system). */
+.kpi-card{animation:kpi-in var(--motion-slow) var(--ease-decelerate) both}
+.kpi-card:nth-child(2){animation-delay:40ms} .kpi-card:nth-child(3){animation-delay:80ms}
+.kpi-card:nth-child(4){animation-delay:120ms} .kpi-card:nth-child(n+5){animation-delay:160ms}
+@keyframes kpi-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
 /* ---- mini bar chart (vertical) — pure CSS, no chart library ------------ */
 .bar-chart{display:flex;flex-direction:column;gap:6px}
 .bar-chart .bc-plot{display:flex;align-items:flex-end;gap:4px;height:120px;border-bottom:1px solid var(--chart-grid);padding-bottom:2px}
-.bar-chart .bc-bar{flex:1;background:var(--chart-1);border-radius:3px 3px 0 0;min-height:3px}
+.bar-chart .bc-bar{flex:1;background:var(--chart-1);border-radius:3px 3px 0 0;min-height:3px;
+  transform-origin:bottom;animation:bar-grow var(--motion-slow) var(--ease-decelerate) both}
 .bar-chart .bc-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-muted)}
 .bar-chart .bc-yaxis{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-muted);margin-bottom:4px}
+@keyframes bar-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 
 /* ---- horizontal distribution bars (e.g. payment-method split) ---------- */
 .dist-list{display:grid;gap:10px}
@@ -318,8 +362,25 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 .dist-row .dist-label{font-size:var(--text-sm);width:92px;flex:none;display:flex;align-items:center;gap:6px}
 .dist-row .dist-label .sw{width:8px;height:8px;border-radius:50%;flex:none}
 .dist-row .dist-track{flex:1;height:9px;background:var(--gray-100);border-radius:99px;overflow:hidden}
-.dist-row .dist-fill{height:100%;border-radius:99px}
+.dist-row .dist-fill{height:100%;border-radius:99px;transform-origin:left;animation:dist-grow var(--motion-slow) var(--ease-decelerate) both}
+[dir="rtl"] .dist-row .dist-fill{transform-origin:right}
+@keyframes dist-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .dist-row .dist-value{font-size:var(--text-xs);font-weight:var(--weight-bold);width:64px;flex:none;text-align:end}
+
+/* ---- donut / ring chart — CSS conic-gradient, no library ---------------
+   Usage: <div class="donut" style="--donut-stops:var(--chart-1) 0 57%, var(--chart-2) 57% 82%, var(--chart-3) 82% 100%">
+            <div class="donut-hole"><div class="donut-value">262,200</div><div class="donut-label">EGP</div></div></div> */
+.donut{width:120px;height:120px;border-radius:50%;position:relative;display:grid;place-items:center;flex:none;
+  animation:donut-in var(--motion-slow) var(--ease-decelerate) both}
+.donut::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--donut-stops,var(--chart-1) 0 100%))}
+.donut .donut-hole{position:relative;width:68%;height:68%;border-radius:50%;background:var(--color-surface);display:grid;place-items:center;text-align:center;box-shadow:var(--shadow-xs)}
+.donut .donut-value{font-size:var(--text-md);font-weight:var(--weight-black);color:var(--color-text-strong);font-variant-numeric:tabular-nums}
+.donut .donut-label{font-size:10px;color:var(--color-text-muted)}
+@keyframes donut-in{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+
+/* ---- scroll/entrance reveal (opt-in via data-reveal, homepage) --------- */
+[data-reveal]{opacity:0;transform:translateY(10px);transition:opacity var(--motion-slow) var(--ease-decelerate),transform var(--motion-slow) var(--ease-decelerate)}
+[data-reveal].revealed{opacity:1;transform:none}
 
 /* ---- ranked mini list (top services / receivables aging) --------------- */
 .rank-list{display:grid}
@@ -344,7 +405,9 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 
 /* ---- permission role cards + permission groups -------------------------- */
 .role-card-list{display:grid;gap:8px}
-.role-card{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer}
+.role-card{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer;
+  transition:border-color var(--motion-fast) var(--ease-standard),background var(--motion-fast) var(--ease-standard)}
+.role-card:hover{border-color:var(--color-border-strong)}
 .role-card .rc-icon{width:34px;height:34px;border-radius:var(--radius-sm);background:var(--color-bg-app);color:var(--navy-800);display:grid;place-items:center;flex:none}
 .role-card .rc-title{font-weight:var(--weight-bold);font-size:var(--text-sm)}
 .role-card .rc-sub{font-size:11.5px;color:var(--color-text-muted)}

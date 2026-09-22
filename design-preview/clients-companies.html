@@ -10,7 +10,13 @@
 <style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
 .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4)}
-@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.cl-row{cursor:pointer;transition:background var(--motion-fast) var(--ease-standard)}
+.cl-row.active{background:var(--brass-100)}
+.cl-row.active:hover{background:var(--brass-100)}
+.cl-name{display:flex;align-items:center;gap:10px}
+.cl-avatar{width:32px;height:32px;border-radius:50%;background:var(--navy-800);color:var(--brass-300);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+.cl-avatar.co{background:var(--brass-500);color:var(--navy-900)}</style>
 </head>
 <body>
 <div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — العملاء والشركات" data-en="Design preview V2 — clients & companies">معاينة تصميم V2 — العملاء والشركات</span><button id="langToggle"><span data-lang-label>English</span></button></div>
@@ -28,6 +34,13 @@
     <button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="عميل جديد" data-en="New client">عميل جديد</span></button>
   </div></div>
 
+  <div class="kpi-strip" style="margin-bottom:var(--space-4)">
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي العملاء" data-en="Total clients">إجمالي العملاء</span><div class="role-kpi-value" data-count-to="41">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="شركات" data-en="Companies">شركات</span><div class="role-kpi-value" data-count-to="9">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="طلبات مفتوحة" data-en="Open requests">طلبات مفتوحة</span><div class="role-kpi-value" data-count-to="34">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي المستحق" data-en="Total outstanding">إجمالي المستحق</span><div class="role-kpi-value num" data-count-to="15770">0</div></div></div>
+  </div>
+
   <div class="filter-pills">
     <span class="filter-pill active" data-ar="كل الطلبات" data-en="All">كل الطلبات</span>
     <span class="filter-pill" data-ar="الأكثر طلبات" data-en="Most requests">الأكثر طلبات</span>
@@ -43,32 +56,58 @@
 
   <div class="two-col">
   <div class="panel">
-    <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
+    <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive" id="clientsTable">
       <thead><tr><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="التواصل" data-en="Contact">التواصل</th><th data-ar="الطلبات" data-en="Requests">الطلبات</th><th data-ar="أحدث طلب" data-en="Last request">أحدث طلب</th><th data-ar="المتبقي" data-en="Balance">المتبقي</th><th data-ar="الحالة" data-en="Status">الحالة</th><th></th></tr></thead>
       <tbody>
-        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="عادل عبد العزيز سليمان" data-en="Adel Abdelaziz Soliman">عادل عبد العزيز سليمان</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020504134</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">3,270</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
-        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="هشام السيد الشناوي" data-en="Hesham Elsayed Elshinnawy">هشام السيد الشناوي</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020884273</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num">—</td><td data-label="الحالة"><span class="badge badge-neutral" data-ar="بدون حساب" data-en="No account">بدون حساب</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
-        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">client36@demo.sanad</span></td><td data-label="الطلبات" class="num">7</td><td data-label="أحدث طلب"><span data-ar="10 سبتمبر" data-en="Sep 10">10 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">12,500</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="مفتوح 2" data-en="2 open">مفتوح 2</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
-        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="وليد عصام الغريب" data-en="Walid Essam Elghareeb">وليد عصام الغريب</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">walid@example.com</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="منذ 14 دقيقة" data-en="14 minutes ago">منذ 14 دقيقة</span></td><td data-label="المتبقي" class="num" style="color:var(--color-success);font-weight:700">مسدد</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr class="cl-row" data-name-ar="عادل عبد العزيز سليمان" data-name-en="Adel Abdelaziz Soliman" data-mark="ع" data-co="0" data-since-ar="عميل منذ مارس 2025" data-since-en="Client since Mar 2025" data-contact="+201020504134" data-requests="1" data-balance="3270" data-balance-text="3,270"><td data-label="العميل"><span class="cl-name"><span class="cl-avatar">ع</span><a href="#" class="row-link" data-ar="عادل عبد العزيز سليمان" data-en="Adel Abdelaziz Soliman">عادل عبد العزيز سليمان</a></span></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020504134</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">3,270</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr class="cl-row" data-name-ar="هشام السيد الشناوي" data-name-en="Hesham Elsayed Elshinnawy" data-mark="ه" data-co="0" data-since-ar="عميل منذ سبتمبر 2025" data-since-en="Client since Sep 2025" data-contact="+201020884273" data-requests="1" data-balance="0" data-balance-text="—"><td data-label="العميل"><span class="cl-name"><span class="cl-avatar">ه</span><a href="#" class="row-link" data-ar="هشام السيد الشناوي" data-en="Hesham Elsayed Elshinnawy">هشام السيد الشناوي</a></span></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020884273</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num">—</td><td data-label="الحالة"><span class="badge badge-neutral" data-ar="بدون حساب" data-en="No account">بدون حساب</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr class="cl-row active" data-name-ar="شركة النور التجارية" data-name-en="Al-Noor Trading Co." data-mark="ن" data-co="1" data-since-ar="عميل منذ يناير 2025" data-since-en="Client since Jan 2025" data-contact="client36@demo.sanad" data-requests="7" data-balance="12500" data-balance-text="12,500"><td data-label="العميل"><span class="cl-name"><span class="cl-avatar co">ن</span><a href="#" class="row-link" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</a></span></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">client36@demo.sanad</span></td><td data-label="الطلبات" class="num">7</td><td data-label="أحدث طلب"><span data-ar="10 سبتمبر" data-en="Sep 10">10 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">12,500</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="مفتوح 2" data-en="2 open">مفتوح 2</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr class="cl-row" data-name-ar="وليد عصام الغريب" data-name-en="Walid Essam Elghareeb" data-mark="و" data-co="0" data-since-ar="عميل منذ سبتمبر 2025" data-since-en="Client since Sep 2025" data-contact="walid@example.com" data-requests="1" data-balance="0" data-balance-text="مسدد"><td data-label="العميل"><span class="cl-name"><span class="cl-avatar">و</span><a href="#" class="row-link" data-ar="وليد عصام الغريب" data-en="Walid Essam Elghareeb">وليد عصام الغريب</a></span></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">walid@example.com</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="منذ 14 دقيقة" data-en="14 minutes ago">منذ 14 دقيقة</span></td><td data-label="المتبقي" class="num" style="color:var(--color-success);font-weight:700">مسدد</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
       </tbody>
     </table></div></div>
   </div>
 
   <div class="stack">
     <div class="panel">
-      <div class="panel-head"><h3 data-ar="ملف: شركة النور التجارية" data-en="Profile: Al-Noor Trading Co.">ملف: شركة النور التجارية</h3></div>
+      <div class="panel-head"><h3 data-ar="ملف العميل" data-en="Client profile">ملف العميل</h3></div>
       <div class="panel-body stack">
-        <div class="flex" style="gap:10px"><span class="company-logo" style="width:44px;height:44px;font-size:16px">ن</span><div><div style="font-weight:800" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</div><div class="role-metadata" data-ar="عميل منذ يناير 2025" data-en="Client since Jan 2025">عميل منذ يناير 2025</div></div></div>
-        <div class="flex-between"><span class="role-secondary" data-ar="الهاتف" data-en="Phone">الهاتف</span><span class="num" dir="ltr">+20 102 050 4134</span></div>
-        <div class="flex-between"><span class="role-secondary" data-ar="البريد" data-en="Email">البريد</span><span class="num" dir="ltr" style="font-size:12.5px">client36@demo.sanad</span></div>
-        <div class="flex-between"><span class="role-secondary" data-ar="عدد الطلبات" data-en="Requests">عدد الطلبات</span><span style="font-weight:800">7</span></div>
-        <div class="flex-between"><span class="role-secondary" data-ar="الرصيد المتبقي" data-en="Outstanding balance">الرصيد المتبقي</span><span class="num" style="font-weight:800;color:var(--color-danger)">12,500 EGP</span></div>
+        <div class="flex" style="gap:10px"><span class="company-logo" id="cpMark" style="width:44px;height:44px;font-size:16px">ن</span><div><div style="font-weight:800" id="cpName">شركة النور التجارية</div><div class="role-metadata" id="cpSince">عميل منذ يناير 2025</div></div></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="التواصل" data-en="Contact">التواصل</span><span class="num" dir="ltr" id="cpContact" style="font-size:12.5px">client36@demo.sanad</span></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="عدد الطلبات" data-en="Requests">عدد الطلبات</span><span style="font-weight:800" id="cpRequests">7</span></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="الرصيد المتبقي" data-en="Outstanding balance">الرصيد المتبقي</span><span class="num" id="cpBalance" style="font-weight:800;color:var(--color-danger)">12,500 EGP</span></div>
       </div>
       <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="سجل الطلبات" data-en="Request history">سجل الطلبات</button><button class="btn btn-accent btn-sm" data-ar="طلب جديد" data-en="New request">طلب جديد</button></div>
     </div>
   </div>
   </div>
 </main>
+<script>
+(function(){
+  var table = document.getElementById('clientsTable');
+  if (!table) return;
+  function select(row){
+    table.querySelectorAll('.cl-row').forEach(function(r){ r.classList.remove('active'); });
+    row.classList.add('active');
+    var lang = document.documentElement.getAttribute('lang') === 'en' ? 'en' : 'ar';
+    var isCo = row.getAttribute('data-co') === '1';
+    document.getElementById('cpMark').textContent = row.getAttribute('data-mark');
+    document.getElementById('cpMark').style.background = isCo ? 'var(--navy-800)' : 'var(--brass-500)';
+    document.getElementById('cpMark').style.color = isCo ? 'var(--brass-500)' : 'var(--navy-900)';
+    document.getElementById('cpName').textContent = row.getAttribute('data-name-' + lang);
+    document.getElementById('cpSince').textContent = row.getAttribute('data-since-' + lang);
+    document.getElementById('cpContact').textContent = row.getAttribute('data-contact');
+    document.getElementById('cpRequests').textContent = row.getAttribute('data-requests');
+    var balTxt = row.getAttribute('data-balance-text');
+    var balNum = parseFloat(row.getAttribute('data-balance')) || 0;
+    var cpBalance = document.getElementById('cpBalance');
+    cpBalance.textContent = balNum > 0 ? balTxt + ' EGP' : balTxt;
+    cpBalance.style.color = balNum > 0 ? 'var(--color-danger)' : 'var(--color-success)';
+  }
+  table.querySelectorAll('.cl-row').forEach(function(row){
+    row.addEventListener('click', function(e){ if (!e.target.closest('button')) select(row); });
+  });
+})();
+</script>
 </div>
 <script src="assets/app.js"></script>
 </body>

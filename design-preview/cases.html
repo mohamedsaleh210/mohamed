@@ -9,8 +9,9 @@
 <link rel="stylesheet" href="assets/layout.css">
 <style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
-.case-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:var(--space-4);align-items:center;padding:13px 18px;border-top:1px solid var(--color-border)}
+.case-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:var(--space-4);align-items:center;padding:13px 18px;border-top:1px solid var(--color-border);transition:background var(--motion-fast) var(--ease-standard)}
 .case-row:first-child{border-top:0}
+a.case-row:hover{background:var(--color-bg-app)}
 @media(max-width:820px){.case-row{grid-template-columns:1fr 1fr;row-gap:8px}}
 .team-stack{display:flex}
 .team-stack .avatar{width:26px;height:26px;border-radius:50%;background:var(--brass-500);color:var(--navy-800);display:grid;place-items:center;font-size:11px;font-weight:800;border:2px solid #fff;margin-inline-start:-8px}
@@ -33,11 +34,11 @@
   <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="القضايا" data-en="Cases">القضايا</span></nav>
   <div class="page-head"><div class="title-row"><div><h1 data-ar="القضايا" data-en="Cases">القضايا</h1><p data-ar="متابعة القضايا وجلسات المحكمة والفريق القانوني." data-en="Track cases, court hearings, and the legal team.">متابعة القضايا وجلسات المحكمة والفريق القانوني.</p></div><button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="قضية جديدة" data-en="New case">قضية جديدة</span></button></div></div>
 
-  <div class="stat-grid" style="margin-bottom:var(--space-5)">
-    <div class="stat-card"><div><div class="label" data-ar="نشطة" data-en="Active">نشطة</div><div class="value">18</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="مُقيّدة" data-en="Filed">مُقيّدة</div><div class="value">6</div></div><span class="stat-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-file"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="أحكام صادرة" data-en="Judgment issued">أحكام صادرة</div><div class="value">4</div></div><span class="stat-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="جلسات هذا الأسبوع" data-en="Hearings this week">جلسات هذا الأسبوع</div><div class="value">3</div></div><span class="stat-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg></span></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نشطة" data-en="Active">نشطة</span><div class="role-kpi-value" data-count-to="18">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-file"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مُقيّدة" data-en="Filed">مُقيّدة</span><div class="role-kpi-value" data-count-to="6">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="أحكام صادرة" data-en="Judgment issued">أحكام صادرة</span><div class="role-kpi-value" data-count-to="4">0</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="جلسات هذا الأسبوع" data-en="Hearings this week">جلسات هذا الأسبوع</span><div class="role-kpi-value" data-count-to="3">0</div></div></div>
   </div>
 
   <div class="filter-bar">

@@ -139,6 +139,20 @@
   --topbar-h:60px;
   --container-max:1280px;
   --icon-size:20px;
+
+  /* ---- motion (V3) -----------------------------------------------------
+     One shared timing/easing vocabulary so no page invents its own. Calm,
+     fast, institutional — never bouncy. --ease-standard for most UI state
+     changes (hover, panels, tabs); --ease-decelerate for things entering
+     the screen (drawers, dialogs, reveals); --ease-accelerate for things
+     leaving. All durations collapse to ~0 under prefers-reduced-motion,
+     see the override at the bottom of components.css. */
+  --motion-fast:120ms;
+  --motion-normal:200ms;
+  --motion-slow:320ms;
+  --ease-standard:cubic-bezier(.2,0,0,1);
+  --ease-decelerate:cubic-bezier(0,0,.2,1);
+  --ease-accelerate:cubic-bezier(.3,0,1,1);
 }
 
 /* Dark navy surfaces (sidebar, hero) get their own text/border tokens so

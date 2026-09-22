@@ -33,11 +33,20 @@
 .side-group{margin-bottom:var(--space-2)}
 .side-group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#7f939a;padding:var(--space-3) var(--space-3) 6px;font-weight:var(--weight-bold)}
 .side-group-label.toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;font:inherit;cursor:pointer;text-transform:uppercase;letter-spacing:.08em}
-.side-group-label.toggle .chev{width:13px;height:13px;transition:transform .15s ease;flex:none}
+.side-group-label.toggle .chev{width:13px;height:13px;transition:transform var(--motion-normal) var(--ease-standard);flex:none}
 .side-group.collapsed .side-group-label.toggle .chev{transform:rotate(-90deg)}
 [dir="rtl"] .side-group.collapsed .side-group-label.toggle .chev{transform:rotate(90deg)}
-.side-group-body{display:grid;gap:2px;overflow:hidden}
-.side-group.collapsed .side-group-body{display:none}
+/* grid-template-rows auto/1fr -> auto/0fr is the CSS-only way to animate to "auto"
+   height without JS measuring pixels. Scoped with :has() to groups that actually
+   contain a .side-group-body (only sidebar-full-nav.html's collapsible groups) so
+   every other page's plain, non-collapsible .side-group keeps its normal block
+   layout untouched. */
+.side-group:has(> .side-group-body){display:grid;grid-template-rows:auto 1fr;
+  transition:grid-template-rows var(--motion-normal) var(--ease-standard)}
+.side-group.collapsed:has(> .side-group-body){grid-template-rows:auto 0fr}
+.side-group-body{display:grid;gap:2px;overflow:hidden;min-height:0;opacity:1;
+  transition:opacity var(--motion-fast) var(--ease-standard)}
+.side-group.collapsed .side-group-body{opacity:0}
 .side-link{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:var(--weight-medium);color:#c7d4d8;margin-bottom:2px}
 .side-link .icon{color:#8fa3aa}
 .side-link:hover{background:rgba(255,255,255,.06);color:#fff}
@@ -149,6 +158,13 @@
 .stats-band .grid-4{text-align:center}
 .stats-band strong{display:block;font-size:var(--text-2xl);color:#fff;font-variant-numeric:tabular-nums}
 .stats-band span{font-size:var(--text-xs);color:#9fb2b9}
+
+/* ---- office/staff solution band (V3) — dark navy feature band with a
+   staff-facing product mockup, distinct from the hero's customer-tracking
+   mockup above ---------------------------------------------------------- */
+.office-band{background:linear-gradient(135deg,var(--navy-900),var(--navy-700));padding:var(--space-16) 0}
+.office-band .grid-2{align-items:center;gap:var(--space-10)}
+@media (max-width:900px){.office-band .grid-2{grid-template-columns:1fr}}
 
 .journey{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)}
 .journey .jstep{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);position:relative}

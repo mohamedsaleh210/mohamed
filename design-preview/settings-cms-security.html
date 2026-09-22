@@ -36,7 +36,7 @@
     </nav>
 
     <div class="stack">
-      <div class="panel" id="svc">
+      <div class="panel" id="svc" data-settings-panel="svc">
         <div class="panel-head"><h3 data-ar="الأقسام والخدمات الخارجية" data-en="Departments & external services">الأقسام والخدمات الخارجية</h3><button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="إضافة خدمة" data-en="Add service">إضافة خدمة</span></button></div>
         <div class="panel-body flush">
           <div class="svc-row head"><span data-ar="الخدمة" data-en="Service">الخدمة</span><span data-ar="القسم" data-en="Department">القسم</span><span data-ar="الحالة" data-en="Status">الحالة</span><span></span></div>
@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <div class="panel" id="site">
+      <div class="panel" id="site" data-settings-panel="site" hidden>
         <div class="panel-head"><h3 data-ar="إعدادات الموقع" data-en="Site settings">إعدادات الموقع</h3></div>
         <div class="panel-body grid grid-2">
           <div class="field"><label class="field-label" data-ar="اسم الموقع" data-en="Site name">اسم الموقع</label><input class="input" value="سند"></div>
@@ -58,7 +58,7 @@
         <div class="panel-foot"><button class="btn btn-accent btn-sm" data-ar="حفظ" data-en="Save">حفظ</button></div>
       </div>
 
-      <div class="panel" id="mail">
+      <div class="panel" id="mail" data-settings-panel="mail" hidden>
         <div class="panel-head"><h3 data-ar="البريد والتكاملات الخارجية" data-en="Mail & external integrations">البريد والتكاملات الخارجية</h3></div>
         <div class="panel-body">
           <div class="alert alert-warning" role="status" style="margin-bottom:var(--space-4)"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg><div><strong data-ar="تنبيه أمني" data-en="Security notice">تنبيه أمني</strong><p data-ar="لا تشارك مفاتيح الوصول أو كلمات السر عبر أي قناة غير آمنة." data-en="Don't share access keys or passwords over any unsecured channel.">لا تشارك مفاتيح الوصول أو كلمات السر عبر أي قناة غير آمنة.</p></div></div>
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <div class="panel" id="cms">
+      <div class="panel" id="cms" data-settings-panel="cms" hidden>
         <div class="panel-head"><h3 data-ar="محتوى الموقع (CMS)" data-en="Site content (CMS)">محتوى الموقع (CMS)</h3></div>
         <div class="panel-body stack">
           <div class="flex-between" style="padding:10px 0;border-bottom:1px solid var(--color-border)"><span class="flex" style="gap:8px"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="الصفحة الرئيسية" data-en="Homepage">الصفحة الرئيسية</span></span><button class="btn btn-ghost btn-sm" data-ar="تحرير" data-en="Edit">تحرير</button></div>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <div class="panel" id="activity">
+      <div class="panel" id="activity" data-settings-panel="activity" hidden>
         <div class="panel-head"><h3 data-ar="سجل النشاط والملفات" data-en="Activity & file log">سجل النشاط والملفات</h3></div>
         <div class="panel-body flush"><table class="tbl responsive">
           <thead><tr><th data-ar="الوقت" data-en="Time">الوقت</th><th data-ar="المستخدم" data-en="User">المستخدم</th><th data-ar="الحدث" data-en="Event">الحدث</th><th data-ar="التفاصيل" data-en="Details">التفاصيل</th><th data-ar="IP" data-en="IP">IP</th></tr></thead>

@@ -104,13 +104,24 @@
 <% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
 <% if(msg==='bad_custody_balance'){ %><div class="alert err"><span>رصيد العهدة غير كافٍ أو العهدة لا تخص الموظف الحالي.</span></div><% } %>
 
+<%# Phase 2 V3: native #hash anchor nav to this long page's sections — no
+    JS/tab-state, so it can never hide content or break if disabled. %>
+<nav class="section-jump" aria-label="الانتقال السريع">
+  <a class="qf sm" href="#req-client"><svg aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> العميل</a>
+  <% if (siblings.length) { %><a class="qf sm" href="#req-siblings"><svg aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> طلبات تانية</a><% } %>
+  <a class="qf sm" href="#req-documents"><svg aria-hidden="true"><use href="/images/icons.svg#i-folder"/></svg> الملفات</a>
+  <a class="qf sm" href="#req-comments"><svg aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> التعليقات</a>
+  <a class="qf sm" href="#req-log"><svg aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg> سجل الطلب</a>
+  <a class="qf sm" href="#req-actions"><svg aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> إجراءات الطلب</a>
+</nav>
+
 <div class="two-col wide">
   <!-- ==================================================== left column -->
   <div>
     <!-- client -->
-    <div class="panel">
+    <div class="panel" id="req-client">
       <div class="panel-head">
-        <h3>العميل</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> العميل</h3>
         <% if (clientAccount) { %><span class="chip ok spacer">عنده حساب</span>
         <% } else { %><span class="chip spacer">طلب بدون تسجيل</span><% } %>
       </div>
@@ -160,9 +171,9 @@
     </div>
 
     <% if (siblings.length) { %>
-      <div class="panel">
+      <div class="panel" id="req-siblings">
         <div class="panel-head">
-          <h3>طلبات تانية لنفس العميل</h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> طلبات تانية لنفس العميل</h3>
           <span class="chip spacer"><%= siblings.length %></span>
           <a class="btn ghost sm"
              href="<%= adminPath %>/clients/<%= reqRow.client_id || encodeURIComponent(reqRow.phone) %>">
@@ -190,9 +201,9 @@
     <% } %>
 
     <!-- documents -->
-    <div class="panel">
+    <div class="panel" id="req-documents">
       <div class="panel-head">
-        <h3>ملفات العميل</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-folder"/></svg> ملفات العميل</h3>
         <span class="chip spacer"><%= documents.length %> مستند</span>
       </div>
       <div class="panel-body">
@@ -265,9 +276,9 @@
     </div>
 
     <!-- comments -->
-    <div class="panel">
+    <div class="panel" id="req-comments">
       <div class="panel-head">
-        <h3>التعليقات والتوثيق</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> التعليقات والتوثيق</h3>
         <span class="chip spacer">مش بتظهر للعميل</span>
       </div>
       <div class="panel-body">
@@ -370,8 +381,8 @@
     </div>
 
     <!-- audit trail -->
-    <div class="panel">
-      <div class="panel-head"><h3>سجل الطلب</h3></div>
+    <div class="panel" id="req-log">
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg> سجل الطلب</h3></div>
       <div class="panel-body">
         <% if (trail.length) { %>
           <ul class="timeline">
@@ -394,8 +405,8 @@
 
   <!-- ==================================================== right column -->
   <div>
-    <div class="panel action-picker-panel">
-      <div class="panel-head"><h3>إجراءات الطلب</h3></div>
+    <div class="panel action-picker-panel" id="req-actions">
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> إجراءات الطلب</h3></div>
       <div class="panel-body">
         <div class="field"><label for="requestActionPicker">اختر الإجراء المطلوب</label>
           <select id="requestActionPicker">
@@ -418,7 +429,7 @@
     </div>
     <!-- status + money -->
     <div class="panel">
-      <div class="panel-head"><h3>إدارة الطلب</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-settings"/></svg> إدارة الطلب</h3></div>
       <div class="panel-body">
         <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/update">
           <%- csrfField %>
@@ -438,7 +449,7 @@
       </div>
     </div>
 
-    <div class="panel"><div class="panel-head"><h3>إيقاف احتساب المدة</h3><span class="chip spacer"><%=timePauses.length%></span></div><div class="panel-body"><form method="post" enctype="multipart/form-data" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses"><%-csrfField%><label>سبب التوقف<select name="reason"><option value="awaiting_documents">بانتظار مستندات العميل</option><option value="awaiting_payment">بانتظار سداد العميل</option><option value="government">بانتظار جهة حكومية</option><option value="manager_approval">بانتظار اعتماد المسؤول</option><option value="administrative">متوقف بقرار إداري</option></select></label><label>الملاحظة والتوثيق<textarea name="note" required></textarea></label><label>إثبات (اختياري)<input type="file" name="proof" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn ghost">طلب إيقاف المدة</button></form><%if(timePauses.length){%><ul class="timeline"><%timePauses.forEach(p=>{%><li><div class="what"><b><%=({awaiting_documents:'بانتظار مستندات العميل',awaiting_payment:'بانتظار السداد',government:'بانتظار جهة حكومية',manager_approval:'بانتظار اعتماد المسؤول',administrative:'قرار إداري'})[p.reason]%></b><p><%=p.note%></p><small><%=p.status==='pending'?'بانتظار الاعتماد':p.status==='approved'?'المدة متوقفة':'تم استئناف المدة'%></small><%if(p.proof_path){%> · <a href="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/proof" target="_blank">عرض الإثبات</a><%}%></div><%if(p.status==='pending'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/approve"><%-csrfField%><button class="btn sm">اعتماد</button></form><%}%><%if(p.status==='approved'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/resume"><%-csrfField%><button class="btn sm brass">استئناف</button></form><%}%></li><%})%></ul><%}%></div></div>
+    <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-info"/></svg> إيقاف احتساب المدة</h3><span class="chip spacer"><%=timePauses.length%></span></div><div class="panel-body"><form method="post" enctype="multipart/form-data" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses"><%-csrfField%><label>سبب التوقف<select name="reason"><option value="awaiting_documents">بانتظار مستندات العميل</option><option value="awaiting_payment">بانتظار سداد العميل</option><option value="government">بانتظار جهة حكومية</option><option value="manager_approval">بانتظار اعتماد المسؤول</option><option value="administrative">متوقف بقرار إداري</option></select></label><label>الملاحظة والتوثيق<textarea name="note" required></textarea></label><label>إثبات (اختياري)<input type="file" name="proof" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn ghost">طلب إيقاف المدة</button></form><%if(timePauses.length){%><ul class="timeline"><%timePauses.forEach(p=>{%><li><div class="what"><b><%=({awaiting_documents:'بانتظار مستندات العميل',awaiting_payment:'بانتظار السداد',government:'بانتظار جهة حكومية',manager_approval:'بانتظار اعتماد المسؤول',administrative:'قرار إداري'})[p.reason]%></b><p><%=p.note%></p><small><%=p.status==='pending'?'بانتظار الاعتماد':p.status==='approved'?'المدة متوقفة':'تم استئناف المدة'%></small><%if(p.proof_path){%> · <a href="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/proof" target="_blank">عرض الإثبات</a><%}%></div><%if(p.status==='pending'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/approve"><%-csrfField%><button class="btn sm">اعتماد</button></form><%}%><%if(p.status==='approved'&&mayAssign){%><form method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/time-pauses/<%=p.id%>/resume"><%-csrfField%><button class="btn sm brass">استئناف</button></form><%}%></li><%})%></ul><%}%></div></div>
 
     <!-- fees -->
     <% if (showMoney) {
@@ -446,7 +457,7 @@
          const remaining = total - (reqRow.paid_amount || 0); %>
       <div class="panel">
         <div class="panel-head">
-          <h3>الأتعاب</h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> الأتعاب</h3>
           <span class="chip spacer"><%= fees.length %> بند</span>
         </div>
         <div class="panel-body">
@@ -522,7 +533,7 @@
     <!-- urgency -->
     <div class="panel <%= reqRow.is_critical ? 'panel-urgent' : '' %>">
       <div class="panel-head">
-        <h3><%= reqRow.is_critical ? '🔴 طلب عاجل' : 'الأولوية' %></h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-alert-triangle"/></svg> <% if (reqRow.is_critical) { %>طلب عاجل<% } else { %>الأولوية<% } %></h3>
       </div>
       <div class="panel-body">
         <% if (reqRow.is_critical) { %>
@@ -556,7 +567,7 @@
     <% if (showMoney) { %>
       <div class="panel">
         <div class="panel-head">
-          <h3>الدفعات</h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-wallet"/></svg> الدفعات</h3>
           <span class="chip spacer"><%= payments.filter(p => !p.voided_at).length %></span>
         </div>
         <div class="panel-body">
@@ -715,7 +726,7 @@
     <% if (requestServices.length > 1 || reqRow.is_custom) { %>
       <div class="panel">
         <div class="panel-head">
-          <h3><%= reqRow.is_custom ? 'العميل وصف طلبه' : 'الخدمات المطلوبة' %></h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-file"/></svg> <% if (reqRow.is_custom) { %>العميل وصف طلبه<% } else { %>الخدمات المطلوبة<% } %></h3>
           <% if (requestServices.length) { %>
             <span class="chip spacer"><%= requestServices.length %></span>
           <% } %>
@@ -747,7 +758,7 @@
     <% if (showExpenses) { %>
       <div class="panel">
         <div class="panel-head">
-          <h3>مصاريف الطلب</h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> مصاريف الطلب</h3>
           <% if (expenseTotals && expenseTotals.total > 0) { %>
             <span class="chip spacer num"><%= expenseTotals.total.toLocaleString('en-US') %></span>
           <% } %>
@@ -882,7 +893,7 @@
     <!-- destinations -->
     <div class="panel">
       <div class="panel-head">
-        <h3>جهات خارجية</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-map-pin"/></svg> جهات خارجية</h3>
         <span class="chip spacer">
           <%= requestDestinations.filter(d => d.status === 'pending').length %> معلّق
         </span>
@@ -940,7 +951,7 @@
     <!-- special request -->
     <div class="panel">
       <div class="panel-head">
-        <h3>طلب خاص</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> طلب خاص</h3>
         <span class="chip spacer">داخلي</span>
       </div>
       <div class="panel-body">
@@ -958,7 +969,7 @@
 
     <!-- deadline -->
     <div class="panel">
-      <div class="panel-head"><h3>موعد التسليم</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-calendar"/></svg> موعد التسليم</h3></div>
       <div class="panel-body">
         <form method="post" action="<%= adminPath %>/requests/<%= reqRow.id %>/deadline">
           <%- csrfField %>
@@ -972,7 +983,7 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>الإصدار والانتهاء والتجديد</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-refresh"/></svg> الإصدار والانتهاء والتجديد</h3></div>
       <form class="panel-body" method="post" action="<%=adminPath%>/requests/<%=reqRow.id%>/renewal-dates"><%-csrfField%>
         <div class="field"><label>تاريخ الإصدار</label><input type="date" name="issued_on" value="<%=reqRow.issued_on||''%>"></div>
         <div class="field"><label>تاريخ الانتهاء</label><input type="date" name="expires_on" value="<%=reqRow.expires_on||''%>"></div>
@@ -984,7 +995,7 @@
     <!-- assignees -->
     <div class="panel">
       <div class="panel-head">
-        <h3>فريق الطلب</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> فريق الطلب</h3>
         <span class="chip spacer"><%= assignees.length %></span>
       </div>
       <div class="panel-body">
@@ -1036,7 +1047,7 @@
     <!-- requirements -->
     <div class="panel">
       <div class="panel-head">
-        <h3>المطلوب من العميل</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-upload"/></svg> المطلوب من العميل</h3>
         <span class="chip brass spacer">العميل بيشوفها</span>
       </div>
       <div class="panel-body">
@@ -1077,7 +1088,7 @@
     <!-- todos -->
     <div class="panel">
       <div class="panel-head">
-        <h3>خطوات التنفيذ</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg> خطوات التنفيذ</h3>
         <span class="chip spacer">داخلي</span>
       </div>
       <div class="panel-body">

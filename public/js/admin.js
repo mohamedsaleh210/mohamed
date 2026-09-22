@@ -243,4 +243,51 @@
       e.preventDefault();
     });
   });
+
+  // ------------------------------------------------------------ KPI count-up
+  // Phase 2 V3: ports the same data-count-to utility approved in
+  // design/sanad-phase1-preview (design-preview/assets/app.js) — animates a
+  // stat's numeric value up from 0 once, the first time it scrolls into
+  // view. Purely additive: a stat with no data-count-to attribute (the
+  // large majority of Sanad's existing .stat/.v markup) is completely
+  // unaffected. Respects prefers-reduced-motion independently of the CSS
+  // media query above, since this is a JS rAF loop, not a CSS transition.
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function formatNum(n) {
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  function countUp(el) {
+    var target = parseFloat(el.getAttribute('data-count-to'));
+    if (!isFinite(target)) return;
+    var suffix = el.getAttribute('data-count-suffix') || '';
+    if (reduceMotion) { el.textContent = formatNum(target) + suffix; return; }
+    var duration = 700, start = null;
+    function ease(t) { return 1 - Math.pow(1 - t, 3); }
+    function tick(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      el.textContent = formatNum(target * ease(p)) + suffix;
+      if (p < 1) window.requestAnimationFrame(tick);
+    }
+    window.requestAnimationFrame(tick);
+  }
+
+  var countEls = document.querySelectorAll('[data-count-to]');
+  if (countEls.length) {
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var countObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            countUp(entry.target);
+            countObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      countEls.forEach(function (el) { countObserver.observe(el); });
+    } else {
+      countEls.forEach(countUp);
+    }
+  }
 })();

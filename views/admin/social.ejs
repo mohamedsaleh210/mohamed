@@ -28,7 +28,7 @@
 <!-- ============================================================ current -->
 <div class="panel">
   <div class="panel-head">
-    <h3>الحسابات المضافة</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-globe"/></svg> الحسابات المضافة</h3>
     <span class="chip spacer"><%= links.length %></span>
   </div>
 
@@ -100,7 +100,7 @@
       </ul>
     <% } else { %>
       <div class="empty">
-        <span class="big">🔗</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-globe"/></svg></span>
         <p>مفيش حسابات لسه. اختار منصة من تحت وضيف الرابط.</p>
       </div>
     <% } %>
@@ -109,7 +109,7 @@
 
 <!-- ============================================================ add -->
 <div class="panel">
-  <div class="panel-head"><h3>إضافة حساب</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة حساب</h3></div>
   <div class="panel-body">
     <form method="post" action="<%= adminPath %>/social" id="addSocial">
       <%- csrfField %>

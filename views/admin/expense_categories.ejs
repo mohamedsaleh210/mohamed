@@ -32,7 +32,7 @@
 
 <div class="panel">
   <div class="panel-head">
-    <h3>الأنواع</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> الأنواع</h3>
     <span class="chip spacer"><%= rows.filter(r => r.active).length %> ظاهر</span>
   </div>
   <div class="panel-body flush">
@@ -92,7 +92,7 @@
 </div>
 
 <div class="panel" style="max-width:620px">
-  <div class="panel-head"><h3>إضافة نوع جديد</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة نوع جديد</h3></div>
   <div class="panel-body">
     <form method="post" action="<%= adminPath %>/expenses/categories/new">
       <%- csrfField %>

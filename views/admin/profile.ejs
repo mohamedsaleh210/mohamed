@@ -125,7 +125,7 @@
               <input type="file" name="id_front" accept="image/*" capture="environment" hidden>
               <% if (me.id_front) { %>
                 <img src="<%= adminPath %>/account/id-card/<%= me.id %>/front" alt="وجه البطاقة">
-                <span class="id-tag">الوجه ✓</span>
+                <span class="id-tag">الوجه <svg width="13" height="13" aria-hidden="true"><use href="/images/icons.svg#i-check"/></svg></span>
               <% } else { %>
                 <span class="id-plus">+</span>
                 <span class="id-tag">صوّر الوجه</span>
@@ -136,7 +136,7 @@
               <input type="file" name="id_back" accept="image/*" capture="environment" hidden>
               <% if (me.id_back) { %>
                 <img src="<%= adminPath %>/account/id-card/<%= me.id %>/back" alt="ظهر البطاقة">
-                <span class="id-tag">الظهر ✓</span>
+                <span class="id-tag">الظهر <svg width="13" height="13" aria-hidden="true"><use href="/images/icons.svg#i-check"/></svg></span>
               <% } else { %>
                 <span class="id-plus">+</span>
                 <span class="id-tag">صوّر الظهر</span>
@@ -184,7 +184,7 @@
         if (plus) plus.remove();
       }
       img.src = URL.createObjectURL(f);
-      box.querySelector('.id-tag').textContent = 'جاهزة ✓';
+      box.querySelector('.id-tag').innerHTML = 'جاهزة <svg width="13" height="13" aria-hidden="true"><use href="/images/icons.svg#i-check"/></svg>';
     });
   });
 
@@ -199,7 +199,7 @@
 
 <div class="panel" style="max-width:640px">
   <div class="panel-head">
-    <h3>التعيين على طلبات جديدة</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> التعيين على طلبات جديدة</h3>
     <% if (me.assign_locked) { %>
       <span class="chip spacer" style="background:var(--warn-bg);color:#8a6416">مقفول</span>
     <% } else { %>

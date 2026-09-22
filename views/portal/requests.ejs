@@ -52,11 +52,16 @@
 
     <% if (requests.length) { %>
       <div class="req-list">
+        <%
+          const STEPS = Object.keys(STATUS).filter(k => k !== 'cancelled');
+        %>
         <% requests.forEach(r => {
              const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
              const svc = r.service_label
                ? (lang === 'ar' ? r.service_label.split(' / ')[0] : (r.service_label.split(' / ')[1] || r.service_label))
-               : '—'; %>
+               : '—';
+             const stepIdx = STEPS.indexOf(r.status);
+             const remaining = (r.total_amount || 0) - (r.paid_amount || 0); %>
           <a class="req-card" href="/portal/requests/<%= r.id %>">
             <div class="req-top">
               <span class="req-ref"><%= r.ref %></span>
@@ -65,6 +70,15 @@
 
             <h3 class="req-title"><%= svc %></h3>
 
+            <% if (stepIdx >= 0) { %>
+              <div class="req-progress" role="img"
+                   aria-label="<%= lang === 'ar' ? 'الحالة: ' + st.ar : 'Status: ' + st.en %>">
+                <% STEPS.forEach((k, i) => { %>
+                  <i class="<%= i < stepIdx ? 'done' : (i === stepIdx ? 'current' : '') %>"></i>
+                <% }) %>
+              </div>
+            <% } %>
+
             <div class="req-meta">
               <span><%= T.date %>: <%= fmtDate(r.created_at) %></span>
               <% if (r.deadline) { %>
@@ -72,14 +86,24 @@
               <% } %>
             </div>
 
-            <% if (r.pending_count) { %>
-              <div class="req-need">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-                </svg>
-                <%= T.needed %>: <%= r.pending_count %>
-              </div>
-            <% } %>
+            <div class="req-chips">
+              <% if (r.pending_count) { %>
+                <span class="req-need">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                  </svg>
+                  <%= T.needed %>: <%= r.pending_count %>
+                </span>
+              <% } %>
+              <% if (r.total_amount && remaining > 0) { %>
+                <span class="req-pay">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M2 10h20"/>
+                  </svg>
+                  <%= T.remaining %>: <%= remaining.toLocaleString('en-US') %> <%= site.currency %>
+                </span>
+              <% } %>
+            </div>
 
             <span class="req-go"><%= lang === 'ar' ? 'التفاصيل والمستندات ←' : 'Details & documents →' %></span>
           </a>

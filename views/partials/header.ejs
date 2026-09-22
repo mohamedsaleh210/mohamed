@@ -2,21 +2,21 @@
 <div class="site-utility"><div class="wrap"><span><%=ar?'منصة سند للخدمات القانونية والإدارية':'Sanad legal and administrative services platform'%></span><nav><a href="/contact"><%=ar?'خدمة العملاء':'Customer service'%></a><a href="/support"><%=ar?'مركز المساعدة':'Help center'%></a><a href="/contact"><%=ar?'تواصل معنا':'Contact us'%></a></nav></div></div>
 <header class="site-head"><div class="wrap">
   <a class="brand" href="/"><span class="seal"><span>س</span></span><span><b><%=ar?site.name_ar:site.name_en%></b><small><%=ar?'خدمات قانونية وإدارية':'Legal and business services'%></small></span></a>
-  <button class="menu-btn" id="menuBtn" aria-label="<%=ar?'فتح القائمة':'Open menu'%>" aria-expanded="false" aria-controls="nav">☰</button>
+  <button class="menu-btn" id="menuBtn" aria-label="<%=ar?'فتح القائمة':'Open menu'%>" aria-expanded="false" aria-controls="nav"><svg aria-hidden="true"><use href="/images/icons.svg#i-menu"/></svg></button>
   <div class="mobile-nav-scrim" id="mobileNavScrim" hidden></div>
   <nav class="nav" id="nav" aria-label="<%=ar?'التنقل الرئيسي':'Main navigation'%>">
     <div class="mobile-nav-head">
       <a class="brand" href="/"><span class="seal"><span>س</span></span><span><b><%=ar?site.name_ar:site.name_en%></b><small><%=ar?'القائمة الرئيسية':'Main menu'%></small></span></a>
-      <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="<%=ar?'إغلاق القائمة':'Close menu'%>">&times;</button>
+      <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="<%=ar?'إغلاق القائمة':'Close menu'%>"><svg aria-hidden="true"><use href="/images/icons.svg#i-x"/></svg></button>
     </div>
     <div class="nav-primary">
       <%if(cpe('home')){%><a href="/" class="<%=path==='/'?'active':''%>"><%=ar?'الرئيسية':'Home'%></a><%}%>
-      <%if(cpe('services')){%><details class="nav-drop"><summary><%=ar?'خدماتنا':'Services'%></summary><div><a href="/services"><%=ar?'كل الخدمات':'All services'%></a><%menuPages.forEach(p=>{%><a href="/p/<%=p.slug%>"><%=ar?p.name_ar:(p.name_en||p.name_ar)%></a><%})%><%if(cpe('consultations')&&hasConsultations){%><a href="/consultations"><%=ar?'الاستشارات':'Consultations'%></a><%}%></div></details><%}%>
+      <%if(cpe('services')){%><details class="nav-drop"><summary><%=ar?'خدماتنا':'Services'%><svg class="drop-chevron" aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg></summary><div><a href="/services"><%=ar?'كل الخدمات':'All services'%></a><%menuPages.forEach(p=>{%><a href="/p/<%=p.slug%>"><%=ar?p.name_ar:(p.name_en||p.name_ar)%></a><%})%><%if(cpe('consultations')&&hasConsultations){%><a href="/consultations"><%=ar?'الاستشارات':'Consultations'%></a><%}%></div></details><%}%>
       <a href="/about"><%=ar?'من نحن':'About us'%></a>
       <%if(cpe('consultations')){%><a href="/consultations"><%=ar?'الاستشارات':'Consultations'%></a><a class="btn brass nav-book" href="/appointments"><%=ar?'احجز موعد':'Book appointment'%></a><%if(clientUser){%><a href="/appointments/mine"><%=ar?'مواعيدي':'My appointments'%></a><%}%><%}%>
       <%if(cpe('contact')){%><a href="/contact" class="<%=path==='/contact'?'active':''%>"><%=ar?'تواصل معنا':'Contact us'%></a><%}%>
-      <%if(cpe('guides')){%><details class="nav-drop guide-drop"><summary><%=ar?'دليل المستخدم':'User guide'%></summary><div><a href="/guides#companies"><%=ar?'دليل الشركات':'Companies guide'%></a><a href="/guides#employees"><%=ar?'دليل الموظف':'Employee guide'%></a><a href="/guides#admin"><%=ar?'دليل الأدمن':'Admin guide'%></a><a href="/guides#clients"><%=ar?'دليل العميل':'Client guide'%></a></div></details><%}%>
-      <%if(cpe('support')){%><details class="nav-drop help-drop"><summary><%=ar?'مركز المساعدة':'Help center'%></summary><div><a href="/faq" class="<%=path==='/faq'?'active':''%>"><%=ar?'الأسئلة الشائعة':'FAQ'%></a><a href="/support" class="<%=path==='/support'?'active':''%>"><%=ar?'الدعم الفني':'Technical support'%></a></div></details><%}%>
+      <%if(cpe('guides')){%><details class="nav-drop guide-drop"><summary><%=ar?'دليل المستخدم':'User guide'%><svg class="drop-chevron" aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg></summary><div><a href="/guides#companies"><%=ar?'دليل الشركات':'Companies guide'%></a><a href="/guides#employees"><%=ar?'دليل الموظف':'Employee guide'%></a><a href="/guides#admin"><%=ar?'دليل الأدمن':'Admin guide'%></a><a href="/guides#clients"><%=ar?'دليل العميل':'Client guide'%></a></div></details><%}%>
+      <%if(cpe('support')){%><details class="nav-drop help-drop"><summary><%=ar?'مركز المساعدة':'Help center'%><svg class="drop-chevron" aria-hidden="true"><use href="/images/icons.svg#i-chevron-down"/></svg></summary><div><a href="/faq" class="<%=path==='/faq'?'active':''%>"><%=ar?'الأسئلة الشائعة':'FAQ'%></a><a href="/support" class="<%=path==='/support'?'active':''%>"><%=ar?'الدعم الفني':'Technical support'%></a></div></details><%}%>
     </div>
     <div class="nav-actions">
       <%if(cpe('services')){%><a class="btn brass nav-action" href="/request"><%=ar?'طلب خدمة':'Request service'%></a><%}%>

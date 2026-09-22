@@ -26,21 +26,21 @@
 
 <div class="stat-grid">
   <div class="stat icon-stat <%= summary.owed.amount > 0 ? 'warn' : '' %>">
-    <i class="stat-ico ic-warn">↩</i>
+    <i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></i>
     <div><span class="k">مستحق للموظفين</span>
-    <span class="v num"><%= money(summary.owed.amount) %></span>
+    <span class="v num"><span data-count-to="<%= summary.owed.amount %>">0</span></span>
     <span class="sub-k"><%= summary.owed.count %> مصروف · <%= summary.owed.people %> موظف</span></div>
   </div>
   <div class="stat icon-stat">
-    <i class="stat-ico ic-danger">↑</i>
+    <i class="stat-ico ic-danger" aria-hidden="true"><svg style="transform:rotate(180deg)"><use href="/images/icons.svg#i-chevron-down"/></svg></i>
     <div><span class="k">على المكتب</span>
-    <span class="v num"><%= money(summary.totals.office) %></span>
+    <span class="v num"><span data-count-to="<%= summary.totals.office %>">0</span></span>
     <span class="sub-k">بينقص من الصافي</span></div>
   </div>
   <div class="stat icon-stat">
-    <i class="stat-ico ic-info">↺</i>
+    <i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-refresh"/></svg></i>
     <div><span class="k">على العملاء</span>
-    <span class="v num"><%= money(summary.totals.onClient) %></span>
+    <span class="v num"><span data-count-to="<%= summary.totals.onClient %>">0</span></span>
     <span class="sub-k">بيترد في الأتعاب</span></div>
   </div>
 </div>
@@ -107,7 +107,7 @@
       </table>
     <% } else { %>
       <div class="empty">
-        <span class="big">✓</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg></span>
         <p><%= view === 'owed' ? 'مفيش مصاريف مستحقة لحد.' : 'مفيش مصاريف مسجّلة.' %></p>
       </div>
     <% } %>
@@ -117,7 +117,7 @@
 <% if (summary.byCategory.length) { %>
   <div class="two-col wide">
     <div class="panel">
-      <div class="panel-head"><h3>حسب النوع</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> حسب النوع</h3></div>
       <div class="panel-body flush">
         <table class="tbl">
           <thead><tr><th>النوع</th><th>المبلغ</th><th>عدد</th></tr></thead>
@@ -135,7 +135,7 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>حسب الموظف</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> حسب الموظف</h3></div>
       <div class="panel-body flush">
         <table class="tbl">
           <thead><tr><th>الموظف</th><th>صرف</th><th>مستحق له</th></tr></thead>
@@ -147,7 +147,7 @@
                 <td data-label="مستحق له">
                   <% if (s.owed > 0) { %>
                     <b class="num" style="color:var(--danger)"><%= money(s.owed) %></b>
-                  <% } else { %><span style="color:var(--ok)">✓</span><% } %>
+                  <% } else { %><span style="color:var(--ok);display:inline-flex" aria-hidden="true"><svg width="16" height="16"><use href="/images/icons.svg#i-check"/></svg></span><% } %>
                 </td>
               </tr>
             <% }) %>

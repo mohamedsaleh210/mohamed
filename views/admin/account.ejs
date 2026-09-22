@@ -43,7 +43,7 @@
 <% if (msg === 'same') { %><div class="alert err"><span>اختار كلمة سر مختلفة عن الحالية.</span></div><% } %>
 
 <div class="panel" style="max-width:480px">
-  <div class="panel-head"><h3>تغيير كلمة السر</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> تغيير كلمة السر</h3></div>
   <div class="panel-body">
     <form method="post" action="<%= adminPath %>/account/password">
       <%- csrfField %>

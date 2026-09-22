@@ -26,6 +26,23 @@
   <% } %>
 </div>
 
+<% if (!archived) { %>
+<div class="stat-grid" style="margin-bottom:14px">
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></i>
+    <div><div class="k"><%= (q || status || party || companyId || branchId || statuses.length || employeeId) ? 'الطلبات في هذا العرض' : (user.role === 'lawyer' ? 'طلباتي' : 'كل الطلبات') %></div>
+    <div class="v"><span data-count-to="<%= total %>">0</span></div></div>
+  </div>
+  <% if (criticalCount) { %>
+  <a class="stat icon-stat" href="<%= adminPath %>/requests?critical=1&open=1">
+    <i class="stat-ico ic-danger" aria-hidden="true"><svg><use href="/images/icons.svg#i-alert-triangle"/></svg></i>
+    <div><div class="k">طلبات عاجلة مفتوحة</div>
+    <div class="v" style="color:var(--danger)"><span data-count-to="<%= criticalCount %>">0</span></div></div>
+  </a>
+  <% } %>
+</div>
+<% } %>
+
 <nav class="tabs">
   <a href="<%= adminPath %>/requests" class="<%= archived ? '' : 'active' %>">الطلبات الشغّالة</a>
   <a href="<%= adminPath %>/requests?archived=1" class="<%= archived ? 'active' : '' %>">الأرشيف</a>
@@ -58,7 +75,7 @@
   <% }) %>
   <% if (criticalCount) { %>
     <a href="<%= adminPath %>/requests?critical=1&open=1"
-       class="qf urgent <%= critical ? 'on' : '' %>">🔴 عاجل (<%= criticalCount %>)</a>
+       class="qf urgent <%= critical ? 'on' : '' %>"><svg aria-hidden="true"><use href="/images/icons.svg#i-alert-triangle"/></svg> عاجل (<%= criticalCount %>)</a>
   <% } %>
 </div>
 
@@ -98,8 +115,8 @@
                   <span class="flag urgent" title="<%= r.critical_reason || '' %>">عاجل</span><br>
                 <% } %>
                 <a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>
-                <% if (r.comment_count) { %><span class="chip">💬 <%= r.comment_count %></span><% } %>
-                <% if (r.doc_count) { %><span class="chip">📎 <%= r.doc_count %></span><% } %>
+                <% if (r.comment_count) { %><span class="chip"><svg aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> <%= r.comment_count %></span><% } %>
+                <% if (r.doc_count) { %><span class="chip"><svg aria-hidden="true"><use href="/images/icons.svg#i-paperclip"/></svg> <%= r.doc_count %></span><% } %>
               </td>
               <td data-label="العميل / الجهة">
                 <% if (r.company_id) { %><span class="chip">شركة / مكتب</span> <a href="<%= adminPath %>/clients/companies/<%= r.company_id %>" style="font-weight:800;color:var(--ink)"><%= r.company_name %></a><%if(r.branch_name){%><br><span class="chip">الفرع: <%= r.branch_name %></span><%}%><%if(r.name){%><br><small>المفوض/العميل: <%=r.name%></small><%}%><% } else { %><a href="<%= adminPath %>/clients/<%= r.client_id || encodeURIComponent(r.phone) %>" style="font-weight:800;color:var(--ink)"><%= r.name %></a><% } %>
@@ -137,7 +154,7 @@
       </table>
     <% } else { %>
       <div class="empty">
-        <span class="big">🔍</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-search"/></svg></span>
         <% if (q || status) { %>
           <p>مفيش نتايج للبحث ده.</p>
           <a class="btn ghost sm" href="<%= adminPath %>/requests">امسح البحث</a>

@@ -65,7 +65,7 @@
           <%= lang === 'ar' ? 'مستندات استلمناها' : 'Documents received' %>
         </h3>
         <% received.forEach(q => { %>
-          <div class="track-done">✓ <%= q.title %></div>
+          <div class="track-done"><svg aria-hidden="true" width="15" height="15"><use href="/images/icons.svg#i-check"/></svg> <%= q.title %></div>
         <% }) %>
       </div>
     <% } %>

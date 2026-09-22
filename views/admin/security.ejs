@@ -52,7 +52,7 @@
                   <% if (i === 0) { %><span class="chip brass">الأحدث</span><% } %>
                 </td>
                 <td data-label="IP والموقع"><span class="num"><%= l.ip %></span><br>
-                  <% if(l.location_status==='captured' && l.latitude!=null && l.longitude!=null){ %><a class="location-link" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q=<%= l.latitude %>,<%= l.longitude %>">📍 فتح الموقع</a><% } else { %><small class="location-missing"><%= {denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم'}[l.location_status] || 'غير مسجل' %></small><% } %>
+                  <% if(l.location_status==='captured' && l.latitude!=null && l.longitude!=null){ %><a class="location-link" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps?q=<%= l.latitude %>,<%= l.longitude %>"><svg aria-hidden="true" width="12" height="12" style="vertical-align:-1px"><use href="/images/icons.svg#i-map-pin"/></svg> فتح الموقع</a><% } else { %><small class="location-missing"><%= {denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم'}[l.location_status] || 'غير مسجل' %></small><% } %>
                 </td>
                 <td data-label="الجهاز">
                   <span class="chip"><%= l.device %></span>
@@ -72,7 +72,7 @@
 <% if (failures.length) { %>
   <div class="panel">
     <div class="panel-head">
-      <h3>محاولات دخول فاشلة</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-alert-triangle"/></svg> محاولات دخول فاشلة</h3>
       <span class="chip spacer"><%= failures.length %></span>
     </div>
     <div class="panel-body flush">

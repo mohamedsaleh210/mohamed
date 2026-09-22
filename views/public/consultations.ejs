@@ -16,7 +16,7 @@
       <p style="color:var(--muted)"><%= t.empty %></p>
     <% } services.forEach(s => { %>
       <div class="consult-row">
-        <span class="ic">⚖︎</span>
+        <span class="ic" aria-hidden="true"><svg><use href="/images/icons.svg#i-scale"/></svg></span>
         <div class="body">
           <h4><%= pick(s,'title') %></h4>
           <p><%= pick(s,'body') %></p>

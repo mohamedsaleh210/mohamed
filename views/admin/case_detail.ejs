@@ -12,9 +12,19 @@
   <div><small>المحكمة</small><b><%= c.court || '—' %></b></div><div><small>الجلسة القادمة</small><b class="num"><%= c.next_hearing || '—' %></b></div>
 </div>
 
+<%# Phase 2 V3: native #hash anchor nav — no JS/tab-state. %>
+<nav class="section-jump" aria-label="الانتقال السريع">
+  <a class="qf sm" href="#case-data"><svg aria-hidden="true"><use href="/images/icons.svg#i-file"/></svg> بيانات القضية</a>
+  <a class="qf sm" href="#case-hearings"><svg aria-hidden="true"><use href="/images/icons.svg#i-calendar"/></svg> الجلسات</a>
+  <a class="qf sm" href="#case-events"><svg aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg> السجل القانوني</a>
+  <a class="qf sm" href="#case-team"><svg aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> فريق القضية</a>
+  <a class="qf sm" href="#case-tasks"><svg aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg> الأعمال</a>
+  <a class="qf sm" href="#case-parties"><svg aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> الأطراف</a>
+</nav>
+
 <div class="two-col wide case-layout">
 <div>
-  <div class="panel"><div class="panel-head"><h3>بيانات القضية</h3></div>
+  <div class="panel" id="case-data"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-file"/></svg> بيانات القضية</h3></div>
     <form method="post" action="<%= adminPath %>/cases/<%= c.id %>/update" class="legal-form"><%- csrfField %>
       <label>عنوان الملف<input type="text" name="title" required value="<%= c.title %>"></label>
       <label>التصنيف<select name="category_id"><option value="">غير مصنف</option><% categories.forEach(x=>{ %><option value="<%= x.id %>" <%= x.id===c.category_id?'selected':'' %>><%= x.name %></option><% }) %></select></label>
@@ -29,28 +39,28 @@
     </form>
   </div>
 
-  <div class="panel"><div class="panel-head"><h3>الجلسات</h3><span class="chip"><%= hearings.length %></span></div>
+  <div class="panel" id="case-hearings"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-calendar"/></svg> الجلسات</h3><span class="chip"><%= hearings.length %></span></div>
     <% hearings.forEach(h=>{ %><div class="case-item"><div><b class="num"><%= h.hearing_on %></b><strong><%= h.purpose %></strong><small><%= h.court || c.court || '' %> <%= h.circuit || '' %></small><% if(h.decision){ %><p><b>القرار:</b> <%= h.decision %></p><% } %></div>
       <% if(h.status!=='completed'){ %><details><summary class="btn ghost sm">تسجيل القرار</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/hearings/<%= h.id %>/result" class="mini-form"><%- csrfField %><textarea name="decision" required placeholder="قرار الجلسة"></textarea><input type="date" name="next_hearing"><button class="btn sm">حفظ</button></form></details><% } %></div><% }) %>
     <details class="add-box"><summary>+ إضافة جلسة</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/hearings" class="legal-form"><%- csrfField %><label>التاريخ<input type="date" name="hearing_on" required></label><label>الغرض<input type="text" name="purpose" required></label><label>المحكمة<input type="text" name="court" value="<%= c.court||'' %>"></label><label>الدائرة<input type="text" name="circuit" value="<%= c.circuit||'' %>"></label><label class="check"><input type="checkbox" name="client_visible" value="1" checked> تظهر للعميل</label><button class="btn brass">إضافة</button></form></details>
   </div>
 
-  <div class="panel"><div class="panel-head"><h3>السجل القانوني</h3></div>
+  <div class="panel" id="case-events"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg> السجل القانوني</h3></div>
     <% events.forEach(e=>{ %><div class="timeline-entry"><b><%= e.title %></b><p><%= e.details||'' %></p><small><%= e.event_on %> · <%= e.created_by_label||'النظام' %> <%= e.client_visible?'· ظاهر للعميل':'' %></small></div><% }) %>
     <details class="add-box"><summary>+ إضافة إجراء أو مذكرة</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/events" class="legal-form"><%- csrfField %><label>النوع<select name="event_type"><option value="note">مذكرة</option><option value="filing">إيداع</option><option value="procedure">إجراء</option><option value="judgment">حكم</option><option value="communication">تواصل</option></select></label><label>التاريخ<input type="date" name="event_on"></label><label class="full">العنوان<input type="text" name="title" required></label><label class="full">التفاصيل<textarea name="details"></textarea></label><label class="check"><input type="checkbox" name="client_visible" value="1"> يظهر للعميل</label><button class="btn">حفظ</button></form></details>
   </div>
 </div>
 
 <div>
-  <div class="panel"><div class="panel-head"><h3>فريق القضية</h3></div><% assignees.forEach(a=>{ %><div class="person-line"><div><b><%= a.display_name %></b><span><%= a.assignment_role %> <%= a.lead?'· مسؤول الملف':'' %></span></div><% if(can('cases.assign')){ %><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/unassign/<%= a.user_id %>"><%- csrfField %><button class="btn danger ghost sm">إلغاء التعيين</button></form><% } %></div><% }) %>
+  <div class="panel" id="case-team"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> فريق القضية</h3></div><% assignees.forEach(a=>{ %><div class="person-line"><div><b><%= a.display_name %></b><span><%= a.assignment_role %> <%= a.lead?'· مسؤول الملف':'' %></span></div><% if(can('cases.assign')){ %><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/unassign/<%= a.user_id %>"><%- csrfField %><button class="btn danger ghost sm">إلغاء التعيين</button></form><% } %></div><% }) %>
     <% if(can('cases.assign')){ %><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/assign" class="stack-form"><%- csrfField %><select name="user_id" required><option value="">اختر الموظف أو المحامي</option><% staff.forEach(u=>{ %><option value="<%= u.id %>"><%= u.display_name %></option><% }) %></select><input type="text" name="assignment_role" placeholder="دوره في القضية"><label class="check"><input type="checkbox" name="lead" value="1"> مسؤول الملف</label><button class="btn">تعيين وإشعاره</button></form><% } %>
   </div>
 
-  <div class="panel"><div class="panel-head"><h3>أعمال وطلبات القضية</h3><span class="chip"><%= tasks.filter(t=>t.status==='pending').length %> مفتوح</span></div>
+  <div class="panel" id="case-tasks"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg> أعمال وطلبات القضية</h3><span class="chip"><%= tasks.filter(t=>t.status==='pending').length %> مفتوح</span></div>
     <% tasks.forEach(t=>{ %><div class="task-line <%= t.status==='completed'?'done':'' %>"><div><b><%= t.title %></b><small><%= t.assignee||'غير معين' %> · <%= t.due_on||'بدون موعد' %></small></div><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/tasks/<%= t.id %>/toggle"><%- csrfField %><button class="btn ghost sm"><%= t.status==='completed'?'إعادة فتح':'تم' %></button></form></div><% }) %>
     <details class="add-box"><summary>+ إضافة عمل</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/tasks" class="stack-form"><%- csrfField %><input type="text" name="title" required placeholder="العمل المطلوب"><textarea name="details" placeholder="التفاصيل"></textarea><input type="date" name="due_on"><select name="assigned_user_id"><option value="">غير معين</option><% staff.forEach(u=>{ %><option value="<%= u.id %>"><%= u.display_name %></option><% }) %></select><select name="priority"><option value="normal">عادية</option><option value="high">مرتفعة</option><option value="urgent">عاجلة</option></select><label class="check"><input type="checkbox" name="client_visible" value="1"> يظهر للعميل</label><button class="btn brass">إضافة وإشعار المسؤول</button></form></details>
   </div>
 
-  <div class="panel"><div class="panel-head"><h3>أطراف القضية</h3></div><% parties.forEach(p=>{ %><div class="person-line"><b><%= p.name %></b><span><%= p.capacity||p.party_type %> · <%= p.phone||'' %></span></div><% }) %><details class="add-box"><summary>+ إضافة طرف</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/parties" class="stack-form"><%- csrfField %><select name="party_type"><option value="opponent">خصم</option><option value="witness">شاهد</option><option value="expert">خبير</option><option value="other">أخرى</option></select><input type="text" name="name" required placeholder="الاسم"><input type="text" name="capacity" placeholder="الصفة"><input type="text" name="phone" placeholder="رقم الموبايل"><textarea name="notes" placeholder="ملاحظات"></textarea><button class="btn">إضافة</button></form></details></div>
+  <div class="panel" id="case-parties"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> أطراف القضية</h3></div><% parties.forEach(p=>{ %><div class="person-line"><b><%= p.name %></b><span><%= p.capacity||p.party_type %> · <%= p.phone||'' %></span></div><% }) %><details class="add-box"><summary>+ إضافة طرف</summary><form method="post" action="<%= adminPath %>/cases/<%= c.id %>/parties" class="stack-form"><%- csrfField %><select name="party_type"><option value="opponent">خصم</option><option value="witness">شاهد</option><option value="expert">خبير</option><option value="other">أخرى</option></select><input type="text" name="name" required placeholder="الاسم"><input type="text" name="capacity" placeholder="الصفة"><input type="text" name="phone" placeholder="رقم الموبايل"><textarea name="notes" placeholder="ملاحظات"></textarea><button class="btn">إضافة</button></form></details></div>
 </div></div>
 <%- include('../partials/admin_foot') %>

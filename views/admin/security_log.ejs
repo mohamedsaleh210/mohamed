@@ -27,7 +27,7 @@
                 <span class="num"><%= e.ip %></span><br>
                 <% if (e.location_status === 'captured' && e.latitude != null && e.longitude != null) { %>
                   <a class="location-link" target="_blank" rel="noopener noreferrer"
-                     href="https://www.google.com/maps?q=<%= e.latitude %>,<%= e.longitude %>">📍 فتح الموقع</a>
+                     href="https://www.google.com/maps?q=<%= e.latitude %>,<%= e.longitude %>"><svg aria-hidden="true" width="12" height="12" style="vertical-align:-1px"><use href="/images/icons.svg#i-map-pin"/></svg> فتح الموقع</a>
                   <% if (e.location_accuracy) { %><small> (دقة ±<%= Math.round(e.location_accuracy) %>م)</small><% } %>
                 <% } else { const loc = {denied:'رفض الإذن',unavailable:'تعذر التحديد',timeout:'انتهت المهلة',unsupported:'غير مدعوم',not_requested:'لم يُطلب'}; %>
                   <small class="location-missing"><%= loc[e.location_status] || 'غير مسجل' %></small>

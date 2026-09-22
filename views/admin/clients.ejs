@@ -32,9 +32,16 @@
 <div class="page-head">
   <h1>العملاء</h1>
   <p class="sub">
-    <%= total.toLocaleString('en-US') %> عميل — مجمّعين برقم الموبايل،
-    فاللي قدّم قبل ما يسجّل بيظهر مرة واحدة.
+    مجمّعين برقم الموبايل، فاللي قدّم قبل ما يسجّل بيظهر مرة واحدة.
   </p>
+</div>
+
+<div class="stat-grid" style="margin-bottom:14px">
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-users"/></svg></i>
+    <div><div class="k"><%= q ? 'العملاء في هذا البحث' : 'كل العملاء' %></div>
+    <div class="v"><span data-count-to="<%= total %>">0</span></div></div>
+  </div>
 </div>
 
 <form class="toolbar" method="get" action="<%= adminPath %>/clients">
@@ -99,7 +106,7 @@
                   <% if (c.owed > 0.01) { %>
                     <b class="num" style="color:var(--danger)"><%= money(c.owed) %></b>
                   <% } else { %>
-                    <span style="color:var(--ok)">✓</span>
+                    <span style="color:var(--ok);display:inline-flex" aria-hidden="true"><svg width="16" height="16"><use href="/images/icons.svg#i-check"/></svg></span>
                   <% } %>
                 </td>
               <% } %>
@@ -115,7 +122,7 @@
       </table>
     <% } else { %>
       <div class="empty">
-        <span class="big">👤</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg></span>
         <p><%= q ? 'مفيش عميل بالبيانات دي.' : 'مفيش عملاء لسه.' %></p>
       </div>
     <% } %>

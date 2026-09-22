@@ -14,7 +14,7 @@
 <% if (msg === 'saved') { %><div class="alert ok"><span>تم حفظ التعديلات.</span></div><% } %>
 
 <div class="panel">
-  <div class="panel-head"><h3>محرر محتوى الواجهة</h3><span class="chip">مرتبط مباشرة بالرئيسية</span></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> محرر محتوى الواجهة</h3><span class="chip">مرتبط مباشرة بالرئيسية</span></div>
   <div class="panel-body">
     <p class="help">عدّل النصوص والأزرار وصورة الواجهة من هنا. التصميم والترتيب محميان، بينما يظل المحتوى تحت سيطرة أدمن سند.</p>
     <form method="post" action="<%=adminPath%>/homepage/content"><%-csrfField%>
@@ -42,7 +42,7 @@
 </div>
 
 <div class="panel">
-  <div class="panel-head"><h3>ترتيب أقسام الرئيسية</h3><span class="chip"><%= sections.length %></span></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> ترتيب أقسام الرئيسية</h3><span class="chip"><%= sections.length %></span></div>
   <div class="panel-body">
     <p class="help">الرقم الأصغر يظهر أولًا. يمكن إخفاء أي قسم دون حذف محتواه.</p>
     <div class="table-wrap"><table><thead><tr><th>القسم</th><th>الترتيب</th><th>ظاهر</th><th></th></tr></thead><tbody>
@@ -57,7 +57,7 @@
 </div>
 
 <div class="panel">
-  <div class="panel-head"><h3>المؤشرات اليدوية</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-gauge"/></svg> المؤشرات اليدوية</h3></div>
   <div class="panel-body"><div class="table-wrap"><table><thead><tr><th>القيمة</th><th>العنوان العربي</th><th>العنوان الإنجليزي</th><th>الترتيب والظهور</th><th></th></tr></thead><tbody>
     <% metrics.forEach(m => { %><tr><form method="post" action="<%=adminPath%>/homepage/metrics/<%=m.id%>"><%-csrfField%>
       <td><input type="text" name="value" value="<%=m.value%>" required style="max-width:120px"><input type="text" name="icon" value="<%=m.icon||''%>" aria-label="الأيقونة" style="max-width:60px"></td>
@@ -70,7 +70,7 @@
 </div>
 
 <div class="panel">
-  <div class="panel-head"><h3>تثبيت خدمات ضمن الأكثر طلبًا</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> تثبيت خدمات ضمن الأكثر طلبًا</h3></div>
   <div class="panel-body"><p class="help">الخدمات المثبتة تظهر أولًا، ثم يكمل النظام القائمة تلقائيًا حسب حجم الطلب.</p><div class="table-wrap"><table><thead><tr><th>الخدمة</th><th>القسم</th><th>مثبتة</th><th>الترتيب</th><th></th></tr></thead><tbody>
     <% services.forEach(s => { %><tr><form method="post" action="<%=adminPath%>/homepage/popular/<%=s.id%>"><%-csrfField%>
       <td><%=s.title_ar%></td><td><%=s.category_name||'—'%></td>
@@ -82,7 +82,7 @@
 </div>
 
 <div class="two-col">
-  <div class="panel"><div class="panel-head"><h3>إضافة رأي عميل</h3></div><div class="panel-body">
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> إضافة رأي عميل</h3></div><div class="panel-body">
     <form method="post" action="<%=adminPath%>/homepage/testimonials"><%-csrfField%>
       <label>اسم العميل<input type="text" name="customer_name"></label>
       <label>الرأي بالعربية<textarea name="quote_ar" required></textarea></label>
@@ -92,7 +92,7 @@
       <button class="btn brass" type="submit">إضافة الرأي</button>
     </form>
   </div></div>
-  <div class="panel"><div class="panel-head"><h3>إضافة سؤال شائع</h3></div><div class="panel-body">
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-info"/></svg> إضافة سؤال شائع</h3></div><div class="panel-body">
     <form method="post" action="<%=adminPath%>/homepage/faqs"><%-csrfField%>
       <label>السؤال بالعربية<input type="text" name="question_ar" required></label>
       <label>الإجابة بالعربية<textarea name="answer_ar" required></textarea></label>
@@ -104,7 +104,7 @@
   </div></div>
 </div>
 
-<div class="panel"><div class="panel-head"><h3>مراجعة آراء العملاء</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>العميل والرأي</th><th>التقييم</th><th>النشر</th><th></th></tr></thead><tbody>
+<div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> مراجعة آراء العملاء</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>العميل والرأي</th><th>التقييم</th><th>النشر</th><th></th></tr></thead><tbody>
   <% testimonials.forEach(t => { %><tr><form method="post" action="<%=adminPath%>/homepage/testimonials/<%=t.id%>"><%-csrfField%>
     <td><b><%=t.anonymous?'عميل سند':(t.customer_name||'بدون اسم')%></b><small class="muted"><%=t.quote_ar%></small></td><td><%=t.rating%>/5</td>
     <td><label class="check"><input type="checkbox" name="approved" <%=t.approved?'checked':''%>> معتمد</label><label class="check"><input type="checkbox" name="visible" <%=t.visible?'checked':''%>> ظاهر</label><label class="check"><input type="checkbox" name="anonymous" <%=t.anonymous?'checked':''%>> مجهول</label><input type="number" name="sort" value="<%=t.sort%>" style="max-width:70px"></td>
@@ -112,7 +112,7 @@
   </form></tr><% }) %>
 </tbody></table></div></div></div>
 
-<div class="panel"><div class="panel-head"><h3>مراجعة الأسئلة الشائعة</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>السؤال</th><th>النشر</th><th></th></tr></thead><tbody>
+<div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-info"/></svg> مراجعة الأسئلة الشائعة</h3></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>السؤال</th><th>النشر</th><th></th></tr></thead><tbody>
   <% faqs.forEach(f => { %><tr><form method="post" action="<%=adminPath%>/homepage/faqs/<%=f.id%>"><%-csrfField%>
     <td><b><%=f.question_ar%></b><small class="muted"><%=f.answer_ar%></small></td>
     <td><label class="check"><input type="checkbox" name="approved" <%=f.approved?'checked':''%>> معتمد</label><label class="check"><input type="checkbox" name="visible" <%=f.visible?'checked':''%>> ظاهر</label><input type="number" name="sort" value="<%=f.sort%>" style="max-width:70px"></td>

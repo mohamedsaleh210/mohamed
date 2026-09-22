@@ -41,14 +41,14 @@
                   <span class="chip"><%= a.entity_label %></span>
                 <% } else { %>—<% } %>
               </td>
-              <td data-label="IP والموقع"><span class="num"><%= a.ip || '—' %></span><% if(a.latitude!=null&&a.longitude!=null){ %><br><a class="location-link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=<%=a.latitude%>,<%=a.longitude%>">📍 فتح موقع تنفيذ الإجراء</a><% } %></td>
+              <td data-label="IP والموقع"><span class="num"><%= a.ip || '—' %></span><% if(a.latitude!=null&&a.longitude!=null){ %><br><a class="location-link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=<%=a.latitude%>,<%=a.longitude%>"><svg aria-hidden="true" width="12" height="12" style="vertical-align:-1px"><use href="/images/icons.svg#i-map-pin"/></svg> فتح موقع تنفيذ الإجراء</a><% } %></td>
               <td data-label="امتى" style="color:var(--muted);font-size:13px"><%= fmtDateTime(a.created_at) %></td>
             </tr>
           <% }) %>
         </tbody>
       </table>
     <% } else { %>
-      <div class="empty"><span class="big">🕓</span><p>مفيش نشاط مسجّل بالتصفية دي.</p></div>
+      <div class="empty"><span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg></span><p>مفيش نشاط مسجّل بالتصفية دي.</p></div>
     <% } %>
   </div>
 </div>

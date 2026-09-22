@@ -30,11 +30,11 @@
 <main class="main">
   <div class="page-head"><h1 data-ar="أهلًا سامية" data-en="Welcome, Samia">أهلًا سامية</h1><p style="color:var(--color-text-muted)" data-ar="ملخص مالي سريع وما يحتاج اعتمادك." data-en="A quick financial summary and what needs your approval.">ملخص مالي سريع وما يحتاج اعتمادك.</p></div>
 
-  <div class="stat-grid" style="margin-bottom:var(--space-5)">
-    <div class="stat-card featured"><div><div class="label" data-ar="رصيد الخزنة" data-en="Treasury balance">رصيد الخزنة</div><div class="value num">262,200</div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</div><div class="value">6</div><div class="delta down" data-ar="يتطلب اعتمادك" data-en="Needs your approval">يتطلب اعتمادك</div></div><span class="stat-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="إيرادات الشهر" data-en="Monthly revenue">إيرادات الشهر</div><div class="value num">217,885</div></div><span class="stat-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="مصروفات الشهر" data-en="Monthly expenses">مصروفات الشهر</div><div class="value num">14,610</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="رصيد الخزنة" data-en="Treasury balance">رصيد الخزنة</span><div class="role-kpi-value num">262,200</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span><div class="role-kpi-value">6</div><div class="kpi-period trend-down" data-ar="يتطلب اعتمادك" data-en="Needs your approval">يتطلب اعتمادك</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إيرادات الشهر" data-en="Monthly revenue">إيرادات الشهر</span><div class="role-kpi-value num">217,885</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مصروفات الشهر" data-en="Monthly expenses">مصروفات الشهر</span><div class="role-kpi-value num">14,610</div></div></div>
   </div>
 
   <div class="two-col">
@@ -73,6 +73,15 @@
           <div class="flex-between"><span style="font-size:13px">عمرو عوض</span><span class="num" style="font-weight:700">1,500 <small style="color:var(--color-text-muted);font-weight:400">/ 2,000</small></span></div>
           <div class="flex-between"><span style="font-size:13px">خالد سمير</span><span class="num" style="font-weight:700;color:var(--color-danger)">2,800 <small style="color:var(--color-text-muted);font-weight:400">/ 3,000</small></span></div>
         </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="الإيرادات مقابل المصروفات" data-en="Revenue vs. expenses">الإيرادات مقابل المصروفات</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--color-success)"></span> <span data-ar="إيرادات" data-en="Revenue">إيرادات</span></span><div class="dist-track"><div class="dist-fill" style="width:94%;background:var(--color-success)"></div></div><span class="dist-value num">217,885</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--color-danger)"></span> <span data-ar="مصروفات" data-en="Expenses">مصروفات</span></span><div class="dist-track"><div class="dist-fill" style="width:6%;background:var(--color-danger)"></div></div><span class="dist-value num">14,610</span></div>
+          </div>
+        </div>
+        <div class="panel-foot"><a href="revenue-expenses.html" class="btn btn-ghost btn-sm" data-ar="التفاصيل" data-en="Details">التفاصيل</a></div>
       </div>
     </div>
   </div>

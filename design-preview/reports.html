@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التقارير — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--space-4)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.color-swatch-input{display:flex;align-items:center;gap:8px}
+.color-swatch-input .sw{width:34px;height:34px;border-radius:var(--radius-sm);border:1px solid var(--color-border);flex:none}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — التقارير" data-en="Design preview V2 — reports">معاينة تصميم V2 — التقارير</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="التقارير والدعم" data-en="Reports & support">التقارير والدعم</div><a class="side-link active" href="reports.html"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg> <span data-ar="التقارير" data-en="Reports">التقارير</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="التقارير" data-en="Reports">التقارير</span></nav>
+  <div class="page-head"><h1 data-ar="التقارير" data-en="Reports">التقارير</h1><p style="color:var(--color-text-muted)" data-ar="تقارير تشغيلية ومالية جاهزة للتصدير." data-en="Operational and financial reports, ready to export.">تقارير تشغيلية ومالية جاهزة للتصدير.</p></div>
+
+  <div class="filter-bar">
+    <div class="filter-field"><span class="field-label" data-ar="نوع التقرير" data-en="Report type">نوع التقرير</span><select class="select"><option data-ar="أداء الطلبات" data-en="Requests performance">أداء الطلبات</option><option data-ar="ملخص مالي" data-en="Financial summary">ملخص مالي</option></select></div>
+    <div class="filter-field"><span class="field-label" data-ar="من تاريخ" data-en="From">من تاريخ</span><input class="input" type="date" value="2026-06-01"></div>
+    <div class="filter-field"><span class="field-label" data-ar="إلى تاريخ" data-en="To">إلى تاريخ</span><input class="input" type="date" value="2026-06-26"></div>
+    <button class="btn btn-ghost"><svg class="icon"><use href="assets/icons.svg#i-filter"/></svg> <span data-ar="تطبيق" data-en="Apply">تطبيق</span></button>
+    <button class="btn btn-ghost"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="PDF" data-en="PDF">PDF</span></button>
+    <button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg> <span data-ar="Excel" data-en="Excel">Excel</span></button>
+  </div>
+
+  <div class="kpi-strip" style="margin-bottom:var(--space-4)">
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="طلبات الفترة" data-en="Requests in period">طلبات الفترة</span><div class="role-kpi-value">57</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نسبة الإنجاز" data-en="Completion rate">نسبة الإنجاز</span><div class="role-kpi-value">82٪</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الإيرادات" data-en="Total revenue">إجمالي الإيرادات</span><div class="role-kpi-value num">120,750</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="متوسط زمن الإنجاز" data-en="Avg. completion time">متوسط زمن الإنجاز</span><div class="role-kpi-value num">3.2 <small style="font-size:11px">يوم</small></div></div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel"><div class="panel-head"><h3 data-ar="اتجاه الطلبات — آخر 4 أسابيع" data-en="Request trend — last 4 weeks">اتجاه الطلبات — آخر 4 أسابيع</h3></div>
+      <div class="panel-body">
+        <div class="bar-chart">
+          <div class="bc-plot" aria-hidden="true"><div class="bc-bar" style="height:55%"></div><div class="bc-bar" style="height:70%"></div><div class="bc-bar" style="height:62%"></div><div class="bc-bar" style="height:100%"></div></div>
+          <div class="bc-axis"><span data-ar="الأسبوع 1" data-en="Week 1">الأسبوع 1</span><span data-ar="الأسبوع 4" data-en="Week 4">الأسبوع 4</span></div>
+        </div>
+        <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: هل حجم الطلبات في نمو يستدعي قوة عاملة إضافية؟" data-en="Business question: is request volume growing enough to justify more staff?">سؤال العمل: هل حجم الطلبات في نمو يستدعي قوة عاملة إضافية؟</p>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><h3 data-ar="الطلبات حسب الخدمة" data-en="Requests by service">الطلبات حسب الخدمة</h3></div>
+      <div class="panel-body">
+        <div class="dist-list">
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="شركات" data-en="Companies">شركات</span></span><div class="dist-track"><div class="dist-fill" style="width:54%;background:var(--chart-1)"></div></div><span class="dist-value num">31</span></div>
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="أفراد" data-en="Individuals">أفراد</span></span><div class="dist-track"><div class="dist-fill" style="width:32%;background:var(--chart-2)"></div></div><span class="dist-value num">18</span></div>
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="استشارات" data-en="Consultations">استشارات</span></span><div class="dist-track"><div class="dist-fill" style="width:14%;background:var(--chart-3)"></div></div><span class="dist-value num">8</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:var(--space-4)"><div class="panel-head"><h3 data-ar="جدول التقرير" data-en="Report table">جدول التقرير</h3></div>
+    <div class="panel-body flush"><table class="tbl responsive">
+      <thead><tr><th data-ar="الفترة" data-en="Period">الفترة</th><th data-ar="طلبات جديدة" data-en="New requests">طلبات جديدة</th><th data-ar="مكتملة" data-en="Completed">مكتملة</th><th data-ar="الإيرادات" data-en="Revenue">الإيرادات</th></tr></thead>
+      <tbody>
+        <tr><td data-label="الفترة" data-ar="الأسبوع 1" data-en="Week 1">الأسبوع 1</td><td data-label="جديدة" class="num">11</td><td data-label="مكتملة" class="num">9</td><td data-label="الإيرادات" class="num">26,400</td></tr>
+        <tr><td data-label="الفترة" data-ar="الأسبوع 2" data-en="Week 2">الأسبوع 2</td><td data-label="جديدة" class="num">14</td><td data-label="مكتملة" class="num">12</td><td data-label="الإيرادات" class="num">31,200</td></tr>
+        <tr><td data-label="الفترة" data-ar="الأسبوع 3" data-en="Week 3">الأسبوع 3</td><td data-label="جديدة" class="num">13</td><td data-label="مكتملة" class="num">10</td><td data-label="الإيرادات" class="num">28,900</td></tr>
+        <tr><td data-label="الفترة" data-ar="الأسبوع 4" data-en="Week 4">الأسبوع 4</td><td data-label="جديدة" class="num">19</td><td data-label="مكتملة" class="num">16</td><td data-label="الإيرادات" class="num">34,250</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="panel" style="margin-top:var(--space-4)"><div class="panel-head"><h3 data-ar="هوية التقارير" data-en="Report identity">هوية التقارير</h3><p style="margin:0;font-size:12.5px;color:var(--color-text-muted)" data-ar="بيانات الشركة وهوية الألوان المستخدمة في التقارير المُصدَّرة." data-en="Company data and color identity used in exported reports.">بيانات الشركة وهوية الألوان المستخدمة في التقارير المُصدَّرة.</p></div>
+    <div class="panel-body grid grid-2">
+      <div class="field"><label class="field-label" data-ar="اسم الشركة" data-en="Company name">اسم الشركة</label><input class="input" value="سند للاستشارات القانونية"></div>
+      <div class="field"><label class="field-label" data-ar="الرقم الضريبي" data-en="Tax number">الرقم الضريبي</label><input class="input num" dir="ltr" value="VAT12345667"></div>
+      <div class="field"><label class="field-label" data-ar="اللون الأساسي في التقارير" data-en="Report primary color">اللون الأساسي في التقارير</label><div class="color-swatch-input"><span class="sw" style="background:var(--navy-800)"></span><input class="input num" dir="ltr" value="#12303A" readonly></div></div>
+      <div class="field"><label class="field-label" data-ar="لون التمييز" data-en="Accent color">لون التمييز</label><div class="color-swatch-input"><span class="sw" style="background:var(--brass-500)"></span><input class="input num" dir="ltr" value="#C9A24B" readonly></div></div>
+    </div>
+    <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="إلغاء" data-en="Cancel">إلغاء</button><button class="btn btn-accent btn-sm" data-ar="حفظ" data-en="Save">حفظ</button></div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

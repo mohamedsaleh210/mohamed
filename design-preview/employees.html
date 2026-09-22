@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الموظفون — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.emp-name{display:flex;align-items:center;gap:10px}
+.emp-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy-800);color:var(--brass-300);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.status-dot{display:inline-flex;align-items:center;gap:6px}
+.status-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.status-dot.on{color:var(--color-success)} .status-dot.off{color:var(--color-danger)} .status-dot.leave{color:var(--color-warning)}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — الموظفون" data-en="Design preview V2 — employees">معاينة تصميم V2 — الموظفون</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="العملاء والموظفون" data-en="Clients & staff">العملاء والموظفون</div><a class="side-link" href="clients-companies.html"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</span></a><a class="side-link active" href="employees.html"><svg class="icon"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="الموظفون" data-en="Employees">الموظفون</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الموظفون" data-en="Employees">الموظفون</span></nav>
+  <div class="page-head"><div class="title-row">
+    <div><h1 data-ar="الموظفون" data-en="Employees">الموظفون</h1><p data-ar="إدارة بيانات الموظفين والصلاحيات والوصول." data-en="Manage employee data, permissions, and access.">إدارة بيانات الموظفين والصلاحيات والوصول.</p></div>
+    <button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="إضافة موظف" data-en="Add employee">إضافة موظف</span></button>
+  </div></div>
+
+  <div class="kpi-strip" style="margin-bottom:var(--space-4)">
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الموظفين" data-en="Total employees">إجمالي الموظفين</span><div class="role-kpi-value">27</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نشط الآن" data-en="Active now">نشط الآن</span><div class="role-kpi-value">22</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-calendar"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="في إجازة" data-en="On leave">في إجازة</span><div class="role-kpi-value">3</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-x-circle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="غير نشط" data-en="Inactive">غير نشط</span><div class="role-kpi-value">2</div></div></div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-field search-input" style="flex:2"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg><input class="input" data-ar-ph="ابحث بالاسم أو البريد أو رقم الموظف" data-en-ph="Search by name, email, or employee #" placeholder="ابحث بالاسم أو البريد أو رقم الموظف"></div>
+    <div class="filter-field"><span class="field-label" data-ar="القسم" data-en="Department">القسم</span><select class="select"><option data-ar="كل الأقسام" data-en="All departments">كل الأقسام</option></select></div>
+    <div class="filter-field"><span class="field-label" data-ar="الحالة" data-en="Status">الحالة</span><select class="select"><option data-ar="كل الحالات" data-en="All statuses">كل الحالات</option></select></div>
+    <button class="btn btn-ghost"><svg class="icon"><use href="assets/icons.svg#i-filter"/></svg> <span data-ar="بحث" data-en="Search">بحث</span></button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
+      <thead><tr><th data-ar="الموظف" data-en="Employee">الموظف</th><th data-ar="المسمى الوظيفي" data-en="Job title">المسمى الوظيفي</th><th data-ar="القسم" data-en="Department">القسم</th><th data-ar="الدور" data-en="Role">الدور</th><th data-ar="الحالة" data-en="Status">الحالة</th><th data-ar="تاريخ الانضمام" data-en="Joined">تاريخ الانضمام</th><th></th></tr></thead>
+      <tbody>
+        <tr><td data-label="الموظف"><a href="employee-profile.html" class="emp-name" style="color:inherit"><span class="emp-avatar">ع م</span><span><b style="font-size:13.5px" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</b><br><span class="num" style="font-size:11.5px;color:var(--color-text-muted)" dir="ltr">ezz.mahmoud@company.eg</span></span></a></td><td data-label="المسمى" data-ar="مدير النظام" data-en="System admin">مدير النظام</td><td data-label="القسم" data-ar="تقنية المعلومات" data-en="IT">تقنية المعلومات</td><td data-label="الدور"><span class="badge badge-accent" data-ar="مالك" data-en="Owner">مالك</span></td><td data-label="الحالة"><span class="status-dot on" data-ar="نشط" data-en="Active">نشط</span></td><td data-label="الانضمام" class="num">2023/09/12</td><td class="row-actions"><a class="btn btn-ghost btn-sm" href="employee-profile.html" data-ar="عرض" data-en="View">عرض</a></td></tr>
+        <tr><td data-label="الموظف"><a href="employee-profile.html" class="emp-name" style="color:inherit"><span class="emp-avatar">س أ</span><span><b style="font-size:13.5px" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</b><br><span class="num" style="font-size:11.5px;color:var(--color-text-muted)" dir="ltr">s.ahmed@company.eg</span></span></a></td><td data-label="المسمى" data-ar="محاسب" data-en="Accountant">محاسب</td><td data-label="القسم" data-ar="المالية" data-en="Finance">المالية</td><td data-label="الدور"><span class="badge badge-info" data-ar="محاسب" data-en="Accountant">محاسب</span></td><td data-label="الحالة"><span class="status-dot on" data-ar="نشط" data-en="Active">نشط</span></td><td data-label="الانضمام" class="num">2024/02/03</td><td class="row-actions"><a class="btn btn-ghost btn-sm" href="employee-profile.html" data-ar="عرض" data-en="View">عرض</a></td></tr>
+        <tr><td data-label="الموظف"><a href="employee-profile.html" class="emp-name" style="color:inherit"><span class="emp-avatar">خ م</span><span><b style="font-size:13.5px" data-ar="خالد محمد" data-en="Khaled Mohamed">خالد محمد</b><br><span class="num" style="font-size:11.5px;color:var(--color-text-muted)" dir="ltr">k.mohamed@company.eg</span></span></a></td><td data-label="المسمى" data-ar="أخصائي موارد بشرية" data-en="HR specialist">أخصائي موارد بشرية</td><td data-label="القسم" data-ar="الموارد البشرية" data-en="HR">الموارد البشرية</td><td data-label="الدور"><span class="badge badge-neutral" data-ar="موظف" data-en="Staff">موظف</span></td><td data-label="الحالة"><span class="status-dot on" data-ar="نشط" data-en="Active">نشط</span></td><td data-label="الانضمام" class="num">2024/01/18</td><td class="row-actions"><a class="btn btn-ghost btn-sm" href="employee-profile.html" data-ar="عرض" data-en="View">عرض</a></td></tr>
+        <tr><td data-label="الموظف"><a href="employee-profile.html" class="emp-name" style="color:inherit"><span class="emp-avatar">ل ع</span><span><b style="font-size:13.5px" data-ar="لينا عبدالله" data-en="Lina Abdullah">لينا عبدالله</b><br><span class="num" style="font-size:11.5px;color:var(--color-text-muted)" dir="ltr">l.abdullah@company.eg</span></span></a></td><td data-label="المسمى" data-ar="أخصائي إدارة مشاريع" data-en="Project management specialist">أخصائي إدارة مشاريع</td><td data-label="القسم" data-ar="إدارة المشاريع" data-en="Project mgmt">إدارة المشاريع</td><td data-label="الدور"><span class="badge badge-warning" data-ar="مشرف" data-en="Supervisor">مشرف</span></td><td data-label="الحالة"><span class="status-dot leave" data-ar="في إجازة" data-en="On leave">في إجازة</span></td><td data-label="الانضمام" class="num">2023/11/05</td><td class="row-actions"><a class="btn btn-ghost btn-sm" href="employee-profile.html" data-ar="عرض" data-en="View">عرض</a></td></tr>
+        <tr><td data-label="الموظف"><a href="employee-profile.html" class="emp-name" style="color:inherit"><span class="emp-avatar">م ع</span><span><b style="font-size:13.5px" data-ar="محمد علي" data-en="Mohamed Ali">محمد علي</b><br><span class="num" style="font-size:11.5px;color:var(--color-text-muted)" dir="ltr">m.ali@company.eg</span></span></a></td><td data-label="المسمى" data-ar="أخصائي مبيعات" data-en="Sales specialist">أخصائي مبيعات</td><td data-label="القسم" data-ar="المبيعات" data-en="Sales">المبيعات</td><td data-label="الدور"><span class="badge badge-neutral" data-ar="موظف" data-en="Staff">موظف</span></td><td data-label="الحالة"><span class="status-dot off" data-ar="غير نشط" data-en="Inactive">غير نشط</span></td><td data-label="الانضمام" class="num">2024/05/20</td><td class="row-actions"><a class="btn btn-ghost btn-sm" href="employee-profile.html" data-ar="عرض" data-en="View">عرض</a></td></tr>
+      </tbody>
+    </table></div></div>
+    <div class="panel-body" style="padding-top:0"><div class="pagination">
+      <span class="pg-info" data-ar="عرض 1–5 من 27 موظفًا" data-en="Showing 1–5 of 27 employees">عرض 1–5 من 27 موظفًا</span>
+      <nav class="pg-nav"><button class="pg" disabled><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-start"/></svg></button><button class="pg active">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg"><svg class="icon-sm"><use href="assets/icons.svg#i-chevron-end"/></svg></button></nav>
+    </div></div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

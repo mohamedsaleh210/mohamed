@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عز الدين محمود — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:var(--space-4)}
+@media(max-width:1180px){.two-col{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+.profile-head{display:flex;align-items:center;gap:14px}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:var(--navy-800);color:var(--brass-300);display:grid;place-items:center;font-weight:800;font-size:20px;flex:none}
+.kv-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--color-border);font-size:13.5px}
+.kv-row:last-child{border-bottom:0}
+.kv-row .k{color:var(--color-text-muted)}
+.device-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--color-border);font-size:12.5px}
+.device-row:last-child{border-bottom:0}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — ملف الموظف" data-en="Design preview V2 — employee profile">معاينة تصميم V2 — ملف الموظف</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="العملاء والموظفون" data-en="Clients & staff">العملاء والموظفون</div><a class="side-link active" href="employees.html"><svg class="icon"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="الموظفون" data-en="Employees">الموظفون</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><a href="employees.html" data-ar="الموظفون" data-en="Employees">الموظفون</a><span class="sep">/</span><span class="current" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</span></nav>
+
+  <div class="panel" style="margin-bottom:var(--space-4)"><div class="panel-body">
+    <div class="flex-between" style="flex-wrap:wrap;gap:14px">
+      <div class="profile-head"><span class="profile-avatar">ع م</span><div>
+        <h1 style="margin:0;font-size:22px" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</h1>
+        <p style="margin:2px 0 0;color:var(--color-text-muted);font-size:13.5px" data-ar="مدير النظام · تقنية المعلومات" data-en="System admin · IT">مدير النظام · تقنية المعلومات</p>
+        <span class="status-dot on" style="font-size:12px" data-ar="نشط الآن" data-en="Active now">نشط الآن</span>
+      </div></div>
+      <div class="flex"><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg> <span data-ar="تعديل" data-en="Edit">تعديل</span></button><button class="btn btn-danger btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-x-circle"/></svg> <span data-ar="تعطيل الحساب" data-en="Suspend account">تعطيل الحساب</span></button></div>
+    </div>
+  </div></div>
+
+  <div class="two-col">
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="البيانات الشخصية" data-en="Personal information">البيانات الشخصية</h3></div>
+        <div class="panel-body">
+          <div class="kv-row"><span class="k" data-ar="الاسم الكامل" data-en="Full name">الاسم الكامل</span><span data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</span></div>
+          <div class="kv-row"><span class="k" data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span><span class="num" dir="ltr" style="font-size:12.5px">ezz.mahmoud@company.eg</span></div>
+          <div class="kv-row"><span class="k" data-ar="رقم الموظف" data-en="Employee #">رقم الموظف</span><span class="num">EMP-001</span></div>
+          <div class="kv-row"><span class="k" data-ar="تاريخ الانضمام" data-en="Joined">تاريخ الانضمام</span><span class="num">2023/09/12</span></div>
+          <div class="kv-row"><span class="k" data-ar="القسم" data-en="Department">القسم</span><span data-ar="تقنية المعلومات" data-en="IT">تقنية المعلومات</span></div>
+          <div class="kv-row"><span class="k" data-ar="المسمى الوظيفي" data-en="Job title">المسمى الوظيفي</span><span data-ar="مدير النظام" data-en="System admin">مدير النظام</span></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="العهد والمصروفات" data-en="Custody & assets">العهد والمصروفات</h3></div>
+        <div class="panel-body stack">
+          <div class="flex-between"><span class="role-secondary" data-ar="عناصر في العهدة" data-en="Custody items">عناصر في العهدة</span><span style="font-weight:800">4</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="أجهزة من العهدة" data-en="Devices in custody">أجهزة من العهدة</span><span style="font-weight:800">1</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="قطع من العهدة" data-en="Other custody items">قطع من العهدة</span><span style="font-weight:800">0</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="مصروفات معلَّقة" data-en="Pending expenses">مصروفات معلَّقة</span><span style="font-weight:800">0</span></div>
+          <div class="flex-between"><span class="role-secondary" data-ar="سُلَف مستحقة" data-en="Advances due">سُلَف مستحقة</span><span style="font-weight:800">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="سير العمل الحالي" data-en="Current workload">سير العمل الحالي</h3><span class="badge badge-neutral" data-ar="5 مهام" data-en="5 tasks">5 مهام</span></div>
+        <div class="panel-body flush">
+          <div class="notif"><span class="notif-icon ic-danger"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg></span><div><div class="notif-text" data-ar="مراجعة تقرير الرواتب الشهري" data-en="Review the monthly payroll report">مراجعة تقرير الرواتب الشهري</div><div class="notif-time" data-ar="يستحق اليوم" data-en="Due today">يستحق اليوم</div></div></div>
+          <div class="notif"><span class="notif-icon ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-briefcase"/></svg></span><div><div class="notif-text" data-ar="إعداد ميزانية التدريب" data-en="Prepare the training budget">إعداد ميزانية التدريب</div><div class="notif-time" data-ar="خلال 3 أيام" data-en="In 3 days">خلال 3 أيام</div></div></div>
+          <div class="notif"><span class="notif-icon ic-info"><svg class="icon-sm"><use href="assets/icons.svg#i-calendar"/></svg></span><div><div class="notif-text" data-ar="متابعة طلبات الإجازة" data-en="Follow up on leave requests">متابعة طلبات الإجازة</div><div class="notif-time" data-ar="جارية" data-en="Ongoing">جارية</div></div></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="ملخص الرواتب — هذا الشهر" data-en="Payroll summary — this month">ملخص الرواتب — هذا الشهر</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label" style="width:120px" data-ar="الراتب الأساسي" data-en="Base salary">الراتب الأساسي</span><div class="dist-track"><div class="dist-fill" style="width:87%;background:var(--chart-1)"></div></div><span class="dist-value num">42,300</span></div>
+            <div class="dist-row"><span class="dist-label" style="width:120px" data-ar="البدلات" data-en="Allowances">البدلات</span><div class="dist-track"><div class="dist-fill" style="width:20%;background:var(--chart-2)"></div></div><span class="dist-value num">9,600</span></div>
+            <div class="dist-row"><span class="dist-label" style="width:120px" data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</span><div class="dist-track"><div class="dist-fill" style="width:10%;background:var(--chart-4)"></div></div><span class="dist-value num">4,800</span></div>
+          </div>
+        </div>
+        <div class="panel-foot"><a href="payroll.html" class="btn btn-ghost btn-sm" data-ar="عرض في المرتبات" data-en="View in Payroll">عرض في المرتبات</a></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</h3><a href="permissions.html" class="btn btn-subtle btn-sm" data-ar="إدارة" data-en="Manage">إدارة</a></div>
+        <div class="panel-body"><div class="flex" style="gap:6px;flex-wrap:wrap">
+          <span class="badge badge-accent" data-ar="مدير النظام" data-en="System admin">مدير النظام</span>
+          <span class="badge badge-info" data-ar="المالية" data-en="Finance">المالية</span>
+          <span class="badge badge-neutral" data-ar="الموارد البشرية" data-en="HR">الموارد البشرية</span>
+        </div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="الأجهزة وتسجيل الدخول" data-en="Devices & login">الأجهزة وتسجيل الدخول</h3><span class="badge badge-neutral" data-ar="3 أجهزة" data-en="3 devices">3 أجهزة</span></div>
+        <div class="panel-body">
+          <div class="device-row"><span data-ar="Windows · Chrome" data-en="Windows · Chrome">Windows · Chrome</span><span class="num" style="color:var(--color-text-muted)">128 <span data-ar="مرة" data-en="times">مرة</span></span></div>
+          <div class="device-row"><span data-ar="iPhone · Safari" data-en="iPhone · Safari">iPhone · Safari</span><span class="num" style="color:var(--color-text-muted)">42 <span data-ar="مرة" data-en="times">مرة</span></span></div>
+          <div class="device-row"><span data-ar="Mac · Chrome" data-en="Mac · Chrome">Mac · Chrome</span><span class="num" style="color:var(--color-text-muted)">17 <span data-ar="مرة" data-en="times">مرة</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

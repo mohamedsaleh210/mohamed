@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الصلاحيات — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.perm-shell{display:grid;grid-template-columns:240px 1fr;gap:var(--space-4)}
+@media(max-width:900px){.perm-shell{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — الصلاحيات (الأدوار الحقيقية في سند فقط: أدمن، مشرف، محامي، محاسب)" data-en="Design preview V2 — Permissions (Sanad's real roles only: admin, supervisor, lawyer, accountant)">معاينة تصميم V2 — الصلاحيات (الأدوار الحقيقية في سند فقط)</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="المحتوى والإعدادات" data-en="Content & settings">المحتوى والإعدادات</div><a class="side-link active" href="permissions.html"><svg class="icon"><use href="assets/icons.svg#i-shield"/></svg> <span data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</span></a><a class="side-link" href="settings-cms-security.html"><svg class="icon"><use href="assets/icons.svg#i-settings"/></svg> <span data-ar="الإعدادات والأمان" data-en="Settings & security">الإعدادات والأمان</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</span></nav>
+  <div class="page-head"><h1 data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</h1><p style="color:var(--color-text-muted)" data-ar="إدارة صلاحيات كل دور من أدوار سند الحقيقية (أدمن، مشرف، محامي، محاسب) والوصول إلى موارد النظام." data-en="Manage permissions for each of Sanad's real roles (admin, supervisor, lawyer, accountant) and access to system resources.">إدارة صلاحيات كل دور من أدوار سند الحقيقية (أدمن، مشرف، محامي، محاسب) والوصول إلى موارد النظام.</p></div>
+
+  <div class="perm-shell">
+    <div>
+      <span class="ds-label role-table-header" style="display:block;margin-bottom:8px" data-ar="أدوار سند" data-en="Sanad roles">أدوار سند</span>
+      <div class="role-card-list">
+        <div class="role-card active"><span class="rc-icon"><svg class="icon"><use href="assets/icons.svg#i-shield"/></svg></span><div><div class="rc-title" data-ar="أدمن" data-en="Admin">أدمن</div><div class="rc-sub" data-ar="صلاحيات كاملة على النظام" data-en="Full system access">صلاحيات كاملة على النظام</div></div></div>
+        <div class="role-card"><span class="rc-icon"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg></span><div><div class="rc-title" data-ar="مشرف" data-en="Supervisor">مشرف</div><div class="rc-sub" data-ar="إشراف تشغيلي وتقارير" data-en="Operational oversight & reports">إشراف تشغيلي وتقارير</div></div></div>
+        <div class="role-card"><span class="rc-icon"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span><div><div class="rc-title" data-ar="محامي" data-en="Lawyer">محامي</div><div class="rc-sub" data-ar="الطلبات والقضايا المعيَّنة" data-en="Assigned requests & cases">الطلبات والقضايا المعيَّنة</div></div></div>
+        <div class="role-card"><span class="rc-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div><div class="rc-title" data-ar="محاسب" data-en="Accountant">محاسب</div><div class="rc-sub" data-ar="الوصول المالي والمصروفات" data-en="Financial access & expenses">الوصول المالي والمصروفات</div></div></div>
+      </div>
+      <div class="alert alert-info" style="margin-top:var(--space-4)" role="status"><svg class="icon"><use href="assets/icons.svg#i-info"/></svg><div><strong data-ar="أدوار سند الحقيقية فقط" data-en="Sanad's real roles only">أدوار سند الحقيقية فقط</strong><p data-ar="القائمة أعلاه تطابق lib/permissions.js في التطبيق الحالي بالضبط — لا أدوار جديدة اختُرعت لهذه المعاينة." data-en="The list above matches lib/permissions.js in the current application exactly — no roles were invented for this preview.">القائمة أعلاه تطابق lib/permissions.js في التطبيق الحالي بالضبط — لا أدوار جديدة اختُرعت لهذه المعاينة.</p></div></div>
+    </div>
+
+    <div class="stack">
+      <div class="flex-between"><h2 class="role-section-title" data-ar="صلاحيات دور: أدمن" data-en="Permissions for role: Admin">صلاحيات دور: أدمن</h2><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg> <span data-ar="تعديل" data-en="Edit">تعديل</span></button></div>
+
+      <div class="grid grid-2">
+        <div class="perm-group">
+          <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="إدارة الموظفين" data-en="Employee management">إدارة الموظفين</span></div>
+          <div class="perm-row"><span data-ar="عرض بيانات الموظفين" data-en="View employee data">عرض بيانات الموظفين</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="إضافة وتعديل موظف" data-en="Add/edit employee">إضافة وتعديل موظف</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="إدارة الصلاحيات" data-en="Manage permissions">إدارة الصلاحيات</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+        </div>
+        <div class="perm-group">
+          <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-list"/></svg> <span data-ar="الطلبات والقضايا" data-en="Requests & cases">الطلبات والقضايا</span></div>
+          <div class="perm-row"><span data-ar="عرض كل الطلبات" data-en="View all requests">عرض كل الطلبات</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="إعادة تعيين المسؤول" data-en="Reassign owner">إعادة تعيين المسؤول</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="إلغاء طلب" data-en="Cancel a request">إلغاء طلب</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+        </div>
+        <div class="perm-group">
+          <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة والمحاسبة" data-en="Treasury & accounting">الخزنة والمحاسبة</span></div>
+          <div class="perm-row"><span data-ar="عرض الخزنة" data-en="View treasury">عرض الخزنة</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="اعتماد الصرف" data-en="Approve disbursement">اعتماد الصرف</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+        </div>
+        <div class="perm-group">
+          <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-gauge"/></svg> <span data-ar="التقارير والإحصائيات" data-en="Reports & analytics">التقارير والإحصائيات</span></div>
+          <div class="perm-row"><span data-ar="عرض جميع التقارير" data-en="View all reports">عرض جميع التقارير</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          <div class="perm-row"><span data-ar="تصدير PDF/Excel" data-en="Export PDF/Excel">تصدير PDF/Excel</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+        </div>
+      </div>
+
+      <div class="perm-group perm-sensitive">
+        <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg> <span data-ar="صلاحيات حسّاسة" data-en="Sensitive permissions">صلاحيات حسّاسة</span></div>
+        <p class="role-secondary" style="margin:0 0 8px" data-ar="منح هذه الصلاحيات أو التعديل عليها قد يؤدي لفقدان بيانات مهمة. يُرجى التأكد من الحاجة الفعلية قبل المنح." data-en="Granting or changing these permissions may cause important data loss. Confirm the actual need before granting.">منح هذه الصلاحيات أو التعديل عليها قد يؤدي لفقدان بيانات مهمة. يُرجى التأكد من الحاجة الفعلية قبل المنح.</p>
+        <div class="perm-row"><span data-ar="حذف بيانات الموظفين نهائيًا" data-en="Permanently delete employee data">حذف بيانات الموظفين نهائيًا</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+        <div class="perm-row"><span data-ar="حذف حركات الخزنة" data-en="Delete treasury transactions">حذف حركات الخزنة</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

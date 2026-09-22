@@ -62,11 +62,11 @@
     </div>
   </div>
 
-  <div class="stat-grid" style="margin-bottom:var(--space-5)">
-    <div class="stat-card featured"><div><div class="label" data-ar="رصيد الخزنة الحالي" data-en="Current treasury balance">رصيد الخزنة الحالي</div><div class="value num">262,200 <small style="font-size:13px">EGP</small></div><div class="delta up" data-ar="↑ 4.2٪" data-en="↑ 4.2%">↑ 4.2٪</div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="إجمالي الإيرادات" data-en="Total revenue">إجمالي الإيرادات</div><div class="value num">217,885</div></div><span class="stat-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="كل الطلبات" data-en="All requests">كل الطلبات</div><div class="value num">57</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="إشعارات جديدة" data-en="New alerts">إشعارات جديدة</div><div class="value num">8</div><div class="delta down" data-ar="يتطلب انتباه" data-en="Needs attention">يتطلب انتباه</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg></span></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="رصيد الخزنة الحالي" data-en="Current treasury balance">رصيد الخزنة الحالي</span><div class="role-kpi-value num">262,200 <small style="font-size:12px;font-weight:600">EGP</small></div><div class="kpi-period trend-up" data-ar="↑ 4.2٪ عن الشهر الماضي" data-en="↑ 4.2% vs last month">↑ 4.2٪ عن الشهر الماضي</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الإيرادات" data-en="Total revenue">إجمالي الإيرادات</span><div class="role-kpi-value num">217,885</div><div class="kpi-period" data-ar="هذا الشهر" data-en="This month">هذا الشهر</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="كل الطلبات" data-en="All requests">كل الطلبات</span><div class="role-kpi-value num">57</div><div class="kpi-period" data-ar="12 جديدة هذا الأسبوع" data-en="12 new this week">12 جديدة هذا الأسبوع</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إشعارات جديدة" data-en="New alerts">إشعارات جديدة</span><div class="role-kpi-value num">8</div><div class="kpi-period trend-down" data-ar="يتطلب انتباه" data-en="Needs attention">يتطلب انتباه</div></div></div>
   </div>
 
   <div class="two-col">
@@ -81,6 +81,19 @@
             <tr><td data-label="الطلب"><span class="row-link num">SND-1044</span></td><td data-label="العميل">منى فتحي</td><td data-label="الحالة"><span class="badge badge-neutral">جديد</span></td><td data-label="المسؤول"><span style="color:var(--color-text-muted)" data-ar="غير معيَّن" data-en="Unassigned">غير معيَّن</span></td></tr>
           </tbody>
         </table></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3 data-ar="الطلبات حسب الحالة — آخر 7 أيام" data-en="Requests by status — last 7 days">الطلبات حسب الحالة — آخر 7 أيام</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--gray-200)"></span> <span data-ar="جديد" data-en="New">جديد</span></span><div class="dist-track"><div class="dist-fill" style="width:22%;background:var(--gray-200)"></div></div><span class="dist-value num">12</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--info-700)"></span> <span data-ar="قيد المراجعة" data-en="In review">قيد المراجعة</span></span><div class="dist-track"><div class="dist-fill" style="width:31%;background:var(--info-700)"></div></div><span class="dist-value num">17</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--warning-700)"></span> <span data-ar="بانتظار مستندات" data-en="Awaiting docs">بانتظار مستندات</span></span><div class="dist-track"><div class="dist-fill" style="width:20%;background:var(--warning-700)"></div></div><span class="dist-value num">11</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--success-700)"></span> <span data-ar="مكتمل" data-en="Completed">مكتمل</span></span><div class="dist-track"><div class="dist-fill" style="width:27%;background:var(--success-700)"></div></div><span class="dist-value num">15</span></div>
+          </div>
+          <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: أين تتكدّس الطلبات فعليًا؟ — يوجّه آدم لموازنة التحميل بين الموظفين." data-en="Business question: where are requests actually piling up? — helps Adam rebalance workload across staff.">سؤال العمل: أين تتكدّس الطلبات فعليًا؟ — يوجّه آدم لموازنة التحميل بين الموظفين.</p>
+        </div>
       </div>
 
       <div class="panel">

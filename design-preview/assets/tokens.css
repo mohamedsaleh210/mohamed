@@ -1,9 +1,18 @@
 /* ==========================================================================
-   Sanad Design System — Tokens (Phase 1 preview)
+   Sanad Design System — Tokens (Phase 1 preview, V2 refined)
    Evolves the existing Sanad palette (admin.css / style.css --ink/--brass/
    --paper/--muted) rather than replacing it. Every text/background pairing
    below is WCAG AA verified (>=4.5:1 normal text, >=3:1 large text/UI) —
    see design-preview/README.md for the full contrast table.
+
+   V2 note: the approved visual references use a dark teal/navy primary
+   (#0F4D4F) and gold accent (#D4AF37) that are already within the same
+   family as --navy-800 (#12303a) and --brass-500 (#c9a24b) established in
+   Phase 1 and contrast-verified in Phase 0B. Per the V2 brief ("refine the
+   design system, do not restart it"), the existing tokens are kept rather
+   than swapped for the reference's exact hex values — swapping would
+   re-open the whole Phase 0B contrast audit for a visually negligible hue
+   shift. See README V2 section for the full reasoning.
    ========================================================================== */
 
 :root{
@@ -64,6 +73,17 @@
   --color-info:var(--info-700);       --color-info-bg:var(--info-50);
 
   --color-focus-ring:rgba(201,162,75,.45);
+
+  /* ---- chart palette (V2) --------------------------------------------
+     Reused across every mini bar-chart/distribution-bar in the system so
+     multi-series charts read consistently. --chart-1 (brass) is always the
+     primary/first series; the rest are ordered by contrast against
+     --color-bg-app so a 2-4 series chart stays legible without a legend. */
+  --chart-1:var(--brass-500);
+  --chart-2:var(--navy-600);
+  --chart-3:var(--info-700);
+  --chart-4:var(--slate-400);
+  --chart-grid:var(--gray-100);
 
   /* ---- typography ------------------------------------------------- */
   /* Tajawal already carries both scripts well in production Sanad and

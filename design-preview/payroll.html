@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المرتبات والمسير — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — المرتبات والمسير" data-en="Design preview V2 — payroll">معاينة تصميم V2 — المرتبات والمسير</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div><a class="side-link" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a><a class="side-link" href="revenue-expenses.html"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</span></a><a class="side-link active" href="payroll.html"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="المرتبات" data-en="Payroll">المرتبات</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="المرتبات والمسير" data-en="Payroll">المرتبات والمسير</span></nav>
+  <div class="page-head"><div class="title-row">
+    <div><h1 data-ar="المرتبات والمسير" data-en="Payroll">المرتبات والمسير</h1><p style="color:var(--color-text-muted)" data-ar="مسير يونيو 2026" data-en="June 2026 payroll run">مسير يونيو 2026</p></div>
+    <div class="flex"><select class="select" style="min-width:110px"><option>2026</option></select><select class="select" style="min-width:110px"><option data-ar="يونيو" data-en="June">يونيو</option></select></div>
+  </div></div>
+
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="صافي الرواتب" data-en="Net payroll">صافي الرواتب</span><div class="role-kpi-value num">21,300</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الاستقطاعات" data-en="Total deductions">إجمالي الاستقطاعات</span><div class="role-kpi-value num">3,200</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرواتب الأساسية" data-en="Total base salaries">إجمالي الرواتب الأساسية</span><div class="role-kpi-value num">24,500</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="الموظفون في هذا المسير" data-en="Employees in this run">الموظفون في هذا المسير</span><div class="role-kpi-value">27</div></div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="سجلات المسير — آخر 4 شهور" data-en="Payroll history — last 4 months">سجلات المسير — آخر 4 شهور</h3></div>
+        <div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="الشهر" data-en="Month">الشهر</th><th data-ar="السنة" data-en="Year">السنة</th><th data-ar="عدد الموظفين" data-en="Employees">عدد الموظفين</th><th data-ar="إجمالي المستحقات" data-en="Gross">إجمالي المستحقات</th><th data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</th><th data-ar="صافي الرواتب" data-en="Net pay">صافي الرواتب</th><th data-ar="الحالة" data-en="Status">الحالة</th><th></th></tr></thead>
+          <tbody>
+            <tr><td data-label="الشهر" data-ar="يونيو" data-en="June">يونيو</td><td data-label="السنة" class="num">2026</td><td data-label="الموظفون" class="num">27</td><td data-label="الإجمالي" class="num">24,500</td><td data-label="الاستقطاعات" class="num">3,200</td><td data-label="الصافي" class="num" style="font-weight:700">21,300</td><td data-label="الحالة"><span class="badge badge-info" data-ar="قيد الاعتماد" data-en="Awaiting approval">قيد الاعتماد</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="عرض" data-en="View">عرض</button></td></tr>
+            <tr><td data-label="الشهر" data-ar="مايو" data-en="May">مايو</td><td data-label="السنة" class="num">2026</td><td data-label="الموظفون" class="num">26</td><td data-label="الإجمالي" class="num">23,800</td><td data-label="الاستقطاعات" class="num">3,100</td><td data-label="الصافي" class="num" style="font-weight:700">20,700</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مكتمل" data-en="Complete">مكتمل</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="عرض" data-en="View">عرض</button></td></tr>
+            <tr><td data-label="الشهر" data-ar="أبريل" data-en="April">أبريل</td><td data-label="السنة" class="num">2026</td><td data-label="الموظفون" class="num">26</td><td data-label="الإجمالي" class="num">23,600</td><td data-label="الاستقطاعات" class="num">3,050</td><td data-label="الصافي" class="num" style="font-weight:700">20,550</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مكتمل" data-en="Complete">مكتمل</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="عرض" data-en="View">عرض</button></td></tr>
+            <tr><td data-label="الشهر" data-ar="مارس" data-en="March">مارس</td><td data-label="السنة" class="num">2026</td><td data-label="الموظفون" class="num">25</td><td data-label="الإجمالي" class="num">22,900</td><td data-label="الاستقطاعات" class="num">2,950</td><td data-label="الصافي" class="num" style="font-weight:700">19,950</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مكتمل" data-en="Complete">مكتمل</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="عرض" data-en="View">عرض</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="panel"><div class="panel-head"><h3 data-ar="تفاصيل مسير يونيو — حسب الموظف" data-en="June run detail — by employee">تفاصيل مسير يونيو — حسب الموظف</h3></div>
+        <div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="الموظف" data-en="Employee">الموظف</th><th data-ar="الأساسي" data-en="Base">الأساسي</th><th data-ar="البدلات" data-en="Allowances">البدلات</th><th data-ar="الاستقطاعات" data-en="Deductions">الاستقطاعات</th><th data-ar="الصافي" data-en="Net">الصافي</th><th></th></tr></thead>
+          <tbody>
+            <tr><td data-label="الموظف" data-ar="عز الدين محمود" data-en="Ezz Eldeen Mahmoud">عز الدين محمود</td><td data-label="الأساسي" class="num">4,900</td><td data-label="البدلات" class="num">800</td><td data-label="الاستقطاعات" class="num">420</td><td data-label="الصافي" class="num" style="font-weight:700">5,280</td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+            <tr><td data-label="الموظف" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</td><td data-label="الأساسي" class="num">3,600</td><td data-label="البدلات" class="num">400</td><td data-label="الاستقطاعات" class="num">310</td><td data-label="الصافي" class="num" style="font-weight:700">3,690</td><td class="row-actions"><a href="employee-profile.html" class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-eye"/></svg></a></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel"><div class="panel-head"><h3 data-ar="إجراءات المسير" data-en="Payroll run actions">إجراءات المسير</h3></div>
+        <div class="panel-body">
+          <div class="steps-v">
+            <div class="sv-item done"><span class="sv-dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></span><div><div class="sv-title" data-ar="مراجعة البيانات" data-en="Review data">مراجعة البيانات</div><div class="sv-sub" data-ar="مراجعة الحضور والغياب والاستقطاعات" data-en="Review attendance and deductions">مراجعة الحضور والغياب والاستقطاعات</div></div></div>
+            <div class="sv-item done"><span class="sv-dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></span><div><div class="sv-title" data-ar="اعتماد المسير" data-en="Approve run">اعتماد المسير</div><div class="sv-sub" data-ar="اعتماد من المدير المالي" data-en="Approved by finance manager">اعتماد من المدير المالي</div></div></div>
+            <div class="sv-item current"><span class="sv-dot">3</span><div><div class="sv-title" data-ar="دفع من الخزنة" data-en="Pay from treasury">دفع من الخزنة</div><div class="sv-sub" data-ar="تنفيذ دفع الرواتب من الخزنة" data-en="Execute salary payment from treasury">تنفيذ دفع الرواتب من الخزنة</div></div></div>
+          </div>
+        </div>
+        <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="طباعة" data-en="Print">طباعة</button><button class="btn btn-accent btn-sm" data-ar="تنفيذ الدفع الآن" data-en="Pay now">تنفيذ الدفع الآن</button></div>
+      </div>
+
+      <div class="panel"><div class="panel-head"><h3 data-ar="تركيب صافي الرواتب" data-en="Net payroll composition">تركيب صافي الرواتب</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="أساسي" data-en="Base">أساسي</span></span><div class="dist-track"><div class="dist-fill" style="width:87%;background:var(--chart-1)"></div></div><span class="dist-value num">24,500</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="بدلات" data-en="Allowances">بدلات</span></span><div class="dist-track"><div class="dist-fill" style="width:14%;background:var(--chart-2)"></div></div><span class="dist-value num">3,900</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-4)"></span> <span data-ar="استقطاعات" data-en="Deductions">استقطاعات</span></span><div class="dist-track"><div class="dist-fill" style="width:11%;background:var(--chart-4)"></div></div><span class="dist-value num">−3,200</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel"><div class="panel-body">
+        <h3 class="role-panel-title" style="margin-bottom:10px" data-ar="تصدير" data-en="Export">تصدير</h3>
+        <div class="stack">
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg> <span data-ar="تصدير Excel" data-en="Export Excel">تصدير Excel</span></button>
+          <button class="btn btn-ghost btn-block" style="justify-content:flex-start"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="تصدير PDF" data-en="Export PDF">تصدير PDF</span></button>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

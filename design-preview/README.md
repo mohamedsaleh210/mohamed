@@ -1,4 +1,4 @@
-# Sanad Design System Preview — Phase 1
+# Sanad Design System Preview — Phase 1 (V2)
 
 **Status: preview only. Nothing in this directory is wired into the Sanad application.**
 No EJS, CSS, JS, route, database, auth, permission, API, responsive, or business-logic file
@@ -44,8 +44,17 @@ design-preview/
   portal.html          — customer portal shell (visual only, §7 below)
   lawyer-dashboard.html
   accountant-dashboard.html
-  sidebar-full-nav.html — refinement-pass addition: full 14-module nav, collapsible groups
-  screenshots/          — real Playwright/Chromium screenshots (390/768/1440, AR+EN)
+  sidebar-full-nav.html — full-navigation demo (now 18 modules, V2)
+  clients-companies.html — V2 addition
+  employees.html          — V2 addition
+  employee-profile.html   — V2 addition
+  permissions.html         — V2 addition (Sanad's real roles only)
+  revenue-expenses.html   — V2 addition
+  payroll.html             — V2 addition
+  reports.html             — V2 addition
+  settings-cms-security.html — V2 addition
+  screenshots/          — Phase 1 + refinement-pass screenshots (390/768/1440, AR+EN)
+  screenshots-v2/        — V2 screenshots for every prototype above + _v2-quality-report.json
 ```
 
 ---
@@ -67,6 +76,105 @@ accessibility/contrast compliance established above — all of that is preserved
 | 6 | Treasury | Added a second KPI row (monthly revenue, monthly expenses, outstanding custody, net in/out) and reference + linked-request columns on the transactions table; added a "Report" action alongside Export. | `treasury.html` |
 | 7 | Request detail | Kept the existing tab structure and added four tabs: Quotation, Payments, Subtasks, Visits & appointments — so the default (Details) view stays uncrowded while the full data model is demonstrated. | `request-detail.html` |
 | 8 | Design system | Elevation tokens (`--shadow-sm/md/lg`) tightened alongside the radius pass for a more grounded, less "floaty" feel; radius-scale swatch labels and a short note updated to match. Palette, typography, and all chip/badge/pill styling are unchanged. | `tokens.css`, `design-system.html` |
+
+---
+
+## V2 — reference-informed refinement (this pass)
+
+Built from three sources combined, per the V2 brief: (A) the real Sanad templates/CSS/routes for
+what every page actually contains, (B) five approved visual-reference screenshots (treasury/
+revenue/payroll dashboard, clients/support/subscriptions/security screens, employee list/profile/
+permissions/performance) for visual language only, and (C) the `ui-ux-pro-max` skill for
+hierarchy, KPI selection, chart-type choice, and responsive/consistency review. The references are
+**not** a functional spec: nothing was added, renamed, or removed from Sanad's real feature set
+because a reference image did or didn't show it — see §"Deliberately not copied" below.
+
+**Visual language adopted from the references:** icon-in-pastel-circle KPI cards with a period
+caption (`.kpi-card` / `.kpi-strip`), compact horizontal distribution bars for category splits
+(`.dist-list`), a pure-CSS/SVG daily bar chart (`.bar-chart`, no charting library — stays portable
+to Sanad's plain-CSS stack), ranked mini-lists for "top N" data (`.rank-list`), tighter panel
+radii/elevation, and a secondary settings side-nav. The references' exact hex identity
+(`#0F4D4F` navy-teal / `#D4AF37` gold / `#EBEFE9` light bg) was **not** substituted for Phase 1's
+tokens — see the note in `assets/tokens.css` for why (same family, already contrast-verified,
+swapping would re-open the Phase 0B AA audit for a negligible hue shift).
+
+### V2 prototype matrix
+
+| # | Prototype (file) | Real Sanad source | Reference principles used | KPI / chart reasoning | Responsive & RTL/LTR |
+|---|---|---|---|---|---|
+| 1 | Design System V2 (`design-system.html`) | `public/css/admin.css`, `style.css`, audit's token findings | KPI-v2 cards, mini bar chart, distribution bars, permission role-cards, vertical workflow steps — added as new documented sections (§17–19) | N/A — this page documents the KPI/chart components other pages use | 390/768/1440 verified; AR+EN toggle |
+| 2 | Public homepage (`public-home.html`) | `views/public/home.ejs` + real service/category/testimonial content | Product-preview "browser chrome" mockup with mini KPIs, floating contextual notification cards, subtle legal watermark texture | No KPIs invented for marketing copy; the 3 KPIs shown inside the product mockup (open requests / avg completion / satisfaction) mirror the same numbers used on `admin-dashboard.html` | 1440/768/390; AR+EN mirrors nav, hero grid, drawer side |
+| 3 | Admin dashboard (`admin-dashboard.html`) | `views/admin/dashboard.ejs` | Icon-circle KPI strip; "requests by status" distribution replacing an empty second panel | Status distribution: real field (`request.status`) — answers "where are requests piling up," directly actionable (rebalance staff) | 1440/390; AR+EN |
+| 4 | Full-navigation sidebar (`sidebar-full-nav.html`) | `views/partials/admin_nav.ejs` + `lib/permissions.js` module list | Same navy/gold sidebar, collapsible groups per reference's grouped-menu density | N/A | 1440/390; AR+EN; collapsed-group state shown |
+| 5 | Requests (`requests.html`) | `views/admin/requests.ejs` (per audit) | KPI strip above the table (reference's finance-dashboard KPI-then-table pattern) | Total/open/urgent/completion — all derivable from `status` + `flag_urgent` fields already in the table rows | 1440/390; AR+EN; table→card confirmed at 390 |
+| 6 | Request detail (`request-detail.html`) | same | Tabs kept from Phase 1; added quotation/payments/subtasks/visits tabs (reference's document-rich detail pattern) | N/A (no chart — a single request has no series to plot) | 1440/390; AR+EN; 8 tabs scroll horizontally on mobile, no overflow |
+| 7 | Cases (`cases.html`) | `views/admin/cases.ejs` (per audit) | Case-detail block with tabs (overview / memoranda-docs-evidence / fees / judgment-appeal-execution), multi-avatar team stack | N/A (status counts shown as KPI strip: active/filed/judgment/hearings-this-week — all real case fields) | 1440/390; AR+EN |
+| 8 | Clients & companies (`clients-companies.html`) | audit-identified module, no existing preview page | Compact list + quick-filter pills + a representative profile card (reference's client-list pattern) | Request count / outstanding balance shown per row — both plausible existing fields (mirrors treasury's per-request balance already used in `treasury.html`) | 1440/390; AR+EN |
+| 9 | Employee list (`employees.html`) | audit-identified module (`lib/permissions.js` roles) | Status-dot list, department/role columns, KPI strip (total/active/leave/inactive) | Counts are simple status tallies of the same rows in the table | 1440/390; AR+EN |
+| 10 | Employee profile (`employee-profile.html`) | same | 3-column profile: personal info / workload+payroll / permissions+devices (reference's profile layout) | Payroll mini-distribution (base/allowances/deductions) links to the same numbers shown in `payroll.html` — not invented separately | 1440/390 (stacks to 1 col ≤760px); AR+EN |
+| 11 | Permissions (`permissions.html`) | `lib/permissions.js` — **Sanad's real roles only: admin, supervisor, lawyer, accountant** | Role-card list + permission-group grid + sensitive-permission warning box | N/A | 1440/390; AR+EN; explicit on-page note that no roles were invented |
+| 12 | Treasury (`treasury.html`) | `views/admin/treasury.ejs` (per audit) | Icon-circle KPIs (was plain stat-cards), distribution bars for collection-method split | Collection-method split answers "are we over-reliant on one channel" | 1440/390; AR+EN |
+| 13 | Revenue / Expenses (`revenue-expenses.html`) | audit-identified module | Daily bar chart + payment-method distribution + top-services rank list + receivables table (reference's revenue-dashboard layout), tabbed to add Expenses without duplicating the shell | Daily trend: "is revenue trending up". Top services: "which services should we invest in". Receivables: real overdue-tracking need | 1440/390; AR+EN; tab default un-crowds the view |
+| 14 | Payroll (`payroll.html`) | audit-identified module | KPI strip, payroll-history table, vertical workflow steps (review→approve→pay), per-employee breakdown, net-composition distribution | All figures reconcile: base+allowances−deductions=net, shown 3 ways (KPI, table, distribution) from one consistent dataset | 1440/390; AR+EN |
+| 15 | Reports (`reports.html`) | audit-identified module | KPI/filter/chart/table organization + "report identity" panel (mirrors reference's company/tax-identity panel) | Weekly trend: capacity-planning question. Requests-by-service: informs staffing/marketing | 1440/390; AR+EN; PDF/Excel actions kept conceptual (no invented export logic) |
+| 16 | Settings / CMS / Security (`settings-cms-security.html`) | audit-identified module | Sticky secondary settings nav, grouped panels, integration status cards, activity-log table, danger-zone pattern | N/A | 1440/390; AR+EN; nav fixed to not stretch full-page height (V2 bug caught and fixed, see Known issues fixed) |
+| 17 | Customer portal (`portal.html`) | `views/portal/*.ejs` | Kept deliberately simpler than staff pages per brief §21; only the top nav gained horizontal-scroll safety (see Known issues fixed) | N/A | 1440/390; AR+EN; no routing/auth touched |
+| 18 | Lawyer dashboard (`lawyer-dashboard.html`) | role-scoped dashboard, audit-identified | KPI-v2 cards; added workload distribution (requests/cases/consultations) | Workload split: real counts of the lawyer's own assigned rows, already shown in the two panels above it | 1440/390; AR+EN |
+| 19 | Accountant dashboard (`accountant-dashboard.html`) | same | KPI-v2 cards; added revenue-vs-expenses distribution | Directly reflects the two KPI numbers already on the page — no new data source | 1440/390; AR+EN |
+
+### Known issues found and fixed during this pass
+
+The V2 quality gate (Playwright script computing `document.documentElement.scrollWidth` at
+390px, plus manual bisection) caught four real horizontal-overflow bugs, all fixed before final
+screenshots:
+
+1. **`request-detail.html` / `cases.html`** — the 8-tab / 4-tab horizontal-scrolling tab bar
+   (`.tabs{overflow-x:auto}`) was blowing out its flex-column ancestor (`.stack`) because a flex
+   item's automatic minimum width defaults to its content size, not 0. Fixed by adding
+   `min-width:0` to `.stack` in `components.css` — a one-line, low-risk fix that applies
+   everywhere `.stack` wraps scrollable content.
+2. **`portal.html`** — the 5-item portal top nav (`.portal-nav`) had no wrap/scroll behavior and
+   forced the page 114px wider than the viewport at 390px. Fixed with `overflow-x:auto` +
+   `white-space:nowrap` on the nav links (`layout.css`), the same pattern already used for `.tabs`.
+3. **`design-system.html`** — the "shell patterns" demo frame (a fixed 220px sidebar mockup)
+   pushed the whole two-column TOC layout to 519px minimum width even at 390px, because
+   `overflow:hidden` on a *descendant* doesn't cap an *ancestor* grid track's automatic minimum
+   size. Fixed with `min-width:0` on the actual grid item (`.ds-shell > main`) plus
+   `overflow-x:auto` on the demo frame itself so it scrolls instead of clipping invisibly.
+4. **`settings-cms-security.html`** — the settings side-nav (`.settings-nav`) was stretching to
+   the full height of the very long content column (CSS Grid's default `align-items:stretch`),
+   which combined with implicit grid-row stretch made the active link's dark background balloon
+   to fill the whole column. Fixed with `align-items:start` on `.settings-shell` and made the nav
+   `position:sticky` (a genuine UX improvement, not just a bug fix).
+
+All four are documented here rather than silently fixed, per the review process established in
+Phase 0/0B: analyze the real cause before patching, then record it.
+
+### Deliberately not copied from the reference images
+
+- The references' exact color hex values (`#0F4D4F`/`#D4AF37`/`#EBEFE9`) — Phase 1's
+  already-audited navy/brass tokens were kept (see `tokens.css` note).
+- Role names shown in the references ("مدير النظام", "مراجع", generic "موظف") — the Permissions
+  page uses Sanad's **real** four roles from `lib/permissions.js` only (admin/supervisor/
+  lawyer/accountant); no "reviewer" or generic "staff" role was invented.
+- The references' support-ticket kanban board and company-subscription screens — not in the V2
+  deliverable list (§27), so not built, to keep scope matched to what was actually requested.
+- Emoji used in one reference-adjacent earlier draft (🔴) — removed; replaced with a CSS dot
+  indicator, per the brief's explicit "avoid emoji" instruction.
+- Any KPI or chart that would require data Sanad doesn't currently expose (e.g., no invented
+  "customer lifetime value" or "predicted churn" metrics, even though dashboards like this often
+  have them) — flagged as a **possible future enhancement**, not built into this preview.
+
+### Accessibility & environment notes
+
+- Every new component reuses Phase 0B's contrast-verified color tokens; no new raw colors were
+  introduced. Focus-visible styling, `role="status"`/`role="alert"` on alerts, and
+  `aria-hidden` on decorative icons all carry over unchanged from Phase 1.
+- The Playwright console-error check flagged one identical error on every single page:
+  `net::ERR_CERT_AUTHORITY_INVALID` for the Google Fonts `<link>` request. This is the sandboxed
+  session's network proxy intercepting TLS for an external CDN — not a real application error
+  (the page still renders with the system fallback in the font stack). It is reported here rather
+  than hidden.
 
 ---
 

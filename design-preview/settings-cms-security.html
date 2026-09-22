@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الإعدادات — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.svc-row{display:grid;grid-template-columns:2fr 1.4fr 90px 90px;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--color-border);font-size:13px}
+.svc-row:first-child{border-top:0}
+.svc-row.head{font-size:11px;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;background:var(--color-bg-app)}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — الإعدادات / CMS / الأمان" data-en="Design preview V2 — settings / CMS / security">معاينة تصميم V2 — الإعدادات / CMS / الأمان</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="المحتوى والإعدادات" data-en="Content & settings">المحتوى والإعدادات</div><a class="side-link" href="permissions.html"><svg class="icon"><use href="assets/icons.svg#i-shield"/></svg> <span data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</span></a><a class="side-link active" href="settings-cms-security.html"><svg class="icon"><use href="assets/icons.svg#i-settings"/></svg> <span data-ar="الإعدادات والأمان" data-en="Settings & security">الإعدادات والأمان</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الإعدادات" data-en="Settings">الإعدادات</span></nav>
+  <div class="page-head"><h1 data-ar="الإعدادات" data-en="Settings">الإعدادات</h1></div>
+
+  <div class="settings-shell">
+    <nav class="settings-nav">
+      <a href="#svc" class="active"><svg class="icon-sm"><use href="assets/icons.svg#i-folder"/></svg> <span data-ar="الأقسام والخدمات" data-en="Departments & services">الأقسام والخدمات</span></a>
+      <a href="#site"><svg class="icon-sm"><use href="assets/icons.svg#i-globe"/></svg> <span data-ar="إعدادات الموقع" data-en="Site settings">إعدادات الموقع</span></a>
+      <a href="#mail"><svg class="icon-sm"><use href="assets/icons.svg#i-mail"/></svg> <span data-ar="البريد والتكاملات" data-en="Mail & integrations">البريد والتكاملات</span></a>
+      <a href="#cms"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="محتوى الموقع (CMS)" data-en="Site content (CMS)">محتوى الموقع (CMS)</span></a>
+      <a href="#activity"><svg class="icon-sm"><use href="assets/icons.svg#i-clock"/></svg> <span data-ar="سجل النشاط والملفات" data-en="Activity & file log">سجل النشاط والملفات</span></a>
+    </nav>
+
+    <div class="stack">
+      <div class="panel" id="svc">
+        <div class="panel-head"><h3 data-ar="الأقسام والخدمات الخارجية" data-en="Departments & external services">الأقسام والخدمات الخارجية</h3><button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="إضافة خدمة" data-en="Add service">إضافة خدمة</span></button></div>
+        <div class="panel-body flush">
+          <div class="svc-row head"><span data-ar="الخدمة" data-en="Service">الخدمة</span><span data-ar="القسم" data-en="Department">القسم</span><span data-ar="الحالة" data-en="Status">الحالة</span><span></span></div>
+          <div class="svc-row"><span data-ar="التراخيص والعقود" data-en="Licenses & contracts">التراخيص والعقود</span><span style="color:var(--color-text-muted)" data-ar="الخدمات القانونية" data-en="Legal services">الخدمات القانونية</span><span class="badge badge-success" data-ar="نشط" data-en="Active">نشط</span><span class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg></button></span></div>
+          <div class="svc-row"><span data-ar="الاستشارات القانونية" data-en="Legal consultations">الاستشارات القانونية</span><span style="color:var(--color-text-muted)" data-ar="الخدمات القانونية" data-en="Legal services">الخدمات القانونية</span><span class="badge badge-success" data-ar="نشط" data-en="Active">نشط</span><span class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg></button></span></div>
+          <div class="svc-row"><span data-ar="مراجعة العقود" data-en="Contract review">مراجعة العقود</span><span style="color:var(--color-text-muted)" data-ar="الخدمات القانونية" data-en="Legal services">الخدمات القانونية</span><span class="badge badge-success" data-ar="نشط" data-en="Active">نشط</span><span class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg></button></span></div>
+          <div class="svc-row"><span data-ar="الطلبات الحكومية" data-en="Government filings">الطلبات الحكومية</span><span style="color:var(--color-text-muted)" data-ar="الخدمات الإدارية" data-en="Admin services">الخدمات الإدارية</span><span class="badge badge-neutral" data-ar="معطّل" data-en="Disabled">معطّل</span><span class="row-actions"><button class="btn btn-icon btn-subtle btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-edit"/></svg></button></span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="site">
+        <div class="panel-head"><h3 data-ar="إعدادات الموقع" data-en="Site settings">إعدادات الموقع</h3></div>
+        <div class="panel-body grid grid-2">
+          <div class="field"><label class="field-label" data-ar="اسم الموقع" data-en="Site name">اسم الموقع</label><input class="input" value="سند"></div>
+          <div class="field"><label class="field-label" data-ar="العبارة التعريفية" data-en="Tagline">العبارة التعريفية</label><input class="input" value="تراخيصك وعقودك… ونحن نتكفّل بالإجراءات"></div>
+          <div class="field"><label class="field-label" data-ar="العملة" data-en="Currency">العملة</label><select class="select"><option>EGP</option></select></div>
+          <div class="field"><label class="field-label" data-ar="رقم واتساب الدعم" data-en="Support WhatsApp number">رقم واتساب الدعم</label><input class="input num" dir="ltr" value="+20 100 000 0000"></div>
+        </div>
+        <div class="panel-foot"><button class="btn btn-accent btn-sm" data-ar="حفظ" data-en="Save">حفظ</button></div>
+      </div>
+
+      <div class="panel" id="mail">
+        <div class="panel-head"><h3 data-ar="البريد والتكاملات الخارجية" data-en="Mail & external integrations">البريد والتكاملات الخارجية</h3></div>
+        <div class="panel-body">
+          <div class="alert alert-warning" role="status" style="margin-bottom:var(--space-4)"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg><div><strong data-ar="تنبيه أمني" data-en="Security notice">تنبيه أمني</strong><p data-ar="لا تشارك مفاتيح الوصول أو كلمات السر عبر أي قناة غير آمنة." data-en="Don't share access keys or passwords over any unsecured channel.">لا تشارك مفاتيح الوصول أو كلمات السر عبر أي قناة غير آمنة.</p></div></div>
+          <div class="grid grid-2">
+            <div class="field"><label class="field-label" data-ar="خادم SMTP" data-en="SMTP server">خادم SMTP</label><input class="input num" dir="ltr" value="smtp.sanad-law.com"></div>
+            <div class="field"><label class="field-label" data-ar="المنفذ" data-en="Port">المنفذ</label><input class="input num" dir="ltr" value="587"></div>
+          </div>
+          <div class="flex" style="gap:10px;margin-top:var(--space-2)">
+            <div class="panel" style="flex:1;padding:var(--space-3)"><div class="flex-between"><span data-ar="Google OAuth" data-en="Google OAuth">Google OAuth</span><span class="badge badge-success" data-ar="مفعَّل" data-en="Enabled">مفعَّل</span></div></div>
+            <div class="panel" style="flex:1;padding:var(--space-3)"><div class="flex-between"><span data-ar="Google Drive" data-en="Google Drive">Google Drive</span><span class="badge badge-neutral" data-ar="غير مفعَّل" data-en="Not enabled">غير مفعَّل</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="cms">
+        <div class="panel-head"><h3 data-ar="محتوى الموقع (CMS)" data-en="Site content (CMS)">محتوى الموقع (CMS)</h3></div>
+        <div class="panel-body stack">
+          <div class="flex-between" style="padding:10px 0;border-bottom:1px solid var(--color-border)"><span class="flex" style="gap:8px"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="الصفحة الرئيسية" data-en="Homepage">الصفحة الرئيسية</span></span><button class="btn btn-ghost btn-sm" data-ar="تحرير" data-en="Edit">تحرير</button></div>
+          <div class="flex-between" style="padding:10px 0;border-bottom:1px solid var(--color-border)"><span class="flex" style="gap:8px"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="من نحن" data-en="About">من نحن</span></span><button class="btn btn-ghost btn-sm" data-ar="تحرير" data-en="Edit">تحرير</button></div>
+          <div class="flex-between" style="padding:10px 0"><span class="flex" style="gap:8px"><svg class="icon-sm"><use href="assets/icons.svg#i-file"/></svg> <span data-ar="الأسئلة الشائعة" data-en="FAQ">الأسئلة الشائعة</span></span><button class="btn btn-ghost btn-sm" data-ar="تحرير" data-en="Edit">تحرير</button></div>
+        </div>
+      </div>
+
+      <div class="panel" id="activity">
+        <div class="panel-head"><h3 data-ar="سجل النشاط والملفات" data-en="Activity & file log">سجل النشاط والملفات</h3></div>
+        <div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="الوقت" data-en="Time">الوقت</th><th data-ar="المستخدم" data-en="User">المستخدم</th><th data-ar="الحدث" data-en="Event">الحدث</th><th data-ar="التفاصيل" data-en="Details">التفاصيل</th><th data-ar="IP" data-en="IP">IP</th></tr></thead>
+          <tbody>
+            <tr><td data-label="الوقت" class="num">2026/09/21 14:23</td><td data-label="المستخدم" data-ar="محمد العتيبي" data-en="Mohamed Elotaibi">محمد العتيبي</td><td data-label="الحدث"><span class="badge badge-success" data-ar="تسجيل دخول" data-en="Login">تسجيل دخول</span></td><td data-label="التفاصيل" data-ar="تم تسجيل الدخول بنجاح" data-en="Signed in successfully">تم تسجيل الدخول بنجاح</td><td data-label="IP" class="num" dir="ltr">192.168.1.10</td></tr>
+            <tr><td data-label="الوقت" class="num">2026/09/21 13:50</td><td data-label="المستخدم" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</td><td data-label="الحدث"><span class="badge badge-info" data-ar="رفع ملف" data-en="File upload">رفع ملف</span></td><td data-label="التفاصيل" data-ar="تم رفع ملف العقد PDF" data-en="Uploaded contract PDF">تم رفع ملف العقد PDF</td><td data-label="IP" class="num" dir="ltr">192.168.1.15</td></tr>
+            <tr><td data-label="الوقت" class="num">2026/09/21 11:12</td><td data-label="المستخدم" data-ar="محمد العتيبي" data-en="Mohamed Elotaibi">محمد العتيبي</td><td data-label="الحدث"><span class="badge badge-warning" data-ar="تعديل بيانات" data-en="Data edit">تعديل بيانات</span></td><td data-label="التفاصيل" data-ar="تم تعديل بيانات الموظف" data-en="Edited employee data">تم تعديل بيانات الموظف</td><td data-label="IP" class="num" dir="ltr">192.168.1.22</td></tr>
+            <tr><td data-label="الوقت" class="num">2026/09/21 09:45</td><td data-label="المستخدم" data-ar="سارة أحمد" data-en="Sara Ahmed">سارة أحمد</td><td data-label="الحدث"><span class="badge badge-danger" data-ar="حذف ملف" data-en="File delete">حذف ملف</span></td><td data-label="التفاصيل" data-ar="تم حذف ملف قديم" data-en="Deleted an old file">تم حذف ملف قديم</td><td data-label="IP" class="num" dir="ltr">192.168.1.15</td></tr>
+          </tbody>
+        </table></div>
+        <div class="panel-body" style="padding-top:var(--space-4)">
+          <div class="danger-zone">
+            <div class="dz-text"><strong data-ar="تنظيف الملفات القديمة" data-en="Clean up old files">تنظيف الملفات القديمة</strong><p data-ar="سيتم حذف الملفات التي مر عليها أكثر من 180 يومًا. لا يمكن التراجع عن هذا الإجراء." data-en="Files older than 180 days will be deleted. This action cannot be undone.">سيتم حذف الملفات التي مر عليها أكثر من 180 يومًا. لا يمكن التراجع عن هذا الإجراء.</p></div>
+            <button class="btn btn-danger btn-sm" data-ar="تنفيذ التنظيف" data-en="Run cleanup">تنفيذ التنظيف</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -11,10 +11,7 @@
 .hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
 .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4)}
 @media(max-width:1024px){.two-col{grid-template-columns:1fr}}
-.safe-card{border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);background:#fff}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-row .bar-track{flex:1;height:10px;background:var(--gray-100);border-radius:99px;overflow:hidden}
-.bar-row .bar-fill{height:100%;border-radius:99px}</style>
+.safe-card{border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);background:#fff}</style>
 </head>
 <body>
 <div class="hero-preview-bar"><span data-ar="معاينة تصميم — الخزنة والمحاسبة" data-en="Design preview — treasury & accounting">معاينة تصميم — الخزنة والمحاسبة</span><button id="langToggle"><span data-lang-label>English</span></button></div>
@@ -23,23 +20,23 @@
 <div class="shell">
 <aside class="sidebar" id="sidebar">
   <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
-  <div class="side-group"><div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div><a class="side-link active" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a><a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات" data-en="Revenue">الإيرادات</span></a><a class="side-link" href="#"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="المصروفات" data-en="Expenses">المصروفات</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div><a class="side-link active" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a><a class="side-link" href="revenue-expenses.html"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</span></a><a class="side-link" href="payroll.html"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="المرتبات" data-en="Payroll">المرتبات</span></a></div>
 </aside>
 <main class="main">
   <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الخزنة" data-en="Treasury">الخزنة</span></nav>
   <div class="page-head"><div class="title-row"><div><h1 data-ar="الخزنة" data-en="Treasury">الخزنة</h1><p data-ar="النقدية والبنك وإنستاباي — حركات وموافقات." data-en="Cash, bank, and Instapay — transactions and approvals.">النقدية والبنك وإنستاباي — حركات وموافقات.</p></div><div class="flex"><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-print"/></svg> <span data-ar="تقرير" data-en="Report">تقرير</span></button><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg> <span data-ar="تصدير" data-en="Export">تصدير</span></button><button class="btn btn-accent btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="حركة جديدة" data-en="New transaction">حركة جديدة</span></button></div></div></div>
 
-  <div class="stat-grid" style="margin-bottom:var(--space-4)">
-    <div class="stat-card featured"><div><div class="label" data-ar="إجمالي الرصيد" data-en="Total balance">إجمالي الرصيد</div><div class="value num">262,200 <small style="font-size:13px">EGP</small></div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="نقدي" data-en="Cash">نقدي</div><div class="value num">84,500</div></div></div>
-    <div class="stat-card"><div><div class="label" data-ar="بنكي" data-en="Bank">بنكي</div><div class="value num">150,300</div></div></div>
-    <div class="stat-card"><div><div class="label" data-ar="إنستاباي" data-en="Instapay">إنستاباي</div><div class="value num">27,400</div></div></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-3)">
+    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الرصيد" data-en="Total balance">إجمالي الرصيد</span><div class="role-kpi-value num">262,200 <small style="font-size:11px;font-weight:600">EGP</small></div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="نقدي" data-en="Cash">نقدي</span><div class="role-kpi-value num">84,500</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بنكي" data-en="Bank">بنكي</span><div class="role-kpi-value num">150,300</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إنستاباي" data-en="Instapay">إنستاباي</span><div class="role-kpi-value num">27,400</div></div></div>
   </div>
-  <div class="stat-grid" style="margin-bottom:var(--space-5)">
-    <div class="stat-card"><div><div class="label" data-ar="إيرادات الشهر" data-en="Monthly revenue">إيرادات الشهر</div><div class="value num">217,885</div><div class="delta up" data-ar="↑ 6.1٪" data-en="↑ 6.1%">↑ 6.1٪</div></div><span class="stat-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="مصروفات الشهر" data-en="Monthly expenses">مصروفات الشهر</div><div class="value num">14,610</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="عهد قائمة" data-en="Outstanding custody">عهد قائمة</div><div class="value num">4,300</div></div><span class="stat-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="صافي التدفق (وارد/منصرف)" data-en="Net flow (in/out)">صافي التدفق (وارد/منصرف)</div><div class="value num" style="color:var(--color-success)">+ 22,650</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg></span></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-download"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إيرادات الشهر" data-en="Monthly revenue">إيرادات الشهر</span><div class="role-kpi-value num">217,885</div><div class="kpi-period trend-up" data-ar="↑ 6.1٪" data-en="↑ 6.1%">↑ 6.1٪</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-upload"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مصروفات الشهر" data-en="Monthly expenses">مصروفات الشهر</span><div class="role-kpi-value num">14,610</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عهد قائمة" data-en="Outstanding custody">عهد قائمة</span><div class="role-kpi-value num">4,300</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-gauge"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="صافي التدفق (وارد/منصرف)" data-en="Net flow (in/out)">صافي التدفق (وارد/منصرف)</span><div class="role-kpi-value num trend-up">+ 22,650</div></div></div>
   </div>
 
   <div class="two-col">
@@ -61,9 +58,12 @@
     <div class="stack">
       <div class="panel"><div class="panel-head"><h3 data-ar="توزيع طرق التحصيل" data-en="Collection method split">توزيع طرق التحصيل</h3></div>
         <div class="panel-body">
-          <div class="bar-row"><span style="font-size:13px;width:70px" data-ar="نقدي" data-en="Cash">نقدي</span><div class="bar-track"><div class="bar-fill" style="width:32%;background:var(--navy-800)"></div></div><span class="num" style="font-size:12px">32٪</span></div>
-          <div class="bar-row"><span style="font-size:13px;width:70px" data-ar="بنكي" data-en="Bank">بنكي</span><div class="bar-track"><div class="bar-fill" style="width:57%;background:var(--brass-500)"></div></div><span class="num" style="font-size:12px">57٪</span></div>
-          <div class="bar-row"><span style="font-size:13px;width:70px" data-ar="إنستاباي" data-en="Instapay">إنستاباي</span><div class="bar-track"><div class="bar-fill" style="width:11%;background:var(--info-700)"></div></div><span class="num" style="font-size:12px">11٪</span></div>
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="نقدي" data-en="Cash">نقدي</span></span><div class="dist-track"><div class="dist-fill" style="width:32%;background:var(--chart-2)"></div></div><span class="dist-value num">32٪</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="بنكي" data-en="Bank">بنكي</span></span><div class="dist-track"><div class="dist-fill" style="width:57%;background:var(--chart-1)"></div></div><span class="dist-value num">57٪</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="إنستاباي" data-en="Instapay">إنستاباي</span></span><div class="dist-track"><div class="dist-fill" style="width:11%;background:var(--chart-3)"></div></div><span class="dist-value num">11٪</span></div>
+          </div>
+          <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: هل نعتمد على قناة تحصيل واحدة بشكل مبالغ فيه؟" data-en="Business question: are we over-reliant on a single collection channel?">سؤال العمل: هل نعتمد على قناة تحصيل واحدة بشكل مبالغ فيه؟</p>
         </div>
       </div>
       <div class="panel"><div class="panel-head"><h3 data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</h3></div>

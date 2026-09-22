@@ -1,0 +1,82 @@
+{
+  "consoleErrors": {
+    "homepage": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "dashboard": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "sidebar-full-nav": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "requests": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "request-detail": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "cases": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "clients-companies": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "employees": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "employee-profile": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "permissions": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "treasury": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "revenue-expenses": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "payroll": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "reports": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "settings": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "portal": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "lawyer-dashboard": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "accountant-dashboard": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ],
+    "design-system": [
+      "Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID"
+    ]
+  },
+  "overflow390": {
+    "homepage": false,
+    "dashboard": false,
+    "sidebar-full-nav": false,
+    "requests": false,
+    "request-detail": false,
+    "cases": false,
+    "clients-companies": false,
+    "employees": false,
+    "employee-profile": false,
+    "permissions": false,
+    "treasury": false,
+    "revenue-expenses": false,
+    "payroll": false,
+    "reports": false,
+    "settings": false,
+    "portal": false,
+    "lawyer-dashboard": false,
+    "accountant-dashboard": false,
+    "design-system": false
+  }
+}

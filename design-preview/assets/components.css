@@ -35,7 +35,7 @@ p{margin:0 0 var(--space-3)}
 .grid-4{grid-template-columns:repeat(4,1fr)}
 .flex{display:flex;gap:var(--space-3);align-items:center}
 .flex-between{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}
-.stack{display:flex;flex-direction:column;gap:var(--space-2)}
+.stack{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
 
 /* =============================================================== buttons */
 .btn{
@@ -187,9 +187,12 @@ p{margin:0 0 var(--space-3)}
 .filter-field{min-width:160px;flex:1}
 .filter-field .field-label{font-size:var(--text-xs);margin-bottom:4px;font-weight:var(--weight-medium);color:var(--color-text-muted)}
 .filter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:var(--space-4)}
-.filter-pill{padding:8px 16px;border-radius:var(--radius-full);border:1px solid var(--color-border);background:var(--color-surface);font-size:var(--text-xs);font-weight:var(--weight-bold);color:var(--color-text-muted);cursor:pointer}
+.filter-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-full);border:1px solid var(--color-border);background:var(--color-surface);font-size:var(--text-xs);font-weight:var(--weight-bold);color:var(--color-text-muted);cursor:pointer}
 .filter-pill.active{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
-.filter-pill.urgent.active{background:var(--color-danger);border-color:var(--color-danger)}
+.filter-pill.urgent{color:var(--color-danger);border-color:#f2c4c1}
+.filter-pill.urgent::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--color-danger);flex:none}
+.filter-pill.urgent.active{background:var(--color-danger);border-color:var(--color-danger);color:#fff}
+.filter-pill.urgent.active::before{background:#fff}
 
 /* =============================================================== pagination */
 .pagination{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);padding-top:var(--space-4);flex-wrap:wrap}
@@ -266,3 +269,105 @@ table.tbl .row-actions{display:flex;gap:6px;justify-content:flex-end}
 .step.done::before{background:var(--color-success)}
 .step.current .dot{background:var(--navy-800);color:#fff;box-shadow:0 0 0 4px var(--color-accent-soft)}
 .step.current{color:var(--color-text-strong);font-weight:var(--weight-bold)}
+
+/* ==========================================================================
+   V2 additions — typography roles, KPI-v2, charts, permissions, vertical
+   workflow steps. Everything below composes the existing tokens; nothing
+   in the base system above was removed.
+   ========================================================================== */
+
+/* ---- typographic roles (V2) --------------------------------------------
+   Named utility classes so every screen uses the same role consistently,
+   instead of ad-hoc inline font-sizes. Maps onto the existing --text-*
+   scale — no new sizes introduced. */
+.role-page-title{font-size:var(--text-3xl);font-weight:var(--weight-black);color:var(--color-text-strong);line-height:var(--leading-tight);margin:0}
+.role-section-title{font-size:var(--text-xl);font-weight:var(--weight-black);color:var(--color-text-strong);margin:0}
+.role-panel-title{font-size:var(--text-md);font-weight:var(--weight-bold);color:var(--color-text-strong);margin:0}
+.role-kpi-label{font-size:var(--text-xs);font-weight:var(--weight-bold);color:var(--color-text-muted)}
+.role-kpi-value{font-size:var(--text-xl);font-weight:var(--weight-black);color:var(--color-text-strong);font-variant-numeric:tabular-nums}
+.role-field-label{font-size:var(--text-sm);font-weight:var(--weight-bold);color:var(--color-text-strong)}
+.role-table-header{font-size:var(--text-xs);font-weight:var(--weight-bold);text-transform:uppercase;letter-spacing:.03em;color:var(--color-text-muted)}
+.role-body{font-size:var(--text-base);color:var(--color-text)}
+.role-secondary{font-size:var(--text-sm);color:var(--color-text-muted)}
+.role-metadata{font-size:var(--text-xs);color:var(--color-text-muted)}
+
+/* ---- KPI card v2: icon in a pastel circle + value + period caption ----- */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3)}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4);display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow-xs)}
+.kpi-card .kpi-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.kpi-card .kpi-body{min-width:0}
+.kpi-card .role-kpi-label{display:block;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-card .kpi-period{font-size:10.5px;color:var(--color-text-muted);margin-top:2px}
+.kpi-card.featured{background:linear-gradient(135deg,var(--navy-800),var(--navy-700));border-color:var(--navy-800)}
+.kpi-card.featured .role-kpi-label,.kpi-card.featured .kpi-period{color:#b9c8ce}
+.kpi-card.featured .role-kpi-value{color:#fff}
+.kpi-card.featured .kpi-icon{background:rgba(255,255,255,.14);color:var(--brass-300)}
+@media (max-width:999px){.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.kpi-strip{grid-template-columns:1fr}}
+
+/* ---- mini bar chart (vertical) — pure CSS, no chart library ------------ */
+.bar-chart{display:flex;flex-direction:column;gap:6px}
+.bar-chart .bc-plot{display:flex;align-items:flex-end;gap:4px;height:120px;border-bottom:1px solid var(--chart-grid);padding-bottom:2px}
+.bar-chart .bc-bar{flex:1;background:var(--chart-1);border-radius:3px 3px 0 0;min-height:3px}
+.bar-chart .bc-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-muted)}
+.bar-chart .bc-yaxis{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-muted);margin-bottom:4px}
+
+/* ---- horizontal distribution bars (e.g. payment-method split) ---------- */
+.dist-list{display:grid;gap:10px}
+.dist-row{display:flex;align-items:center;gap:10px}
+.dist-row .dist-label{font-size:var(--text-sm);width:92px;flex:none;display:flex;align-items:center;gap:6px}
+.dist-row .dist-label .sw{width:8px;height:8px;border-radius:50%;flex:none}
+.dist-row .dist-track{flex:1;height:9px;background:var(--gray-100);border-radius:99px;overflow:hidden}
+.dist-row .dist-fill{height:100%;border-radius:99px}
+.dist-row .dist-value{font-size:var(--text-xs);font-weight:var(--weight-bold);width:64px;flex:none;text-align:end}
+
+/* ---- ranked mini list (top services / receivables aging) --------------- */
+.rank-list{display:grid}
+.rank-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--color-border)}
+.rank-row:last-child{border-bottom:0}
+.rank-row .rank-n{width:20px;height:20px;border-radius:50%;background:var(--color-bg-app);color:var(--color-text-muted);font-size:10.5px;font-weight:800;display:grid;place-items:center;flex:none}
+.rank-row .rank-main{flex:1;min-width:0;font-size:var(--text-sm)}
+.rank-row .rank-sub{font-size:11px;color:var(--color-text-muted)}
+.rank-row .rank-value{font-weight:800;font-size:var(--text-sm)}
+
+/* ---- vertical workflow steps (e.g. payroll run stages) ----------------- */
+.steps-v{display:grid;gap:0}
+.steps-v .sv-item{display:flex;gap:12px;padding-bottom:18px;position:relative}
+.steps-v .sv-item::before{content:'';position:absolute;top:26px;bottom:0;inset-inline-start:13px;width:2px;background:var(--gray-100)}
+.steps-v .sv-item:last-child::before{display:none}
+.steps-v .sv-dot{width:27px;height:27px;border-radius:50%;background:var(--gray-100);color:var(--color-text-muted);display:grid;place-items:center;flex:none;font-weight:800;font-size:12px;position:relative;z-index:1}
+.steps-v .sv-item.done .sv-dot{background:var(--color-success);color:#fff}
+.steps-v .sv-item.done::before{background:var(--color-success)}
+.steps-v .sv-item.current .sv-dot{background:var(--brass-500);color:var(--navy-900)}
+.steps-v .sv-title{font-weight:var(--weight-bold);font-size:var(--text-sm)}
+.steps-v .sv-sub{font-size:12px;color:var(--color-text-muted)}
+
+/* ---- permission role cards + permission groups -------------------------- */
+.role-card-list{display:grid;gap:8px}
+.role-card{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer}
+.role-card .rc-icon{width:34px;height:34px;border-radius:var(--radius-sm);background:var(--color-bg-app);color:var(--navy-800);display:grid;place-items:center;flex:none}
+.role-card .rc-title{font-weight:var(--weight-bold);font-size:var(--text-sm)}
+.role-card .rc-sub{font-size:11.5px;color:var(--color-text-muted)}
+.role-card.active{border-color:var(--brass-500);background:var(--brass-100)}
+.role-card.active .rc-icon{background:var(--brass-500);color:var(--navy-900)}
+.perm-group{border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4)}
+.perm-group .pg-title{display:flex;align-items:center;gap:8px;font-weight:var(--weight-bold);font-size:var(--text-sm);margin-bottom:8px;color:var(--color-text-strong)}
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:var(--text-sm)}
+.perm-sensitive{border-color:#f2c4c1;background:var(--color-danger-bg)}
+.perm-sensitive .pg-title{color:var(--color-danger)}
+
+/* ---- danger zone (settings) ---------------------------------------------- */
+.danger-zone{border:1px solid #f2c4c1;background:var(--color-danger-bg);border-radius:var(--radius-md);padding:var(--space-4);display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap}
+.danger-zone .dz-text strong{color:var(--color-danger);display:block;margin-bottom:2px}
+.danger-zone .dz-text p{margin:0;color:var(--color-text);font-size:var(--text-sm)}
+
+/* ---- settings secondary nav ---------------------------------------------- */
+.settings-shell{display:grid;grid-template-columns:220px 1fr;gap:var(--space-4);align-items:start}
+@media (max-width:900px){.settings-shell{grid-template-columns:1fr}}
+.settings-nav{display:grid;gap:2px;position:sticky;top:calc(var(--topbar-h) + 12px)}
+.settings-nav a{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--radius-sm);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted)}
+.settings-nav a:hover{background:var(--color-bg-app);color:var(--color-text-strong)}
+.settings-nav a.active{background:var(--navy-800);color:#fff}
+
+.icon-rotate{transform:rotate(180deg)}
+.trend-up{color:var(--color-success)} .trend-down{color:var(--color-danger)}

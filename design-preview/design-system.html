@@ -21,6 +21,7 @@
   .ds-toc a{display:block;padding:6px 4px;color:var(--color-text-muted);border-radius:6px}
   .ds-toc a:hover{color:var(--navy-800);background:var(--color-bg-app)}
   .ds-shell{display:grid;grid-template-columns:220px 1fr;gap:var(--space-8);align-items:start;max-width:var(--container-max);margin:0 auto;padding:var(--space-8) var(--space-6)}
+  .ds-shell > main{min-width:0}
   @media (max-width:900px){.ds-shell{grid-template-columns:1fr}.ds-toc{position:static}}
   .type-sample{border-bottom:1px dashed var(--color-border);padding:var(--space-3) 0}
   .type-sample .meta{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:4px;font-family:var(--font-mono)}
@@ -64,6 +65,9 @@
     <a href="#overlays" data-ar="النوافذ المنبثقة" data-en="Dialogs & dropdowns">النوافذ المنبثقة</a>
     <a href="#states" data-ar="حالات فارغة/تحميل" data-en="Empty & loading">حالات فارغة/تحميل</a>
     <a href="#shell" data-ar="القوالب" data-en="Shell patterns">القوالب</a>
+    <a href="#typeroles" data-ar="أدوار الطباعة (V2)" data-en="Typographic roles (V2)">أدوار الطباعة (V2)</a>
+    <a href="#kpiv2" data-ar="مؤشرات ورسوم (V2)" data-en="KPIs & charts (V2)">مؤشرات ورسوم (V2)</a>
+    <a href="#permv2" data-ar="الصلاحيات وخطوات سير العمل (V2)" data-en="Permissions & workflow steps (V2)">الصلاحيات وخطوات سير العمل (V2)</a>
   </nav>
 
   <main>
@@ -319,7 +323,7 @@
         <span class="filter-pill active" data-ar="الكل" data-en="All">الكل</span>
         <span class="filter-pill" data-ar="آخر 7 أيام" data-en="Last 7 days">آخر 7 أيام</span>
         <span class="filter-pill" data-ar="آخر 30 يومًا" data-en="Last 30 days">آخر 30 يومًا</span>
-        <span class="filter-pill urgent" data-ar="🔴 عاجل" data-en="Urgent">عاجل</span>
+        <span class="filter-pill urgent" data-ar="عاجل" data-en="Urgent">عاجل</span>
       </div>
       <div class="filter-bar">
         <div class="filter-field"><span class="field-label" data-ar="الحالة" data-en="Status">الحالة</span><select class="select"><option data-ar="كل الحالات" data-en="All statuses">كل الحالات</option></select></div>
@@ -414,7 +418,7 @@
     <section class="ds-section" style="border-bottom:0" id="shell">
       <h2><span class="n">16</span> <span data-ar="قوالب الهيكل: الشريط الجانبي وأعلى الصفحة والتنقل على الجوال" data-en="Shell patterns: sidebar, topbar, mobile nav">قوالب الهيكل</span></h2>
       <p style="color:var(--color-text-muted)" data-ar="مطابقة لآلية admin_nav.ejs الحالية — قائمة جانبية ثابتة أعلى 1000px، درج قابل للسحب تحتها." data-en="Matches the existing admin_nav.ejs mechanism — a docked sidebar above 1000px, a slide-in drawer below it.">مطابقة لآلية admin_nav.ejs الحالية — قائمة جانبية ثابتة أعلى 1000px، درج قابل للسحب تحتها.</p>
-      <div class="demo-frame" style="overflow:hidden;padding:0">
+      <div class="demo-frame" style="overflow-x:auto;overflow-y:hidden;padding:0">
         <div style="display:flex;height:340px">
           <aside style="width:220px;background:var(--navy-900);color:#dfe7e9;padding:16px;flex:none">
             <div class="side-link active"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></div>
@@ -433,6 +437,84 @@
         </div>
       </div>
       <p style="margin-top:20px" data-ar="ملاحظة القياس المتجاوب: نفس تجربة الجوال الحالية بالضبط — زر همبرغر، درج ينزلق من الحافة الصحيحة حسب الاتجاه، طبقة تعتيم خلفية، وحبس تركيز لوحة المفاتيح." data-en="Responsive note: the exact same mobile experience as today — hamburger button, drawer sliding from the correct edge per direction, background scrim, keyboard focus trap.">ملاحظة القياس المتجاوب: نفس تجربة الجوال الحالية بالضبط — زر همبرغر، درج ينزلق من الحافة الصحيحة حسب الاتجاه، طبقة تعتيم خلفية، وحبس تركيز لوحة المفاتيح.</p>
+    </section>
+
+    <!-- ============================================================ V2: TYPOGRAPHIC ROLES -->
+    <section class="ds-section" id="typeroles">
+      <h2><span class="n">17</span> <span data-ar="أدوار الطباعة — V2" data-en="Typographic roles — V2">أدوار الطباعة — V2</span></h2>
+      <p style="color:var(--color-text-muted)" data-ar="نفس مقياس الأحجام أعلاه (القسم 2)، لكن بأسماء أدوار صريحة بدل أحجام inline مباشرة — لتمييز واضح بين كل مستوى في الشاشات التشغيلية الكثيفة." data-en="Same size scale as §2 above, but with explicit role names instead of ad-hoc inline sizes — for a clear distinction between every level on dense operational screens.">نفس مقياس الأحجام أعلاه (القسم 2)، لكن بأسماء أدوار صريحة بدل أحجام inline مباشرة — لتمييز واضح بين كل مستوى في الشاشات التشغيلية الكثيفة.</p>
+      <div class="type-sample"><div class="role-page-title" data-ar="عنوان الصفحة" data-en="Page title">عنوان الصفحة</div><div class="meta">.role-page-title — text-3xl / 800</div></div>
+      <div class="type-sample"><div class="role-section-title" data-ar="عنوان القسم" data-en="Section title">عنوان القسم</div><div class="meta">.role-section-title — text-xl / 800</div></div>
+      <div class="type-sample"><div class="role-panel-title" data-ar="عنوان اللوحة" data-en="Panel title">عنوان اللوحة</div><div class="meta">.role-panel-title — text-md / 700</div></div>
+      <div class="type-sample"><span class="role-kpi-label" data-ar="تسمية المؤشر" data-en="KPI label">تسمية المؤشر</span><div class="meta">.role-kpi-label — text-xs / 700 / muted</div></div>
+      <div class="type-sample"><div class="role-kpi-value num">262,200</div><div class="meta">.role-kpi-value — text-xl / 800 / tabular-nums</div></div>
+      <div class="type-sample"><div class="role-field-label" data-ar="تسمية الحقل" data-en="Field label">تسمية الحقل</div><div class="meta">.role-field-label — text-sm / 700</div></div>
+      <div class="type-sample"><div class="role-table-header" data-ar="رأس الجدول" data-en="Table header">رأس الجدول</div><div class="meta">.role-table-header — text-xs / 700 / uppercase / muted</div></div>
+      <div class="type-sample"><div class="role-body" data-ar="نص أساسي — محتوى الفقرات والتفاصيل التشغيلية." data-en="Body text — paragraph and operational detail content.">نص أساسي — محتوى الفقرات والتفاصيل التشغيلية.</div><div class="meta">.role-body — text-base / 400</div></div>
+      <div class="type-sample"><div class="role-secondary" data-ar="نص ثانوي/مساعد" data-en="Secondary / help text">نص ثانوي/مساعد</div><div class="meta">.role-secondary — text-sm / muted</div></div>
+      <div class="type-sample"><div class="role-metadata" data-ar="بيانات وصفية — قبل 12 دقيقة" data-en="Metadata — 12 minutes ago">بيانات وصفية — قبل 12 دقيقة</div><div class="meta">.role-metadata — text-xs / muted</div></div>
+    </section>
+
+    <!-- ============================================================ V2: KPI CARDS & CHARTS -->
+    <section class="ds-section" id="kpiv2">
+      <h2><span class="n">18</span> <span data-ar="بطاقات المؤشرات والرسوم البيانية — V2" data-en="KPI cards & charts — V2">بطاقات المؤشرات والرسوم البيانية — V2</span></h2>
+      <p style="color:var(--color-text-muted);max-width:70ch" data-ar="أيقونة في دائرة لونية فاتحة + قيمة + فترة زمنية — مستوحى من المراجع البصرية المعتمدة. الرسوم البيانية أدناه CSS/SVG خالصة، بلا مكتبة رسوم خارجية، لتبقى قابلة للتطبيق مباشرة على واجهة سند الحالية (Express+EJS+CSS خالص)." data-en="Icon in a light color circle + value + period — inspired by the approved visual references. The charts below are pure CSS/SVG, no external charting library, so they stay directly portable to Sanad's current stack (Express+EJS+plain CSS).">أيقونة في دائرة لونية فاتحة + قيمة + فترة زمنية — مستوحى من المراجع البصرية المعتمدة. الرسوم البيانية أدناه CSS/SVG خالصة، بلا مكتبة رسوم خارجية، لتبقى قابلة للتطبيق مباشرة على واجهة سند الحالية (Express+EJS+CSS خالص).</p>
+      <div class="kpi-strip" style="margin-bottom:var(--space-6)">
+        <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="رصيد الخزنة" data-en="Treasury balance">رصيد الخزنة</span><div class="role-kpi-value num">262,200</div><div class="kpi-period" data-ar="محدَّث الآن" data-en="Updated now">محدَّث الآن</div></div></div>
+        <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-download"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="الإيرادات الداخلة" data-en="Incoming revenue">الإيرادات الداخلة</span><div class="role-kpi-value num">57,200</div><div class="kpi-period" data-ar="هذا الشهر" data-en="This month">هذا الشهر</div></div></div>
+        <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-upload"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="المصروفات الخارجة" data-en="Outgoing expenses">المصروفات الخارجة</span><div class="role-kpi-value num">23,450</div><div class="kpi-period" data-ar="هذا الشهر" data-en="This month">هذا الشهر</div></div></div>
+        <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-building"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="تحويل بنكي" data-en="Bank transfer">تحويل بنكي</span><div class="role-kpi-value num">18,750</div><div class="kpi-period" data-ar="الرصيد الحالي" data-en="Current balance">الرصيد الحالي</div></div></div>
+      </div>
+      <div class="grid grid-2">
+        <div class="panel"><div class="panel-head"><h3 data-ar="الإيرادات اليومية" data-en="Daily revenue">الإيرادات اليومية</h3></div>
+          <div class="panel-body">
+            <div class="bar-chart">
+              <div class="bc-plot" aria-hidden="true">
+                <div class="bc-bar" style="height:38%"></div><div class="bc-bar" style="height:52%"></div><div class="bc-bar" style="height:44%"></div><div class="bc-bar" style="height:61%"></div><div class="bc-bar" style="height:48%"></div><div class="bc-bar" style="height:70%"></div><div class="bc-bar" style="height:58%"></div><div class="bc-bar" style="height:83%"></div><div class="bc-bar" style="height:65%"></div><div class="bc-bar" style="height:91%"></div><div class="bc-bar" style="height:76%"></div><div class="bc-bar" style="height:100%"></div>
+              </div>
+              <div class="bc-axis"><span data-ar="1 يونيو" data-en="Jun 1">1 يونيو</span><span data-ar="26 يونيو" data-en="Jun 26">26 يونيو</span></div>
+            </div>
+            <p class="role-metadata" style="margin-top:10px" data-ar="سؤال العمل: هل الإيرادات في اتجاه تصاعدي هذا الشهر؟ — الأعمدة تُجيب عليه بنظرة واحدة أفضل من جدول أرقام." data-en="Business question: is revenue trending up this month? — bars answer it at a glance better than a number table.">سؤال العمل: هل الإيرادات في اتجاه تصاعدي هذا الشهر؟ — الأعمدة تُجيب عليه بنظرة واحدة أفضل من جدول أرقام.</p>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3 data-ar="الإيرادات حسب طريقة الدفع" data-en="Revenue by payment method">الإيرادات حسب طريقة الدفع</h3></div>
+          <div class="panel-body">
+            <div class="dist-list">
+              <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="نقدًا" data-en="Cash">نقدًا</span></span><div class="dist-track"><div class="dist-fill" style="width:40%;background:var(--chart-1)"></div></div><span class="dist-value num">48,300</span></div>
+              <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="تحويل بنكي" data-en="Bank transfer">تحويل بنكي</span></span><div class="dist-track"><div class="dist-fill" style="width:35%;background:var(--chart-2)"></div></div><span class="dist-value num">42,250</span></div>
+              <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="Instapay" data-en="Instapay">Instapay</span></span><div class="dist-track"><div class="dist-fill" style="width:15%;background:var(--chart-3)"></div></div><span class="dist-value num">18,120</span></div>
+              <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-4)"></span> <span data-ar="أخرى" data-en="Other">أخرى</span></span><div class="dist-track"><div class="dist-fill" style="width:10%;background:var(--chart-4)"></div></div><span class="dist-value num">12,080</span></div>
+            </div>
+            <p class="role-metadata" style="margin-top:12px" data-ar="سؤال العمل: أي قناة تحصيل تعتمد عليها سند فعليًا؟ — يوجّه قرارات مثل تفعيل بوابة دفع إضافية." data-en="Business question: which collection channel does Sanad actually rely on? — informs decisions like enabling another payment gateway.">سؤال العمل: أي قناة تحصيل تعتمد عليها سند فعليًا؟ — يوجّه قرارات مثل تفعيل بوابة دفع إضافية.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ V2: PERMISSIONS & WORKFLOW STEPS -->
+    <section class="ds-section" style="border-bottom:0" id="permv2">
+      <h2><span class="n">19</span> <span data-ar="الصلاحيات وخطوات سير العمل — V2" data-en="Permissions & vertical workflow steps — V2">الصلاحيات وخطوات سير العمل — V2</span></h2>
+      <div class="grid grid-2">
+        <div>
+          <span class="ds-label" data-ar="بطاقة دور" data-en="Role card">بطاقة دور</span>
+          <div class="role-card-list">
+            <div class="role-card active"><span class="rc-icon"><svg class="icon"><use href="assets/icons.svg#i-shield"/></svg></span><div><div class="rc-title" data-ar="مدير النظام" data-en="System admin">مدير النظام</div><div class="rc-sub" data-ar="صلاحيات كاملة على النظام" data-en="Full system access">صلاحيات كاملة على النظام</div></div></div>
+          </div>
+          <span class="ds-label" style="margin-top:var(--space-4)" data-ar="مجموعة صلاحيات" data-en="Permission group">مجموعة صلاحيات</span>
+          <div class="perm-group perm-sensitive" style="margin-top:8px">
+            <div class="pg-title"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg> <span data-ar="صلاحيات حسّاسة" data-en="Sensitive permissions">صلاحيات حسّاسة</span></div>
+            <div class="perm-row"><span data-ar="حذف بيانات الموظفين" data-en="Delete employee data">حذف بيانات الموظفين</span><label class="toggle"><input type="checkbox" checked><span class="track"></span></label></div>
+          </div>
+        </div>
+        <div>
+          <span class="ds-label" data-ar="خطوات سير عمل رأسية" data-en="Vertical workflow steps">خطوات سير عمل رأسية</span>
+          <div class="steps-v" style="max-width:320px;margin-top:10px">
+            <div class="sv-item done"><span class="sv-dot"><svg class="icon-sm"><use href="assets/icons.svg#i-check"/></svg></span><div><div class="sv-title" data-ar="مراجعة البيانات" data-en="Review data">مراجعة البيانات</div><div class="sv-sub" data-ar="اكتملت" data-en="Complete">اكتملت</div></div></div>
+            <div class="sv-item current"><span class="sv-dot">2</span><div><div class="sv-title" data-ar="اعتماد المدير" data-en="Manager approval">اعتماد المدير</div><div class="sv-sub" data-ar="قيد الانتظار" data-en="Pending">قيد الانتظار</div></div></div>
+            <div class="sv-item"><span class="sv-dot">3</span><div><div class="sv-title" data-ar="الصرف" data-en="Disbursement">الصرف</div></div></div>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>

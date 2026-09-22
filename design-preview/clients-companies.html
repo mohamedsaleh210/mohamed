@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>العملاء والشركات — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — العملاء والشركات" data-en="Design preview V2 — clients & companies">معاينة تصميم V2 — العملاء والشركات</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="العملاء والموظفون" data-en="Clients & staff">العملاء والموظفون</div><a class="side-link active" href="clients-companies.html"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg> <span data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</span></a><a class="side-link" href="employees.html"><svg class="icon"><use href="assets/icons.svg#i-user"/></svg> <span data-ar="الموظفون" data-en="Employees">الموظفون</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</span></nav>
+  <div class="page-head"><div class="title-row">
+    <div><h1 data-ar="العملاء والشركات" data-en="Clients & companies">العملاء والشركات</h1><p data-ar="41 عميلًا وشركة — أفراد وكيانات تجارية مسجَّلة على المنصة." data-en="41 clients & companies — individuals and registered business entities on the platform.">41 عميلًا وشركة — أفراد وكيانات تجارية مسجَّلة على المنصة.</p></div>
+    <button class="btn btn-accent"><svg class="icon-sm"><use href="assets/icons.svg#i-plus"/></svg> <span data-ar="عميل جديد" data-en="New client">عميل جديد</span></button>
+  </div></div>
+
+  <div class="filter-pills">
+    <span class="filter-pill active" data-ar="كل الطلبات" data-en="All">كل الطلبات</span>
+    <span class="filter-pill" data-ar="الأكثر طلبات" data-en="Most requests">الأكثر طلبات</span>
+    <span class="filter-pill" data-ar="الأكثر مديونية" data-en="Highest balance">الأكثر مديونية</span>
+    <span class="filter-pill" data-ar="الأحدث تسجيلًا" data-en="Recently registered">الأحدث تسجيلًا</span>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-field search-input" style="flex:2"><svg class="icon"><use href="assets/icons.svg#i-search"/></svg><input class="input" data-ar-ph="ابحث بالاسم أو الموبايل أو البريد" data-en-ph="Search by name, mobile, or email" placeholder="ابحث بالاسم أو الموبايل أو البريد"></div>
+    <div class="filter-field"><span class="field-label" data-ar="النوع" data-en="Type">النوع</span><select class="select"><option data-ar="الكل" data-en="All">الكل</option><option data-ar="أفراد" data-en="Individuals">أفراد</option><option data-ar="شركات" data-en="Companies">شركات</option></select></div>
+    <button class="btn btn-ghost"><svg class="icon"><use href="assets/icons.svg#i-filter"/></svg> <span data-ar="بحث" data-en="Search">بحث</span></button>
+  </div>
+
+  <div class="two-col">
+  <div class="panel">
+    <div class="panel-body flush"><div class="table-wrap"><table class="tbl responsive">
+      <thead><tr><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="التواصل" data-en="Contact">التواصل</th><th data-ar="الطلبات" data-en="Requests">الطلبات</th><th data-ar="أحدث طلب" data-en="Last request">أحدث طلب</th><th data-ar="المتبقي" data-en="Balance">المتبقي</th><th data-ar="الحالة" data-en="Status">الحالة</th><th></th></tr></thead>
+      <tbody>
+        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="عادل عبد العزيز سليمان" data-en="Adel Abdelaziz Soliman">عادل عبد العزيز سليمان</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020504134</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">3,270</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="هشام السيد الشناوي" data-en="Hesham Elsayed Elshinnawy">هشام السيد الشناوي</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">+201020884273</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="11 سبتمبر" data-en="Sep 11">11 سبتمبر</span></td><td data-label="المتبقي" class="num">—</td><td data-label="الحالة"><span class="badge badge-neutral" data-ar="بدون حساب" data-en="No account">بدون حساب</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">client36@demo.sanad</span></td><td data-label="الطلبات" class="num">7</td><td data-label="أحدث طلب"><span data-ar="10 سبتمبر" data-en="Sep 10">10 سبتمبر</span></td><td data-label="المتبقي" class="num" style="color:var(--color-danger);font-weight:700">12,500</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="مفتوح 2" data-en="2 open">مفتوح 2</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+        <tr><td data-label="العميل"><a href="#" class="row-link" style="display:block" data-ar="وليد عصام الغريب" data-en="Walid Essam Elghareeb">وليد عصام الغريب</a></td><td data-label="التواصل"><span class="num" style="direction:ltr;display:inline-block" dir="ltr">walid@example.com</span></td><td data-label="الطلبات" class="num">1</td><td data-label="أحدث طلب"><span data-ar="منذ 14 دقيقة" data-en="14 minutes ago">منذ 14 دقيقة</span></td><td data-label="المتبقي" class="num" style="color:var(--color-success);font-weight:700">مسدد</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مفتوح 1" data-en="1 open">مفتوح 1</span></td><td class="row-actions"><button class="btn btn-ghost btn-sm" data-ar="الملف" data-en="Profile">الملف</button></td></tr>
+      </tbody>
+    </table></div></div>
+  </div>
+
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head"><h3 data-ar="ملف: شركة النور التجارية" data-en="Profile: Al-Noor Trading Co.">ملف: شركة النور التجارية</h3></div>
+      <div class="panel-body stack">
+        <div class="flex" style="gap:10px"><span class="company-logo" style="width:44px;height:44px;font-size:16px">ن</span><div><div style="font-weight:800" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</div><div class="role-metadata" data-ar="عميل منذ يناير 2025" data-en="Client since Jan 2025">عميل منذ يناير 2025</div></div></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="الهاتف" data-en="Phone">الهاتف</span><span class="num" dir="ltr">+20 102 050 4134</span></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="البريد" data-en="Email">البريد</span><span class="num" dir="ltr" style="font-size:12.5px">client36@demo.sanad</span></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="عدد الطلبات" data-en="Requests">عدد الطلبات</span><span style="font-weight:800">7</span></div>
+        <div class="flex-between"><span class="role-secondary" data-ar="الرصيد المتبقي" data-en="Outstanding balance">الرصيد المتبقي</span><span class="num" style="font-weight:800;color:var(--color-danger)">12,500 EGP</span></div>
+      </div>
+      <div class="panel-foot"><button class="btn btn-ghost btn-sm" data-ar="سجل الطلبات" data-en="Request history">سجل الطلبات</button><button class="btn btn-accent btn-sm" data-ar="طلب جديد" data-en="New request">طلب جديد</button></div>
+    </div>
+  </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -30,11 +30,11 @@
 <main class="main">
   <div class="page-head"><h1 data-ar="أهلًا خالد" data-en="Welcome, Khaled">أهلًا خالد</h1><p style="color:var(--color-text-muted)" data-ar="إليك أولوياتك اليوم." data-en="Here's what's on your plate today.">إليك أولوياتك اليوم.</p></div>
 
-  <div class="stat-grid" style="margin-bottom:var(--space-5)">
-    <div class="stat-card featured"><div><div class="label" data-ar="طلباتي المفتوحة" data-en="My open requests">طلباتي المفتوحة</div><div class="value">9</div></div><span class="stat-icon"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="قضاياي النشطة" data-en="My active cases">قضاياي النشطة</div><div class="value">5</div></div><span class="stat-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="مهام اليوم" data-en="Today's tasks">مهام اليوم</div><div class="value">4</div></div><span class="stat-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span></div>
-    <div class="stat-card"><div><div class="label" data-ar="مواعيد نهائية عاجلة" data-en="Urgent deadlines">مواعيد نهائية عاجلة</div><div class="value">2</div></div><span class="stat-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg></span></div>
+  <div class="kpi-strip" style="margin-bottom:var(--space-5)">
+    <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="طلباتي المفتوحة" data-en="My open requests">طلباتي المفتوحة</span><div class="role-kpi-value">9</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-scale"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="قضاياي النشطة" data-en="My active cases">قضاياي النشطة</span><div class="role-kpi-value">5</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-check-circle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مهام اليوم" data-en="Today's tasks">مهام اليوم</span><div class="role-kpi-value">4</div></div></div>
+    <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="مواعيد نهائية عاجلة" data-en="Urgent deadlines">مواعيد نهائية عاجلة</span><div class="role-kpi-value">2</div></div></div>
   </div>
 
   <div class="two-col">
@@ -66,6 +66,15 @@
       <div class="panel"><div class="panel-head"><h3 data-ar="إشعاراتي" data-en="My notifications">إشعاراتي</h3></div>
         <div class="panel-body flush">
           <div class="notif unread"><span class="notif-icon ic-warning"><svg class="icon-sm"><use href="assets/icons.svg#i-alert-triangle"/></svg></span><div><div class="notif-text" data-ar="مستند مطلوب من العميل" data-en="Document required from client">مستند مطلوب من العميل</div><div class="notif-time" data-ar="قبل 20 دقيقة" data-en="20 minutes ago">قبل 20 دقيقة</div></div></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="توزيع عبء العمل" data-en="Workload distribution">توزيع عبء العمل</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="طلبات" data-en="Requests">طلبات</span></span><div class="dist-track"><div class="dist-fill" style="width:60%;background:var(--chart-1)"></div></div><span class="dist-value num">9</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="قضايا" data-en="Cases">قضايا</span></span><div class="dist-track"><div class="dist-fill" style="width:33%;background:var(--chart-2)"></div></div><span class="dist-value num">5</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="استشارات" data-en="Consultations">استشارات</span></span><div class="dist-track"><div class="dist-fill" style="width:13%;background:var(--chart-3)"></div></div><span class="dist-value num">2</span></div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الإيرادات والمصروفات — سند</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/layout.css">
+<style>.hero-preview-bar{background:var(--navy-900);color:#fff;text-align:center;padding:8px;font-size:12.5px}
+.hero-preview-bar button{background:var(--brass-500);color:var(--navy-900);border:0;border-radius:999px;padding:5px 14px;font-weight:800;cursor:pointer;margin-inline-start:10px}
+.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:var(--space-4)}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="hero-preview-bar"><span data-ar="معاينة تصميم V2 — الإيرادات والمصروفات" data-en="Design preview V2 — revenue & expenses">معاينة تصميم V2 — الإيرادات والمصروفات</span><button id="langToggle"><span data-lang-label>English</span></button></div>
+<header class="topbar"><button class="menu-btn" id="menuBtn"><svg class="icon"><use href="assets/icons.svg#i-menu"/></svg></button><span class="brand"><span class="seal">س</span> سند</span><span class="topbar-spacer"></span><div class="topbar-actions"><button class="icon-btn"><svg class="icon"><use href="assets/icons.svg#i-bell"/></svg><span class="dot"></span></button><span class="who"><span class="avatar">A</span></span></div></header>
+<div class="scrim" id="scrim"></div>
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <div class="side-group"><a class="side-link" href="admin-dashboard.html"><svg class="icon"><use href="assets/icons.svg#i-grid"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a></div>
+  <div class="side-group"><div class="side-group-label" data-ar="الإدارة المالية" data-en="Finance">الإدارة المالية</div><a class="side-link" href="treasury.html"><svg class="icon"><use href="assets/icons.svg#i-wallet"/></svg> <span data-ar="الخزنة" data-en="Treasury">الخزنة</span></a><a class="side-link active" href="revenue-expenses.html"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg> <span data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</span></a><a class="side-link" href="payroll.html"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg> <span data-ar="المرتبات" data-en="Payroll">المرتبات</span></a></div>
+</aside>
+<main class="main">
+  <nav class="breadcrumbs"><a href="admin-dashboard.html"><svg class="icon-sm"><use href="assets/icons.svg#i-home"/></svg> <span data-ar="لوحة التحكم" data-en="Dashboard">لوحة التحكم</span></a><span class="sep">/</span><span class="current" data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</span></nav>
+  <div class="page-head"><div class="title-row">
+    <div><h1 data-ar="الإيرادات والمصروفات" data-en="Revenue & expenses">الإيرادات والمصروفات</h1><p style="color:var(--color-text-muted)" data-ar="يونيو 2026" data-en="June 2026">يونيو 2026</p></div>
+    <div class="flex"><select class="select" style="min-width:120px"><option data-ar="هذا الشهر" data-en="This month">هذا الشهر</option></select><button class="btn btn-ghost btn-sm"><svg class="icon-sm"><use href="assets/icons.svg#i-download"/></svg> <span data-ar="تصدير" data-en="Export">تصدير</span></button></div>
+  </div></div>
+
+  <div class="tabs" data-tabs="re" style="margin-bottom:var(--space-4)">
+    <span class="tab active" data-tab="revenue" data-ar="الإيرادات" data-en="Revenue">الإيرادات</span>
+    <span class="tab" data-tab="expenses" data-ar="المصروفات" data-en="Expenses">المصروفات</span>
+  </div>
+
+  <div data-tab-panel="revenue" data-tab-group="re">
+    <div class="kpi-strip" style="margin-bottom:var(--space-4)">
+      <div class="kpi-card featured"><span class="kpi-icon"><svg class="icon"><use href="assets/icons.svg#i-chart"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي الإيرادات" data-en="Total revenue">إجمالي الإيرادات</span><div class="role-kpi-value num">120,750</div></div></div>
+      <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-list"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عدد العمليات" data-en="Transactions">عدد العمليات</span><div class="role-kpi-value">342</div></div></div>
+      <div class="kpi-card"><span class="kpi-icon ic-accent"><svg class="icon"><use href="assets/icons.svg#i-receipt"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="متوسط العملية" data-en="Avg. transaction">متوسط العملية</span><div class="role-kpi-value num">353</div></div></div>
+      <div class="kpi-card"><span class="kpi-icon ic-success"><svg class="icon"><use href="assets/icons.svg#i-users"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عملاء جدد" data-en="New clients">عملاء جدد</span><div class="role-kpi-value">28</div></div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel"><div class="panel-head"><h3 data-ar="الإيرادات اليومية" data-en="Daily revenue">الإيرادات اليومية</h3></div>
+        <div class="panel-body">
+          <div class="bar-chart">
+            <div class="bc-plot" aria-hidden="true">
+              <div class="bc-bar" style="height:44%"></div><div class="bc-bar" style="height:58%"></div><div class="bc-bar" style="height:36%"></div><div class="bc-bar" style="height:62%"></div><div class="bc-bar" style="height:50%"></div><div class="bc-bar" style="height:71%"></div><div class="bc-bar" style="height:40%"></div><div class="bc-bar" style="height:66%"></div><div class="bc-bar" style="height:78%"></div><div class="bc-bar" style="height:55%"></div><div class="bc-bar" style="height:82%"></div><div class="bc-bar" style="height:60%"></div><div class="bc-bar" style="height:91%"></div><div class="bc-bar" style="height:74%"></div><div class="bc-bar" style="height:100%"></div><div class="bc-bar" style="height:68%"></div><div class="bc-bar" style="height:85%"></div><div class="bc-bar" style="height:52%"></div><div class="bc-bar" style="height:77%"></div><div class="bc-bar" style="height:63%"></div>
+            </div>
+            <div class="bc-axis"><span data-ar="1 يونيو" data-en="Jun 1">1 يونيو</span><span data-ar="26 يونيو" data-en="Jun 26">26 يونيو</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="الإيرادات حسب طريقة الدفع" data-en="Revenue by payment method">الإيرادات حسب طريقة الدفع</h3></div>
+        <div class="panel-body">
+          <div class="dist-list">
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="نقدًا" data-en="Cash">نقدًا</span></span><div class="dist-track"><div class="dist-fill" style="width:40%;background:var(--chart-2)"></div></div><span class="dist-value num">48,300</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="تحويل بنكي" data-en="Bank transfer">تحويل بنكي</span></span><div class="dist-track"><div class="dist-fill" style="width:35%;background:var(--chart-1)"></div></div><span class="dist-value num">42,250</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-3)"></span> <span data-ar="Instapay" data-en="Instapay">Instapay</span></span><div class="dist-track"><div class="dist-fill" style="width:15%;background:var(--chart-3)"></div></div><span class="dist-value num">18,120</span></div>
+            <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-4)"></span> <span data-ar="أخرى" data-en="Other">أخرى</span></span><div class="dist-track"><div class="dist-fill" style="width:10%;background:var(--chart-4)"></div></div><span class="dist-value num">12,080</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:var(--space-4)">
+      <div class="panel"><div class="panel-head"><h3 data-ar="أعلى الخدمات تحقيقًا للإيرادات" data-en="Top revenue-generating services">أعلى الخدمات تحقيقًا للإيرادات</h3></div>
+        <div class="panel-body flush"><div class="rank-list" style="padding:0 var(--space-4-5)">
+          <div class="rank-row"><span class="rank-n">1</span><div class="rank-main"><span data-ar="استشارات مالية" data-en="Financial consultations">استشارات مالية</span><div class="rank-sub" data-ar="98 عملية" data-en="98 transactions">98 عملية</div></div><span class="rank-value num">36,400</span></div>
+          <div class="rank-row"><span class="rank-n">2</span><div class="rank-main"><span data-ar="إعداد قوائم مالية" data-en="Financial statement prep">إعداد قوائم مالية</span><div class="rank-sub" data-ar="76 عملية" data-en="76 transactions">76 عملية</div></div><span class="rank-value num">28,750</span></div>
+          <div class="rank-row"><span class="rank-n">3</span><div class="rank-main"><span data-ar="مراجعة وتدقيق" data-en="Review & audit">مراجعة وتدقيق</span><div class="rank-sub" data-ar="54 عملية" data-en="54 transactions">54 عملية</div></div><span class="rank-value num">22,300</span></div>
+          <div class="rank-row"><span class="rank-n">4</span><div class="rank-main"><span data-ar="خدمات ضريبية" data-en="Tax services">خدمات ضريبية</span><div class="rank-sub" data-ar="38 عملية" data-en="38 transactions">38 عملية</div></div><span class="rank-value num">15,800</span></div>
+        </div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3 data-ar="الأذمم المدينة (المستحقة)" data-en="Receivables (due)">الأذمم المدينة (المستحقة)</h3></div>
+        <div class="panel-body flush"><table class="tbl responsive">
+          <thead><tr><th data-ar="العميل" data-en="Client">العميل</th><th data-ar="تاريخ الاستحقاق" data-en="Due date">تاريخ الاستحقاق</th><th data-ar="المبلغ" data-en="Amount">المبلغ</th></tr></thead>
+          <tbody>
+            <tr><td data-label="العميل" data-ar="شركة النور التجارية" data-en="Al-Noor Trading Co.">شركة النور التجارية</td><td data-label="الاستحقاق" class="num">2026/06/30</td><td data-label="المبلغ" class="num" style="color:var(--color-danger);font-weight:700">12,500</td></tr>
+            <tr><td data-label="العميل" data-ar="مؤسسة الأفق" data-en="Al-Ofoq Est.">مؤسسة الأفق</td><td data-label="الاستحقاق" class="num">2026/07/05</td><td data-label="المبلغ" class="num" style="color:var(--color-danger);font-weight:700">8,750</td></tr>
+            <tr><td data-label="العميل" data-ar="محمد حسن" data-en="Mohamed Hassan">محمد حسن</td><td data-label="الاستحقاق" class="num">2026/07/10</td><td data-label="المبلغ" class="num" style="color:var(--color-danger);font-weight:700">6,400</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div data-tab-panel="expenses" data-tab-group="re" hidden>
+    <div class="kpi-strip" style="margin-bottom:var(--space-4)">
+      <div class="kpi-card"><span class="kpi-icon ic-danger"><svg class="icon"><use href="assets/icons.svg#i-upload"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="إجمالي المصروفات" data-en="Total expenses">إجمالي المصروفات</span><div class="role-kpi-value num">14,610</div></div></div>
+      <div class="kpi-card"><span class="kpi-icon ic-warning"><svg class="icon"><use href="assets/icons.svg#i-clock"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span><div class="role-kpi-value">6</div></div></div>
+      <div class="kpi-card"><span class="kpi-icon ic-info"><svg class="icon"><use href="assets/icons.svg#i-briefcase"/></svg></span><div class="kpi-body"><span class="role-kpi-label" data-ar="عهد قائمة" data-en="Outstanding custody">عهد قائمة</span><div class="role-kpi-value num">4,300</div></div></div>
+    </div>
+    <div class="panel"><div class="panel-head"><h3 data-ar="المصروفات حسب البند" data-en="Expenses by category">المصروفات حسب البند</h3></div>
+      <div class="panel-body">
+        <div class="dist-list">
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-1)"></span> <span data-ar="مرتبات وعهد" data-en="Payroll & custody">مرتبات وعهد</span></span><div class="dist-track"><div class="dist-fill" style="width:62%;background:var(--chart-1)"></div></div><span class="dist-value num">9,050</span></div>
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-2)"></span> <span data-ar="مصروفات مكتبية" data-en="Office expenses">مصروفات مكتبية</span></span><div class="dist-track"><div class="dist-fill" style="width:23%;background:var(--chart-2)"></div></div><span class="dist-value num">3,360</span></div>
+          <div class="dist-row"><span class="dist-label"><span class="sw" style="background:var(--chart-4)"></span> <span data-ar="أخرى" data-en="Other">أخرى</span></span><div class="dist-track"><div class="dist-fill" style="width:15%;background:var(--chart-4)"></div></div><span class="dist-value num">2,200</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:var(--space-4)"><div class="panel-head"><h3 data-ar="آخر المصروفات" data-en="Recent expenses">آخر المصروفات</h3><a href="treasury.html" class="btn btn-subtle btn-sm" data-ar="عرض في الخزنة" data-en="View in Treasury">عرض في الخزنة</a></div>
+      <div class="panel-body flush"><table class="tbl responsive">
+        <thead><tr><th data-ar="التاريخ" data-en="Date">التاريخ</th><th data-ar="البيان" data-en="Description">البيان</th><th data-ar="القيمة" data-en="Amount">القيمة</th><th data-ar="الحالة" data-en="Status">الحالة</th></tr></thead>
+        <tbody>
+          <tr><td data-label="التاريخ" class="num">21 سبتمبر</td><td data-label="البيان" data-ar="مصروفات مشوار — عهدة عمرو" data-en="Errand expense — Amr's custody">مصروفات مشوار — عهدة عمرو</td><td data-label="القيمة" class="num" style="font-weight:700">350</td><td data-label="الحالة"><span class="badge badge-warning" data-ar="بانتظار الاعتماد" data-en="Pending approval">بانتظار الاعتماد</span></td></tr>
+          <tr><td data-label="التاريخ" class="num">18 سبتمبر</td><td data-label="البيان" data-ar="مصروف مكتبي" data-en="Office expense">مصروف مكتبي</td><td data-label="القيمة" class="num" style="font-weight:700">1,200</td><td data-label="الحالة"><span class="badge badge-success" data-ar="مؤكدة" data-en="Confirmed">مؤكدة</span></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

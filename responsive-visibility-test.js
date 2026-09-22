@@ -237,6 +237,35 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
       await ctx.close();
     }
 
+    // ================================================== 5. Checkpoint 2 P2 fixes
+    section('٥. عرض المحتوى على الديسكتوب وعداد المراحل (Checkpoint 2)');
+    {
+      const { ctx, page } = await loginPage(1024);
+      await page.goto(`${BASE}${ADMIN}/`, { waitUntil: 'networkidle' });
+      const widthInfo = await page.evaluate(() => {
+        const mainInner = document.querySelector('.main-inner');
+        const sidebar = document.getElementById('sidebar');
+        const mr = mainInner.getBoundingClientRect();
+        const sr = sidebar.getBoundingClientRect();
+        const overlap = Math.max(0, Math.min(mr.right, sr.right) - Math.max(mr.left, sr.left));
+        return { width: mr.width, overlap, viewport: window.innerWidth };
+      });
+      // Exactly one 246px sidebar reservation, not two: available column should be
+      // viewport - 246, not viewport - 492 (the P2-A double-reservation bug).
+      check('عمود المحتوى بعرضه الكامل بدون حجز مضاعف لمساحة القائمة الجانبية',
+        Math.abs(widthInfo.width - (1024 - 246)) <= 10 && widthInfo.overlap <= 1,
+        JSON.stringify(widthInfo));
+
+      await page.goto(`${BASE}${ADMIN}/payroll/runs/1`, { waitUntil: 'networkidle' });
+      const journeyInfo = await page.evaluate(() => {
+        const spans = [...document.querySelectorAll('.payroll-journey span')];
+        return spans.map((s) => s.getBoundingClientRect().width);
+      });
+      check('خطوات سند المرتب مقروءة عند 1024px (مفيش عمود أضيق من 90px)',
+        journeyInfo.length > 0 && journeyInfo.every((w) => w >= 90), JSON.stringify(journeyInfo));
+      await ctx.close();
+    }
+
     section('سلامة السيرفر');
     check('مفيش أخطاء في السيرفر', !/Error|error:/i.test(serverErrors), serverErrors.slice(0, 200));
   } catch (err) {

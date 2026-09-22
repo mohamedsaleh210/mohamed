@@ -22,15 +22,21 @@ dialog,.sub-dialog{max-width:calc(100vw - 1rem)!important;max-height:calc(100dvh
 .account-menu-toggle{display:none;appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;font:800 23px/1 inherit;cursor:pointer}
 
 @media (min-width:1000px){
-  .main{margin-inline-start:var(--sidebar-w);width:calc(100% - var(--sidebar-w));padding:0}
-  [dir=rtl] .main{margin-inline-start:0;margin-inline-end:var(--sidebar-w)}
+  /* Sidebar-space reservation for .main/.topbar lives in admin.css alone
+     (physical padding-right/left under an explicit [dir], deliberately —
+     see the comment on that rule). This file used to also reserve it via
+     margin-inline-start/end, which resolves to the *opposite* physical side
+     in RTL from where the sidebar actually sits (inline-end = left in RTL,
+     but the sidebar is pinned right) — so RTL desktop pages carried both a
+     correct right-side padding reservation AND a wasted 246px left-side
+     margin, roughly halving the usable content column on every admin page
+     at >=1000px (V4 Checkpoint 2, P2-A). Removed; admin.css's `margin:0`
+     reset on `.topbar,.main` is no longer fought over so it applies cleanly. */
   .sidebar{transform:none!important}
   [dir=rtl] .sidebar{right:0;left:auto}
   [dir=ltr] .sidebar{left:0;right:auto}
   .sidebar-close,.topbar .menu-btn,.account-menu-toggle{display:none}
   .topbar-mobile-actions{display:block}
-  .topbar{margin-inline-start:var(--sidebar-w);width:calc(100% - var(--sidebar-w))}
-  [dir=rtl] .topbar{margin-inline-start:0;margin-inline-end:var(--sidebar-w)}
   .topbar-user .who{display:inline}
 }
 

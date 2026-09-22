@@ -103,6 +103,8 @@
 <%- include('../partials/undo_banner') %>
 <% if (msg && okMsgs[msg]) { %><div class="alert ok"><span><%= okMsgs[msg] %></span></div><% } %>
 <% if(msg==='bad_custody_balance'){ %><div class="alert err"><span>رصيد العهدة غير كافٍ أو العهدة لا تخص الموظف الحالي.</span></div><% } %>
+<% if(msg==='pause_bad_type'){ %><div class="alert err"><span>نوع ملف الإثبات غير مدعوم. الصور (JPG, PNG, WEBP) و PDF فقط.</span></div><% } %>
+<% if(msg==='pause_too_big'){ %><div class="alert err"><span>ملف الإثبات أكبر من 10 ميجا.</span></div><% } %>
 
 <%# Phase 2 V3: native #hash anchor nav to this long page's sections — no
     JS/tab-state, so it can never hide content or break if disabled. %>

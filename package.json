@@ -9,12 +9,13 @@
     "test": "node test.js",
     "test:imports": "node import-test.js",
     "security": "node security.js",
-    "test:all": "node test.js && node integration.js && node edge.js && node security.js",
+    "test:all": "node test.js && node integration.js && node edge.js && node security.js && node responsive-visibility-test.js",
     "edge": "node edge.js",
     "demo": "node demo.js",
     "demo:clear": "node demo-clear.js",
     "integration": "node integration.js",
     "test:payroll": "node payroll-excel-test.js",
+    "test:responsive": "node responsive-visibility-test.js",
     "dev": "node server.js"
   },
   "engines": {
@@ -34,6 +35,7 @@
   },
   "optionalDependencies": {
     "heic-convert": "^2.1.0",
+    "playwright": "^1.48.0",
     "sharp": "^0.35.3"
   },
   "overrides": {

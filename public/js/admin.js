@@ -14,6 +14,37 @@
     if (!isError) el.setAttribute('aria-live', 'polite');
   });
 
+  // ------------------------------------------------------- success alert auto-recede
+  // A save confirmation (.alert.ok) recedes on its own after a few seconds so
+  // it doesn't linger as stale chrome once the user has moved on — but only
+  // when the visitor hasn't asked for reduced motion (WCAG 2.2.1: the timer
+  // itself, not just its animation, is skipped, per ui-ux-pro-max's
+  // auto-dismiss guidance in design-review/v4/checkpoint-1/UIUX-PRO-MAX-USAGE.md).
+  // Error/warning banners are never auto-dismissed — they need a read and,
+  // often, a next action.
+  if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+    document.querySelectorAll('.alert.ok').forEach(function (el) {
+      setTimeout(function () { el.classList.add('alert-recede'); }, 4000);
+    });
+  }
+
+  // ------------------------------------------------------- workspace tab rail scroll-into-view
+  // The tabs themselves are plain radio+label — no JS needed to select one.
+  // This only keeps the chosen tab's label inside the visible, scrollable
+  // rail on narrow screens (Checkpoint 1 correction pass, item 1), so
+  // clicking/arrow-keying to a tab near the masked edge doesn't leave its
+  // label half-hidden under the fade.
+  var tabScrollReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.wtabs-input').forEach(function (input) {
+    input.addEventListener('change', function () {
+      if (!input.checked) return;
+      var label = document.querySelector('label[for="' + input.id + '"]');
+      if (label && label.scrollIntoView) {
+        label.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: tabScrollReduced ? 'auto' : 'smooth' });
+      }
+    });
+  });
+
   // ------------------------------------------------------------ drawer
   var sidebar = document.getElementById('sidebar');
   var scrim = document.getElementById('scrim');

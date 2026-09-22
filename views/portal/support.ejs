@@ -1,1 +1,21 @@
-<%pageTitle='تذاكر الدعم الفني'%><%-include('../partials/head')%><%-include('../partials/header')%><main><section class="section"><div class="wrap"><div class="page-head-row"><div><h1>تذاكر الدعم الفني</h1><p>تابع الردود والحالة حتى الحل.</p></div><a class="btn brass" href="/support">فتح تذكرة جديدة</a></div><div class="panel"><div class="panel-body flush"><table class="tbl"><thead><tr><th>الرقم</th><th>العنوان</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody><%rows.forEach(t=>{%><tr><td><a href="/support/my/<%=t.id%>"><b><%=t.ref%></b></a></td><td><a href="/support/my/<%=t.id%>"><%=t.title%></a></td><td><%=STATUSES[t.status]%></td><td><%=fmtDate(t.created_at)%></td></tr><%})%></tbody></table><%if(!rows.length){%><div class="empty"><p>لا توجد تذاكر سابقة.</p></div><%}%></div></div></div></section></main><%-include('../partials/footer')%>
+<%pageTitle='تذاكر الدعم الفني'%><%-include('../partials/head')%><%-include('../partials/header')%><main><section class="section"><div class="wrap">
+<div class="page-head-row"><div><h1>تذاكر الدعم الفني</h1><p>تابع الردود والحالة حتى الحل.</p></div><a class="btn brass" href="/support">فتح تذكرة جديدة</a></div>
+<%const TICKET_COLOR={new:'#6b7785',review:'#c9a24b',assigned:'#2f7bbf',working:'#2f7bbf',waiting_client:'#d98a3d',resolved:'#3a9d6b',closed:'#63727b',reopened:'#c15450'};%>
+<% if (rows.length) { %>
+  <div class="req-list">
+    <% rows.forEach(t => { %>
+      <a class="req-card" href="/support/my/<%=t.id%>">
+        <div class="req-top">
+          <span class="req-ref"><%=t.ref%></span>
+          <span class="req-status" style="background:<%=TICKET_COLOR[t.status]||'#888'%>"><%=STATUSES[t.status]%></span>
+        </div>
+        <h3 class="req-title"><%=t.title%></h3>
+        <div class="req-meta"><span>تاريخ الفتح: <%=fmtDate(t.created_at)%></span></div>
+        <span class="req-go">فتح التذكرة والردود ←</span>
+      </a>
+    <% }) %>
+  </div>
+<% } else { %>
+  <div class="form-card" style="text-align:center"><p style="color:var(--muted)">لا توجد تذاكر سابقة.</p></div>
+<% } %>
+</div></section></main><%-include('../partials/footer')%>

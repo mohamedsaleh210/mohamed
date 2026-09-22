@@ -2,17 +2,31 @@
 <%- include('../partials/head') %>
 <%- include('../partials/header') %><main>
 <section class="section"><div class="wrap narrow">
-  <h1><%=t.ref%> — <%=t.title%></h1>
-  <p>الحالة: <b><%=STATUSES[t.status]%></b></p>
-  <div class="ticket-thread">
-    <% messages.forEach(m=>{ %><article class="ticket-message"><b><%=m.author_name%></b><small><%=fmtDateTime(m.created_at)%></small><p><%=m.body%></p><%if(m.attachment_path){%><a href="/support-files/<%=m.attachment_path%>" target="_blank">عرض المرفق</a><%}%></article><% }) %>
+  <a href="/support/my" style="color:var(--muted);font-size:14px">← تذاكر الدعم الفني</a>
+  <%const TICKET_COLOR={new:'#6b7785',review:'#c9a24b',assigned:'#2f7bbf',working:'#2f7bbf',waiting_client:'#d98a3d',resolved:'#3a9d6b',closed:'#63727b',reopened:'#c15450'};%>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
+    <h2 style="margin:0;color:var(--ink)"><%=t.ref%> — <%=t.title%></h2>
+    <span style="background:<%=TICKET_COLOR[t.status]||'#888'%>;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800"><%=STATUSES[t.status]%></span>
+  </div>
+  <div class="form-card" style="max-width:none;margin-bottom:18px">
+    <h4 style="margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      سجل التذكرة
+    </h4>
+    <div class="ticket-thread">
+      <% messages.forEach(m=>{ %><article class="ticket-message"><b><%=m.author_name%></b><small><%=fmtDateTime(m.created_at)%></small><p><%=m.body%></p><%if(m.attachment_path){%><a href="/support-files/<%=m.attachment_path%>" target="_blank">عرض المرفق</a><%}%></article><% }) %>
+    </div>
   </div>
   <% if(!['resolved','closed'].includes(t.status)){ %>
-  <form class="panel panel-body" method="post" enctype="multipart/form-data" action="/support/my/<%=t.id%>/reply"><%-csrfField%><label>إضافة رد<textarea name="body" required></textarea></label><label>مرفق<input type="file" name="attachment" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn brass">إرسال الرد</button></form>
+  <div class="form-card" style="max-width:none;margin-bottom:18px">
+    <form method="post" enctype="multipart/form-data" action="/support/my/<%=t.id%>/reply"><%-csrfField%><label>إضافة رد<textarea name="body" required></textarea></label><label>مرفق<input type="file" name="attachment" accept="image/jpeg,image/png,image/webp,application/pdf"></label><button class="btn brass">إرسال الرد</button></form>
+  </div>
   <% } %>
   <% if(['resolved','closed'].includes(t.status)){ %>
-  <form class="panel panel-body" method="post" action="/support/my/<%=t.id%>/rate"><%-csrfField%><label>تقييم الخدمة<select name="rating"><%[5,4,3,2,1].forEach(n=>{%><option value="<%=n%>" <%=t.rating===n?'selected':''%>><%=n%> نجوم</option><%})%></select></label><label>ملاحظة اختيارية<textarea name="rating_note"><%=t.rating_note||''%></textarea></label><button class="btn">حفظ التقييم</button></form>
-  <% if(t.reopened_until && new Date(t.reopened_until) >= new Date()){ %><form method="post" action="/support/my/<%=t.id%>/reopen"><%-csrfField%><button class="btn ghost">إعادة فتح التذكرة</button></form><% } %>
+  <div class="form-card" style="max-width:none;margin-bottom:18px">
+    <form method="post" action="/support/my/<%=t.id%>/rate"><%-csrfField%><label>تقييم الخدمة<select name="rating"><%[5,4,3,2,1].forEach(n=>{%><option value="<%=n%>" <%=t.rating===n?'selected':''%>><%=n%> نجوم</option><%})%></select></label><label>ملاحظة اختيارية<textarea name="rating_note"><%=t.rating_note||''%></textarea></label><button class="btn">حفظ التقييم</button></form>
+  <% if(t.reopened_until && new Date(t.reopened_until) >= new Date()){ %><form method="post" action="/support/my/<%=t.id%>/reopen" style="margin-top:10px"><%-csrfField%><button class="btn ghost">إعادة فتح التذكرة</button></form><% } %>
+  </div>
   <% } %>
 </div></section>
 </main><%- include('../partials/footer') %>

@@ -29,7 +29,7 @@
     <% if (items.length) { %>
       <% items.forEach(n => { %>
         <div class="notif <%= n.seen_at ? '' : 'unseen' %> <%= n.priority === 'critical' ? 'critical' : '' %>">
-          <span class="ic"><%= { comment:'💬', assigned:'👤', status:'🔄', deadline:'📅', upload:'📎' }[n.type] || '🔔' %></span>
+          <span class="ic" aria-hidden="true"><svg><use href="/images/icons.svg#<%= { comment:'i-message', assigned:'i-user', status:'i-refresh', deadline:'i-calendar', upload:'i-paperclip' }[n.type] || 'i-bell' %>"/></svg></span>
           <div class="nb">
             <div class="m"><%= n.text %></div>
             <div class="meta">
@@ -63,7 +63,7 @@
       <% }) %>
     <% } else { %>
       <div class="empty">
-        <span class="big">🔔</span>
+        <span class="big"><svg aria-hidden="true"><use href="/images/icons.svg#i-bell"/></svg></span>
         <p><%= onlyUnseen ? 'مفيش إشعارات جديدة.' : 'مفيش إشعارات.' %></p>
       </div>
     <% } %>

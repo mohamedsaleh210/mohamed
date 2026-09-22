@@ -3,18 +3,29 @@
 <%- include('../partials/header') %><main>
 
 <% const st = STATUS[r.status] || { ar: r.status, en: r.status, color: '#888' };
-   const remaining = (r.total_amount || 0) - (r.paid_amount || 0); %>
+   const remaining = (r.total_amount || 0) - (r.paid_amount || 0);
+   const STEPS = Object.keys(STATUS).filter(k => k !== 'cancelled');
+   const stepIdx = STEPS.indexOf(r.status); %>
 
 <section class="section">
   <div class="wrap" style="max-width:760px">
     <a href="/portal" style="color:var(--muted);font-size:14px">← <%= T.myRequests %></a>
 
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 6px">
       <h2 style="margin:0;color:var(--ink);direction:ltr"><%= r.ref %></h2>
       <span style="background:<%= st.color %>;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800">
         <%= lang === 'ar' ? st.ar : st.en %>
       </span>
     </div>
+
+    <% if (stepIdx >= 0) { %>
+      <div class="req-progress" style="margin-bottom:22px" role="img"
+           aria-label="<%= lang === 'ar' ? 'الحالة: ' + st.ar : 'Status: ' + st.en %>">
+        <% STEPS.forEach((k, i) => { %>
+          <i class="<%= i < stepIdx ? 'done' : (i === stepIdx ? 'current' : '') %>"></i>
+        <% }) %>
+      </div>
+    <% } %>
 
     <div class="form-card" style="max-width:none;margin-bottom:18px">
       <p style="margin:0 0 6px"><strong><%= T.service %>:</strong>
@@ -28,7 +39,10 @@
 
     <% if (r.total_amount) { %>
       <div class="form-card" style="max-width:none;margin-bottom:18px">
-        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.account %></h4>
+        <h4 style="margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M2 10h20"/></svg>
+          <%= T.account %>
+        </h4>
         <div style="display:flex;gap:20px;flex-wrap:wrap">
           <div><span style="color:var(--muted);font-size:13px"><%= T.account %></span><br>
             <strong style="font-size:19px"><%= r.total_amount.toLocaleString('en-US') %> <%= site.currency %></strong></div>
@@ -58,23 +72,33 @@
 
     <% if (legalCase) { %>
       <div class="form-card portal-case" style="max-width:none;margin-bottom:18px">
-        <h4><%= lang==='ar' ? 'ملف القضية' : 'Legal case' %> · <span class="num"><%= legalCase.file_no %></span></h4>
+        <h4 style="display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><path d="M12 3v18M7 21h10M5 7l3-4 3 4-3 4-3-4zM19 7l-3-4-3 4 3 4 3-4z"/></svg>
+          <%= lang==='ar' ? 'ملف القضية' : 'Legal case' %> · <span class="num"><%= legalCase.file_no %></span>
+        </h4>
         <p><strong><%= lang==='ar'?'الحالة':'Status' %>:</strong> <%= CASE_STATUS[legalCase.status] || legalCase.status %></p>
         <% if(legalCase.case_number){ %><p><strong><%= lang==='ar'?'رقم القضية':'Case number' %>:</strong> <%= legalCase.case_number %> / <%= legalCase.judicial_year||'' %></p><% } %>
         <% if(legalCase.court){ %><p><strong><%= lang==='ar'?'المحكمة':'Court' %>:</strong> <%= legalCase.court %> <%= legalCase.circuit||'' %></p><% } %>
         <% if(legalCase.client_summary){ %><div class="case-client-update"><%= legalCase.client_summary %></div><% } %>
       </div>
-      <% if(caseHearings.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4><%= lang==='ar'?'الجلسات':'Hearings' %></h4><% caseHearings.forEach(h=>{ %><div class="portal-case-row"><b class="num"><%= h.hearing_on %></b><span><%= h.purpose %></span><small><%= h.decision||h.status %></small></div><% }) %></div><% } %>
-      <% if(caseTasks.length || caseEvents.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4><%= lang==='ar'?'متابعة الأعمال والإجراءات':'Progress' %></h4><% caseTasks.forEach(t=>{ %><div class="portal-case-row"><b><%= t.title %></b><small><%= t.status==='completed'?'✓ تم':(t.due_on||'قيد العمل') %></small></div><% }) %><% caseEvents.forEach(e=>{ %><div class="portal-case-row"><b><%= e.title %></b><span><%= e.details||'' %></span><small><%= e.event_on %></small></div><% }) %></div><% } %>
+      <% if(caseHearings.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4 style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><%= lang==='ar'?'الجلسات':'Hearings' %></h4><% caseHearings.forEach(h=>{ %><div class="portal-case-row"><b class="num"><%= h.hearing_on %></b><span><%= h.purpose %></span><small><%= h.decision||h.status %></small></div><% }) %></div><% } %>
+      <% if(caseTasks.length || caseEvents.length){ %><div class="form-card" style="max-width:none;margin-bottom:18px"><h4 style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><%= lang==='ar'?'متابعة الأعمال والإجراءات':'Progress' %></h4><% caseTasks.forEach(t=>{ %><div class="portal-case-row"><b><%= t.title %></b><small><%= t.status==='completed'?'✓ تم':(t.due_on||'قيد العمل') %></small></div><% }) %><% caseEvents.forEach(e=>{ %><div class="portal-case-row"><b><%= e.title %></b><span><%= e.details||'' %></span><small><%= e.event_on %></small></div><% }) %></div><% } %>
     <% } %>
 
     <% if (requirements.length) { %>
       <div class="form-card" style="max-width:none;margin-bottom:18px">
-        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.needed %></h4>
+        <h4 style="margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <%= T.needed %>
+        </h4>
         <% requirements.forEach(rq => { const done = rq.status === 'received'; %>
           <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0ece2">
-            <span style="width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;font-size:13px;color:#fff;background:<%= done ? '#3a9d6b' : '#d98a3d' %>">
-              <%= done ? '✓' : '!' %>
+            <span style="width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;color:#fff;background:<%= done ? '#3a9d6b' : '#d98a3d' %>">
+              <% if (done) { %>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M20 6L9 17l-5-5"/></svg>
+              <% } else { %>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:3px;height:13px"><path d="M12 3v11M12 20h.01"/></svg>
+              <% } %>
             </span>
             <span style="flex:1;<%= done ? 'text-decoration:line-through;color:#8b9aa1' : '' %>"><%= rq.title %></span>
             <span style="font-size:12.5px;color:var(--muted)"><%= done ? T.received : T.pending %></span>
@@ -85,7 +109,10 @@
 
     <% if (documents.length) { %>
       <div class="form-card" style="max-width:none">
-        <h4 style="margin:0 0 12px;color:var(--ink)"><%= T.files %></h4>
+        <h4 style="margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--brass-deep)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <%= T.files %>
+        </h4>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px">
           <% documents.forEach(d => { %>
             <div style="border:1px solid #e6dfd1;border-radius:10px;overflow:hidden">

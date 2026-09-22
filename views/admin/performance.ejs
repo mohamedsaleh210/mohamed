@@ -3,6 +3,12 @@
   <div class="page-head"><h1>تقييم الإنجاز والمكافآت</h1><p class="sub">80% تقييم إلكتروني لا يمكن تعديله، و20% تقييم إداري، ثم اعتماد المكافأة أو الإجراء.</p></div>
   <%if(can('performance.export')){%><a class="btn ghost" href="<%=adminPath%>/performance/export.csv?from=<%=from%>&to=<%=to%>">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/performance/print?from=<%=from%>&to=<%=to%>">PDF / طباعة</a><%}%>
 </div>
+<%
+  const avgScore = staff.length ? Math.round(staff.reduce((n,u)=>n+u.finalScore,0)/staff.length) : 0;
+  const pendingCount = staff.filter(u=>(u.review?.decision||'pending')==='pending').length;
+  const approvedBonusTotal = staff.reduce((n,u)=>n+(u.review?.decision&&u.review.decision!=='pending'?Number(u.review.approved_bonus||0):0),0);
+%>
+<div class="stat-grid"><div class="stat icon-stat"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-users"/></svg></i><div><span class="k">موظفون مقيّمون</span><b class="v"><span data-count-to="<%=staff.length%>">0</span></b></div></div><div class="stat icon-stat"><i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-gauge"/></svg></i><div><span class="k">متوسط نسبة الإنجاز</span><b class="v"><span data-count-to="<%=avgScore%>">0</span>%</b></div></div><div class="stat warn icon-stat"><i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></i><div><span class="k">بانتظار الاعتماد</span><b class="v"><span data-count-to="<%=pendingCount%>">0</span></b></div></div><div class="stat icon-stat"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></i><div><span class="k">إجمالي المكافآت المعتمدة</span><b class="v"><span data-count-to="<%=approvedBonusTotal%>">0</span></b></div></div></div>
 <div class="alert"><span><b>أساس التقييم:</b> الموعد 40%، اكتمال الخطوات 25%، الجودة وعدم إعادة الفتح 20%، التوثيق 10%، وتقييم المسؤول أو العميل 5%. فترات التوقف المعتمدة لا تُحسب تأخيرًا، ولا يتم أي خصم مالي تلقائيًا.</span></div>
 <form class="toolbar" method="get"><label>من<input type="date" name="from" value="<%=from%>"></label><label>إلى<input type="date" name="to" value="<%=to%>"></label><button class="btn brass">عرض الفترة</button></form>
 <div class="performance-list">

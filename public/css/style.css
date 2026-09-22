@@ -255,10 +255,20 @@ img{max-width:100%}
 .req-meta{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:13.5px}
 .req-meta .ltr{direction:ltr;unicode-bidi:isolate}
 
-.req-need{display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+.req-progress{display:flex;align-items:center;gap:4px;margin:2px 0 12px}
+.req-progress i{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .2s ease}
+.req-progress i.done{background:var(--brass)}
+.req-progress i.current{background:var(--brass-deep)}
+
+.req-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.req-need{display:inline-flex;align-items:center;gap:7px;
   background:#fdf3e3;color:#8a6416;border:1px solid #f0d9a8;
   padding:6px 12px;border-radius:20px;font-size:13px;font-weight:800}
 .req-need svg{width:15px;height:15px}
+.req-pay{display:inline-flex;align-items:center;gap:7px;
+  background:#eaf2fa;color:#2f5c85;border:1px solid #c7dcf0;
+  padding:6px 12px;border-radius:20px;font-size:13px;font-weight:800}
+.req-pay svg{width:15px;height:15px}
 
 .req-go{display:block;margin-top:14px;color:var(--brass-deep);font-weight:700;font-size:14px}
 

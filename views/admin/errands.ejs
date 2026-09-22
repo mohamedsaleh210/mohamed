@@ -32,13 +32,15 @@
       من صفحة أي طلب، اختار الجهة اللي محتاج منها حاجة، وهتلاقيها هنا مجمّعة.
     </span>
   </div>
+<% } else { %>
+  <div class="stat-grid"><div class="stat icon-stat"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-map-pin"/></svg></i><div><span class="k">إجمالي المطلوب</span><b class="v"><span data-count-to="<%= totalPending %>">0</span></b></div></div><div class="stat icon-stat"><i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-building"/></svg></i><div><span class="k">جهات فيها مطلوب</span><b class="v"><span data-count-to="<%= destinations.filter(d=>d.pending).length %>">0</span></b></div></div><div class="stat icon-stat"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></i><div><span class="k">مشاوير قادمة</span><b class="v"><span data-count-to="<%= upcoming.length %>">0</span></b></div></div></div>
 <% } %>
 
 <!-- ============================================================ upcoming trips -->
 <% if (upcoming.length) { %>
   <div class="panel">
     <div class="panel-head">
-      <h3>مشاوير قادمة</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-clock"/></svg> مشاوير قادمة</h3>
       <span class="chip spacer"><%= upcoming.length %></span>
     </div>
     <div class="panel-body flush">
@@ -119,7 +121,7 @@
 <% if (canManage) { %>
   <div class="two-col wide">
     <div class="panel">
-      <div class="panel-head"><h3>تخطيط مشوار</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> تخطيط مشوار</h3></div>
       <div class="panel-body">
         <form method="post" action="<%= adminPath %>/errands/trips/new">
           <%- csrfField %>
@@ -159,7 +161,7 @@
     </div>
 
     <div class="panel">
-      <div class="panel-head"><h3>الجهات</h3></div>
+      <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-building"/></svg> الجهات</h3></div>
       <div class="panel-body flush">
         <ul class="dest-list">
           <% destinations.forEach(d => { %>

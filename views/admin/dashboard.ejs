@@ -221,7 +221,7 @@
             <ul class="timeline">
               <% upcomingList.forEach(r => { %>
                 <li>
-                  <span class="who" style="background:<%= r.deadline === today ? 'var(--warn-bg)' : 'var(--bg)' %>">⏱</span>
+                  <span class="who" style="background:<%= r.deadline === today ? 'var(--warn-bg)' : 'var(--bg)' %>"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-clock"/></svg></span>
                   <div class="what">
                     <div class="m">
                       <a class="ref num" href="<%= adminPath %>/requests/<%= r.id %>"><%= r.ref %></a>

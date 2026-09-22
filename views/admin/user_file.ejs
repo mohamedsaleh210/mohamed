@@ -38,7 +38,7 @@
         <%- csrfField %><button class="btn brass" type="submit">بطاقة دخول الموظف</button>
       </form>
     <% } %>
-    <% if (can('users.manage')) { %><a class="btn brass" href="#edit-employee" onclick="document.getElementById('edit-employee').open=true">✎ تعديل بيانات الموظف</a><% } %>
+    <% if (can('users.manage')) { %><a class="btn brass" href="#edit-employee" onclick="document.getElementById('edit-employee').open=true"><svg aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</a><% } %>
     <% if (!isAdminAccount) { %>
       <a class="btn ghost" href="<%= adminPath %>/users/<%= person.id %>/permissions">
         الصلاحيات
@@ -50,7 +50,7 @@
 </div>
 
 <% if (can('users.manage')) { %>
-<details class="panel" id="edit-employee"><summary class="panel-head"><h3>تعديل بيانات الموظف</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary><form class="panel-body legal-form" method="post" action="<%=adminPath%>/users/<%=person.id%>/update"><%-csrfField%><div class="two-col"><div class="field req"><label>الاسم المختصر</label><input type="text" name="display_name" required value="<%=person.display_name||''%>"></div><div class="field"><label>الاسم الرسمي</label><input type="text" name="legal_name" value="<%=person.legal_name||''%>"></div></div><div class="two-col"><div class="field"><label>البريد</label><input type="email" name="email" value="<%=person.email||''%>"></div><div class="field"><label>الموبايل</label><input type="text" name="phone" value="<%=person.phone||''%>"></div></div><div class="two-col"><div class="field"><label>الرقم القومي</label><input type="text" name="national_id" value="<%=person.national_id||''%>"></div><div class="field"><label>تاريخ الميلاد</label><input type="date" name="birth_date" value="<%=person.birth_date||''%>"></div></div><div class="field"><label>الدور</label><select name="role"><%Object.entries(roleAr).forEach(([k,v])=>{%><option value="<%=k%>" <%=person.role===k?'selected':''%>><%=v%></option><%})%></select></div><button class="btn brass">حفظ التعديلات</button></form></details>
+<details class="panel" id="edit-employee"><summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary><form class="panel-body legal-form" method="post" action="<%=adminPath%>/users/<%=person.id%>/update"><%-csrfField%><div class="two-col"><div class="field req"><label>الاسم المختصر</label><input type="text" name="display_name" required value="<%=person.display_name||''%>"></div><div class="field"><label>الاسم الرسمي</label><input type="text" name="legal_name" value="<%=person.legal_name||''%>"></div></div><div class="two-col"><div class="field"><label>البريد</label><input type="email" name="email" value="<%=person.email||''%>"></div><div class="field"><label>الموبايل</label><input type="text" name="phone" value="<%=person.phone||''%>"></div></div><div class="two-col"><div class="field"><label>الرقم القومي</label><input type="text" name="national_id" value="<%=person.national_id||''%>"></div><div class="field"><label>تاريخ الميلاد</label><input type="date" name="birth_date" value="<%=person.birth_date||''%>"></div></div><div class="field"><label>الدور</label><select name="role"><%Object.entries(roleAr).forEach(([k,v])=>{%><option value="<%=k%>" <%=person.role===k?'selected':''%>><%=v%></option><%})%></select></div><button class="btn brass">حفظ التعديلات</button></form></details>
 <% } %>
 
 <% if (person.assign_locked) { %>
@@ -66,10 +66,19 @@
   </div>
 <% } %>
 
+<%# Phase 2 V3: native #hash anchor nav — no JS/tab-state. %>
+<nav class="section-jump" aria-label="الانتقال السريع">
+  <a class="qf sm" href="#uf-identity"><svg aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</a>
+  <a class="qf sm" href="#uf-workload"><svg aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي</a>
+  <a class="qf sm" href="#uf-devices"><svg aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</a>
+  <a class="qf sm" href="#custody"><svg aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> العهد والمصروفات</a>
+  <% if (!isAdminAccount) { %><a class="qf sm" href="#uf-permissions"><svg aria-hidden="true"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</a><% } %>
+</nav>
+
 <div class="two-col wide">
   <!-- identity -->
-  <div class="panel">
-    <div class="panel-head"><h3>البيانات الشخصية</h3></div>
+  <div class="panel" id="uf-identity">
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</h3></div>
     <div class="panel-body">
       <% if (person.photo) { %>
         <div style="text-align:center;margin-bottom:16px">
@@ -137,9 +146,9 @@
 
   <div>
     <!-- workload -->
-    <div class="panel">
+    <div class="panel" id="uf-workload">
       <div class="panel-head">
-        <h3>الشغل الحالي</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي</h3>
         <span class="chip spacer"><%= openCount %> مفتوح</span>
       </div>
       <div class="panel-body flush">
@@ -174,7 +183,7 @@
     <!-- what the office owes them -->
     <% if (owed.amount > 0) { %>
       <div class="panel">
-        <div class="panel-head"><h3>مستحق له</h3></div>
+        <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-wallet"/></svg> مستحق له</h3></div>
         <div class="panel-body">
           <div class="pay-totals">
             <div class="owing">
@@ -190,9 +199,9 @@
     <% } %>
 
     <!-- devices and sign-ins -->
-    <div class="panel">
+    <div class="panel" id="uf-devices">
       <div class="panel-head">
-        <h3>الأجهزة والدخول</h3>
+        <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</h3>
         <span class="chip spacer"><%= devices.length %> جهاز</span>
       </div>
       <div class="panel-body flush">
@@ -222,7 +231,7 @@
 
 <!-- staff custody and expense statement -->
 <div class="panel" id="custody">
-  <div class="panel-head"><h3>كشف العهد والمصروفات</h3><span class="chip spacer"><%= custodyStatement.custodies.length %> عهدة</span><% if(can('expenses.custody')){ %><a class="btn ghost sm" href="<%= adminPath %>/expenses/custodies">إدارة العهد</a><% } %></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-briefcase"/></svg> كشف العهد والمصروفات</h3><span class="chip spacer"><%= custodyStatement.custodies.length %> عهدة</span><% if(can('expenses.custody')){ %><a class="btn ghost sm" href="<%= adminPath %>/expenses/custodies">إدارة العهد</a><% } %></div>
   <div class="panel-body">
     <div class="pay-totals custody-totals">
       <div><span>إجمالي ما استلم</span><b class="num"><%= money(custodyStatement.totals.received) %></b></div>
@@ -232,15 +241,15 @@
     </div>
   </div>
   <% if(custodyStatement.custodies.length){ %><div class="panel-body flush"><table class="tbl"><thead><tr><th>العهدة</th><th>استلم</th><th>صرف</th><th>مرتجع</th><th>المتبقي</th><th>التاريخ</th></tr></thead><tbody><% custodyStatement.custodies.forEach(c=>{ %><tr><td><%= c.purpose %><% if(c.reference){ %><br><small><%= c.reference %></small><% } %></td><td class="num"><%= money(c.amount) %></td><td class="num"><%= money(c.spent) %></td><td class="num"><%= money(c.returned) %></td><td><b class="num"><%= money(c.remaining) %></b></td><td class="num"><%= c.issued_on %></td></tr><% }) %></tbody></table></div><% } %>
-  <% if(custodyStatement.expenses.length){ %><div class="panel-head"><h3>كشف مصروفاته على الطلبات</h3><span class="chip spacer"><%= custodyStatement.expenses.length %></span></div><div class="panel-body flush"><table class="tbl"><thead><tr><th>التاريخ</th><th>الطلب</th><th>السبب</th><th>المبلغ</th><th>المصدر</th></tr></thead><tbody><% custodyStatement.expenses.forEach(e=>{ %><tr><td class="num"><%= e.spent_on %></td><td><a class="num" href="<%= adminPath %>/requests/<%= e.request_id %>"><%= e.ref %></a><br><small><%= e.client_name %></small></td><td><%= e.reason %></td><td><b class="num"><%= money(e.amount) %></b></td><td><span class="chip <%= e.custody_id?'brass':'' %>"><%= e.custody_id?'من العهدة':'من ماله' %></span></td></tr><% }) %></tbody></table></div><% } %>
+  <% if(custodyStatement.expenses.length){ %><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-receipt"/></svg> كشف مصروفاته على الطلبات</h3><span class="chip spacer"><%= custodyStatement.expenses.length %></span></div><div class="panel-body flush"><table class="tbl"><thead><tr><th>التاريخ</th><th>الطلب</th><th>السبب</th><th>المبلغ</th><th>المصدر</th></tr></thead><tbody><% custodyStatement.expenses.forEach(e=>{ %><tr><td class="num"><%= e.spent_on %></td><td><a class="num" href="<%= adminPath %>/requests/<%= e.request_id %>"><%= e.ref %></a><br><small><%= e.client_name %></small></td><td><%= e.reason %></td><td><b class="num"><%= money(e.amount) %></b></td><td><span class="chip <%= e.custody_id?'brass':'' %>"><%= e.custody_id?'من العهدة':'من ماله' %></span></td></tr><% }) %></tbody></table></div><% } %>
   <% if(!custodyStatement.custodies.length&&!custodyStatement.expenses.length){ %><div class="empty"><p>لا توجد عهد أو مصروفات مسجلة لهذا الموظف.</p></div><% } %>
 </div>
 
 <!-- permissions summary -->
 <% if (!isAdminAccount) { %>
-  <div class="panel">
+  <div class="panel" id="uf-permissions">
     <div class="panel-head">
-      <h3>الصلاحيات</h3>
+      <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</h3>
       <span class="chip spacer">
         <%= permissionRows.filter(r => r.effective).length %> من <%= permissionRows.length %>
       </span>

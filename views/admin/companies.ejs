@@ -2,13 +2,20 @@
 <%- include('../partials/admin_head') %><%- include('../partials/admin_nav') %>
 <%- include('../partials/crumbs',{crumbs:[{label:'العملاء',href:adminPath+'/clients'},{label:'الشركات والفروع'}]}) %>
 <div class="page-head-row"><div class="page-head"><h1>الشركات والفروع</h1><p class="sub">ملف موحد للشركة، وطلبات مستقلة لكل فرع.</p></div></div>
+<div class="stat-grid" style="margin-bottom:14px">
+  <div class="stat icon-stat">
+    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-building"/></svg></i>
+    <div><div class="k"><%= q ? 'شركات في هذا البحث' : 'كل الشركات' %></div>
+    <div class="v"><span data-count-to="<%= rows.length %>">0</span></div></div>
+  </div>
+</div>
 <form class="toolbar" method="get"><input type="text" name="q" value="<%= q %>" placeholder="اسم الشركة أو رقم السجل"><button class="btn">بحث</button></form>
 <div class="two-col wide">
- <div class="panel"><div class="panel-head"><h3>الشركات</h3><span class="chip spacer"><%= rows.length %></span></div><div class="panel-body flush">
+ <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-building"/></svg> الشركات</h3><span class="chip spacer"><%= rows.length %></span></div><div class="panel-body flush">
  <% if(rows.length){ %><table class="tbl"><thead><tr><th>الشركة</th><th>السجل</th><th>الفروع</th><th>الطلبات</th><th></th></tr></thead><tbody>
  <% rows.forEach(c=>{ %><tr><td><b><%= c.name %></b><br><small><%= c.contact_name||'' %></small></td><td class="num"><%= c.registration_no||'—' %></td><td><%= c.branch_count %></td><td><%= c.request_count %></td><td><a class="btn ghost sm" href="<%= adminPath %>/clients/companies/<%= c.id %>">فتح</a></td></tr><% }) %>
  </tbody></table><% } else { %><div class="empty"><p>لم تُضف شركات بعد.</p></div><% } %></div></div>
- <% if(can('clients.edit')){ %><div class="panel"><div class="panel-head"><h3>إضافة شركة</h3></div><form class="panel-body" method="post" action="<%= adminPath %>/clients/companies/new"><%- csrfField %>
+ <% if(can('clients.edit')){ %><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة شركة</h3></div><form class="panel-body" method="post" action="<%= adminPath %>/clients/companies/new"><%- csrfField %>
  <div class="field req"><label>اسم الشركة</label><input type="text" name="name" required></div><div class="field"><label>الاسم القانوني</label><input type="text" name="legal_name"></div>
  <div class="two-col"><div class="field"><label>السجل التجاري</label><input type="text" name="registration_no"></div><div class="field"><label>الرقم الضريبي</label><input type="text" name="tax_no"></div></div>
  <div class="two-col"><div class="field"><label>الهاتف</label><input type="text" name="phone"></div><div class="field"><label>البريد</label><input type="email" name="email"></div></div>

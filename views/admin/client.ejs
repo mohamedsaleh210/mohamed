@@ -24,7 +24,7 @@
   </div>
   <div class="btn-row">
     <% if (can('clients.edit')) { %>
-      <a class="btn ghost" href="#edit-client" onclick="document.getElementById('edit-client').open=true">✎ تعديل بيانات العميل</a>
+      <a class="btn ghost" href="#edit-client" onclick="document.getElementById('edit-client').open=true"><svg aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات العميل</a>
     <% } %>
     <a class="btn brass" href="<%= adminPath %>/requests/new<%= account ? '?client=' + account.id : '?phone=' + encodeURIComponent(phone) %>">
       + طلب جديد له
@@ -46,7 +46,7 @@
 
 <% if (can('clients.edit')) { %>
   <details class="panel client-edit-panel" id="edit-client">
-    <summary class="panel-head"><h3>تعديل بيانات العميل</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary>
+    <summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات العميل</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary>
     <form method="post" action="<%= adminPath %>/clients/<%= account ? account.id : encodeURIComponent(phone) %>/update" class="panel-body legal-form">
       <%- csrfField %>
       <div class="field req"><label>الاسم</label><input type="text" name="full_name" required value="<%= name %>"></div>
@@ -61,37 +61,37 @@
 
 <div class="stat-grid">
   <div class="stat icon-stat">
-    <i class="stat-ico ic-brass">▤</i>
+    <i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-list"/></svg></i>
     <div><span class="k">كل الطلبات</span>
-    <span class="v"><%= requests.length %></span></div>
+    <span class="v"><span data-count-to="<%= requests.length %>">0</span></span></div>
   </div>
   <div class="stat icon-stat">
-    <i class="stat-ico ic-warn">◔</i>
+    <i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-clock"/></svg></i>
     <div><span class="k">مفتوحة</span>
-    <span class="v" style="color:var(--brass-deep)"><%= open.length %></span></div>
+    <span class="v" style="color:var(--brass-deep)"><span data-count-to="<%= open.length %>">0</span></span></div>
   </div>
   <div class="stat icon-stat">
-    <i class="stat-ico ic-ok">✓</i>
+    <i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></i>
     <div><span class="k">مكتملة</span>
-    <span class="v" style="color:var(--ok)"><%= done %></span></div>
+    <span class="v" style="color:var(--ok)"><span data-count-to="<%= done %>">0</span></span></div>
   </div>
   <% if (cancelled) { %>
     <div class="stat icon-stat">
-      <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)">✕</i>
+      <i class="stat-ico" style="background:var(--line-soft);color:var(--muted)" aria-hidden="true"><svg><use href="/images/icons.svg#i-x-circle"/></svg></i>
       <div><span class="k">ملغاة</span>
-      <span class="v" style="color:var(--muted)"><%= cancelled %></span></div>
+      <span class="v" style="color:var(--muted)"><span data-count-to="<%= cancelled %>">0</span></span></div>
     </div>
   <% } %>
   <% if (showMoney && totals) { %>
     <div class="stat icon-stat">
-      <i class="stat-ico ic-info">▤</i>
+      <i class="stat-ico ic-info" aria-hidden="true"><svg><use href="/images/icons.svg#i-receipt"/></svg></i>
       <div><span class="k">إجمالي الأتعاب</span>
-      <span class="v num"><%= totals.billed.toLocaleString('en-US') %></span></div>
+      <span class="v num"><span data-count-to="<%= totals.billed %>">0</span></span></div>
     </div>
     <div class="stat icon-stat <%= totals.billed - totals.paid > 0 ? 'warn' : '' %>">
-      <i class="stat-ico ic-warn">%</i>
+      <i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-wallet"/></svg></i>
       <div><span class="k">المتبقي عليه</span>
-      <span class="v num"><%= (totals.billed - totals.paid).toLocaleString('en-US') %></span></div>
+      <span class="v num"><span data-count-to="<%= totals.billed - totals.paid %>">0</span></span></div>
     </div>
   <% } %>
 </div>
@@ -112,7 +112,7 @@
 
 <div class="panel">
   <div class="panel-head">
-    <h3>كل طلباته</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-list"/></svg> كل طلباته</h3>
     <span class="chip spacer"><%= requests.length %></span>
   </div>
   <div class="panel-body flush">
@@ -182,7 +182,7 @@
 
 <% if (account) { %>
   <div class="panel">
-    <div class="panel-head"><h3>بيانات الحساب</h3></div>
+    <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-user"/></svg> بيانات الحساب</h3></div>
     <div class="panel-body flush">
       <table class="tbl">
         <tr><td data-label="الاسم">الاسم</td><td><%= account.full_name %></td></tr>
@@ -204,7 +204,7 @@
 <% if (can('clients.erase')) { %>
   <div class="panel" style="border-color:#f0c9c6">
     <div class="panel-head" style="background:var(--danger-bg)">
-      <h3 style="color:#8f2f2b">حذف العميل نهائياً</h3>
+      <h3 style="color:#8f2f2b"><svg class="h3-ico" aria-hidden="true" style="opacity:1"><use href="/images/icons.svg#i-trash"/></svg> حذف العميل نهائياً</h3>
     </div>
     <div class="panel-body">
       <div class="alert warn" style="margin-top:0">

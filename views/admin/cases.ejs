@@ -4,15 +4,15 @@
 
 <div class="page-head"><h1>إدارة مكتب المحاماة</h1><p class="sub">ملفات القضايا والجلسات وأعمال فريق المكتب مرتبطة بطلبات سند.</p></div>
 
-<%const CASE_ICO={preparation:'ic-info',filed:'ic-info',active:'ic-brass',judgment:'ic-violet',enforcement:'ic-warn',suspended:'ic-warn',closed:'ic-ok'};const CASE_GLYPH={preparation:'▤',filed:'▤',active:'◍',judgment:'⚖',enforcement:'⚡',suspended:'⏸',closed:'✓'};%>
+<%const CASE_ICO={preparation:'ic-info',filed:'ic-info',active:'ic-brass',judgment:'ic-violet',enforcement:'ic-warn',suspended:'ic-warn',closed:'ic-ok'};const CASE_SVG={preparation:'i-file',filed:'i-upload',active:'i-scale',judgment:'i-check-circle',enforcement:'i-refresh',suspended:'i-clock',closed:'i-lock'};%>
 <div class="stat-grid legal-stats">
   <% Object.entries(STATUS).forEach(([key,name]) => { const n=(counts.find(x=>x.status===key)||{}).c||0; %>
-    <a class="stat icon-stat" href="<%= adminPath %>/cases?status=<%= key %>"><i class="stat-ico <%=CASE_ICO[key]||'ic-info'%>"><%=CASE_GLYPH[key]||'●'%></i><div><span class="k"><%= name %></span><b class="v"><%= n %></b></div></a>
+    <a class="stat icon-stat" href="<%= adminPath %>/cases?status=<%= key %>"><i class="stat-ico <%=CASE_ICO[key]||'ic-info'%>" aria-hidden="true"><svg><use href="/images/icons.svg#<%=CASE_SVG[key]||'i-file'%>"/></svg></i><div><span class="k"><%= name %></span><b class="v"><span data-count-to="<%= n %>">0</span></b></div></a>
   <% }) %>
 </div>
 
 <div class="panel">
-  <div class="panel-head"><h3>القضايا</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-scale"/></svg> القضايا</h3></div>
   <form class="filter-bar" method="get">
     <input type="text" name="q" value="<%= q %>" placeholder="رقم الملف أو القضية أو اسم العميل">
     <select name="status"><option value="">كل الحالات</option><% Object.entries(STATUS).forEach(([k,v])=>{ %><option value="<%= k %>" <%= status===k?'selected':'' %>><%= v %></option><% }) %></select>
@@ -28,7 +28,7 @@
   </div>
 </div>
 
-<% if (can('cases.view_all')) { %><details class="panel compact"><summary class="panel-head"><h3>إضافة تصنيف قضية</h3></summary>
+<% if (can('cases.view_all')) { %><details class="panel compact"><summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة تصنيف قضية</h3></summary>
   <form method="post" action="<%= adminPath %>/cases/categories" class="inline-form"><%- csrfField %><input type="text" name="name" required placeholder="مثال: ضرائب"><input type="color" name="color" value="#b78b32"><button class="btn">إضافة</button></form>
 </details><% } %>
 <%- include('../partials/admin_foot') %>

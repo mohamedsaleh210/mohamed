@@ -25,3 +25,21 @@ See the chat/session report for the full checklist: test suite results
 (974+21+138+74+178 = 1385 checks, 0 failures), the 11-breakpoint responsive
 overflow matrix (0 overflow), and the motion/interaction QA run in both
 normal and `prefers-reduced-motion: reduce` modes (14/14 passed).
+
+---
+
+## Operations checkpoint (Requests, Cases, Clients/Companies, Employees, Permissions)
+
+Approved as the next batch after the checkpoint above. Full per-page
+decision log, screenshots, test results, and QA are in
+[`operations/README.md`](operations/README.md). Summary: 8 real modules
+(`requests.ejs`, `request_detail.ejs`, `cases.ejs`, `case_detail.ejs`,
+`clients.ejs`, `client.ejs`, `companies.ejs`, `company.ejs`, `users.ejs`,
+`user_file.ejs`, `permissions.ejs`) restyled with the approved V3 icon
+system, motion tokens, and real-data-only KPI cards — every permission
+gate, form action, input name, and conditional block preserved and diffed
+against `origin/main`. `case_report.ejs` (standalone print document)
+deliberately left untouched. Full suite re-run (1385 checks, 0 failures),
+121-point responsive matrix (0 overflow), 12-point motion/reduced-motion QA
+(all passed), and a live permission-gating spot check as a real lawyer
+account.

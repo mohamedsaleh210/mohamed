@@ -256,7 +256,15 @@ a { color: inherit; text-decoration: none; }
 /* ---------------------------------------------------------------- main */
 .main { padding: 18px 14px 80px; }
 
-.page-head { margin-bottom: 18px; }
+.page-head {
+  margin-bottom: 18px;
+  /* Phase 2 V3: header is always-visible critical content, so it animates
+     directly on load rather than via a JS scroll-reveal observer — same
+     "no JS dependency for primary content" rule the approved preview used
+     for its own hero. prefers-reduced-motion collapses this globally. */
+  animation: page-head-in var(--motion-slow) var(--ease-decelerate) both;
+}
+@keyframes page-head-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .page-head h1 { font-size: 22px; margin: 0 0 2px; color: var(--ink); font-weight: 800; }
 .page-head .sub { color: var(--muted); margin: 0; font-size: 14.5px; }
 .page-head-row {
@@ -316,13 +324,26 @@ a { color: inherit; text-decoration: none; }
   box-shadow: var(--shadow);
   margin-bottom: 16px;
   overflow: hidden;
+  /* Phase 2 V3: so an in-page "jump to section" anchor doesn't land the
+     target flush under the sticky mobile topbar. */
+  scroll-margin-top: calc(var(--topbar-h) + 14px);
 }
+/* Phase 2 V3: lightweight anchor-based section nav for long detail pages
+   (request/case detail) — native #hash scrolling, no JS/tab-state, so it
+   degrades to a no-op if disabled/unreachable rather than hiding content. */
+.section-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.section-jump a.qf svg { margin-inline-end: 2px; }
 .panel-head {
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.panel-head h3 { margin: 0; font-size: 16px; color: var(--ink); font-weight: 800; }
+.panel-head h3 { margin: 0; font-size: 16px; color: var(--ink); font-weight: 800; display: flex; align-items: center; gap: 7px; }
+/* Phase 2 V3: generic small decorative icon used next to a heading/label —
+   not scoped to .panel-head h3 specifically, so it also sizes correctly in
+   .perm-group-head b and any other heading-like element that reuses it. */
+svg.h3-ico { width: 17px; height: 17px; flex: none; opacity: 0.75; vertical-align: -3px; }
+.perm-group-head b { display: inline-flex; align-items: center; gap: 6px; }
 .panel-head .spacer { margin-inline-start: auto; }
 .panel-body { padding: 16px; }
 .panel-body.flush { padding: 0; }
@@ -490,9 +511,12 @@ table.tbl .row-actions { text-align: left; white-space: nowrap; }
   font-size: 12.5px; font-weight: 800; color: #fff; white-space: nowrap;
 }
 .chip {
-  display: inline-block; padding: 3px 10px; border-radius: 8px;
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 8px;
   background: var(--bg); color: #4f5f68; font-size: 12.5px; font-weight: 700;
 }
+.chip svg { width: 12px; height: 12px; flex: none; }
+.qf svg { width: 15px; height: 15px; flex: none; }
+.empty .big { display: inline-flex; }
 .chip.brass { background: var(--brass-soft); color: var(--brass-deep); }
 .chip.ok { background: var(--ok-bg); color: var(--ok); }
 .chip.off { background: #eceff0; color: var(--muted-2); }

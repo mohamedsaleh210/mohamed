@@ -15,6 +15,12 @@
   rows.forEach(r => (groups[r.group] = groups[r.group] || { label: r.groupLabel, items: [] }).items.push(r));
   const added = rows.filter(r => r.override === true).length;
   const removed = rows.filter(r => r.override === false).length;
+  const GROUP_ICON = {
+    'الطلبات': 'i-list', 'إدارة مكتب المحاماة': 'i-scale', 'الفلوس': 'i-wallet',
+    'المصاريف': 'i-receipt', 'تقييم الموظفين': 'i-gauge', 'المرتبات والمكافآت والحوافز': 'i-receipt',
+    'العملاء': 'i-users', 'المشاوير': 'i-map-pin', 'أجندة الأعمال والتجديدات': 'i-calendar',
+    'الدعم الفني': 'i-message', 'المحتوى': 'i-file', 'الحذف النهائي': 'i-trash', 'الإدارة': 'i-settings',
+  };
 %>
 
 <div class="page-head">
@@ -57,7 +63,7 @@
     <% Object.values(groups).forEach(group => { %>
       <div class="panel <%= Object.keys(groups)[0] && group.items[0] && group.items[0].group === 'erase' ? 'danger-panel' : '' %>">
         <div class="panel-head">
-          <h3><%= group.label %></h3>
+          <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#<%= GROUP_ICON[group.label] || 'i-shield' %>"/></svg> <%= group.label %></h3>
           <% if (group.items[0] && group.items[0].group === 'erase') { %>
             <span class="chip danger">مفيش تراجع</span>
           <% } %>

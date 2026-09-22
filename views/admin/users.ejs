@@ -21,11 +21,26 @@
     last_admin: 'ده آخر حساب أدمن شغّال — لو أوقفته محدش هيقدر يدير النظام.',
   };
   const roleLabel = { admin: 'أدمن', supervisor: 'مشرف', lawyer: 'محامي' };
+  const GROUP_ICON = {
+    'الطلبات': 'i-list', 'إدارة مكتب المحاماة': 'i-scale', 'الفلوس': 'i-wallet',
+    'المصاريف': 'i-receipt', 'تقييم الموظفين': 'i-gauge', 'المرتبات والمكافآت والحوافز': 'i-receipt',
+    'العملاء': 'i-users', 'المشاوير': 'i-map-pin', 'أجندة الأعمال والتجديدات': 'i-calendar',
+    'الدعم الفني': 'i-message', 'المحتوى': 'i-file', 'الحذف النهائي': 'i-trash', 'الإدارة': 'i-settings',
+  };
 %>
 
 <div class="page-head">
   <h1>الموظفين</h1>
   <p class="sub">حسابات الدخول للوحة الإدارة: أدمن، مشرف، ومحامي.</p>
+</div>
+
+<div class="stat-grid" style="margin-bottom:14px">
+  <div class="stat icon-stat"><i class="stat-ico ic-brass" aria-hidden="true"><svg><use href="/images/icons.svg#i-users"/></svg></i><div><div class="k">كل الموظفين</div><div class="v"><span data-count-to="<%= users.length %>">0</span></div></div></div>
+  <div class="stat icon-stat"><i class="stat-ico ic-ok" aria-hidden="true"><svg><use href="/images/icons.svg#i-check-circle"/></svg></i><div><div class="k">شغّالين</div><div class="v" style="color:var(--ok)"><span data-count-to="<%= users.filter(u => u.active).length %>">0</span></div></div></div>
+  <% const stopped = users.filter(u => !u.active).length; %>
+  <% if (stopped) { %><div class="stat icon-stat"><i class="stat-ico" style="background:var(--line-soft);color:var(--muted)" aria-hidden="true"><svg><use href="/images/icons.svg#i-x-circle"/></svg></i><div><div class="k">موقوفين</div><div class="v" style="color:var(--muted)"><span data-count-to="<%= stopped %>">0</span></div></div></div><% } %>
+  <% const incomplete = users.filter(u => u.active && !u.profile_completed).length; %>
+  <% if (incomplete) { %><div class="stat icon-stat"><i class="stat-ico ic-warn" aria-hidden="true"><svg><use href="/images/icons.svg#i-alert-triangle"/></svg></i><div><div class="k">بياناتهم ناقصة</div><div class="v" style="color:var(--warn)"><span data-count-to="<%= incomplete %>">0</span></div></div></div><% } %>
 </div>
 <%if(can('users.export')){%><div class="btn-row" style="margin-bottom:14px"><a class="btn ghost" href="<%=adminPath%>/users/export.csv">Excel</a><a class="btn ghost" target="_blank" href="<%=adminPath%>/users/print">PDF / طباعة</a></div><%}%>
 
@@ -35,7 +50,7 @@
 
 <div class="panel">
   <div class="panel-head">
-    <h3>الحسابات</h3>
+    <h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-users"/></svg> الحسابات</h3>
     <span class="chip spacer"><%= users.filter(u => u.active).length %> شغّال</span>
   </div>
   <div class="panel-body flush">
@@ -134,7 +149,7 @@
 </div>
 
 <div class="panel">
-  <div class="panel-head"><h3>إضافة موظف</h3></div>
+  <div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-plus"/></svg> إضافة موظف</h3></div>
   <div class="panel-body">
     <form method="post" action="<%= adminPath %>/users/new">
       <%- csrfField %>
@@ -219,7 +234,7 @@
             <% Object.entries(catalogue).forEach(([groupKey, group]) => { %>
               <div class="perm-group <%= groupKey === 'erase' ? 'danger-group' : '' %>">
                 <div class="perm-group-head">
-                  <b><%= group.label %></b>
+                  <b><svg class="h3-ico" aria-hidden="true" style="opacity:.55"><use href="/images/icons.svg#<%= GROUP_ICON[group.label] || 'i-shield' %>"/></svg> <%= group.label %></b>
                   <% if (groupKey === 'erase') { %>
                     <span class="chip danger">
                       مفيش تراجع

@@ -25,6 +25,27 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
+/**
+ * A browser Playwright's own version didn't ship for itself — this
+ * environment pre-installs one Chromium build at a fixed path rather than
+ * letting every project download its own copy. When the installed
+ * `playwright` package expects a newer revision than that build (a version
+ * mismatch, not a missing browser), point it at the one that's actually on
+ * disk instead of trying to download another.
+ */
+function findPrebuiltChromium() {
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  if (!root || !fs.existsSync(root)) return undefined;
+  const dir = fs
+    .readdirSync(root)
+    .filter((d) => d.startsWith('chromium-'))
+    .sort()
+    .reverse()[0];
+  if (!dir) return undefined;
+  const exe = path.join(root, dir, 'chrome-linux', 'chrome');
+  return fs.existsSync(exe) ? exe : undefined;
+}
+
 const PORT = process.env.TEST_PORT || 4057;
 const ADMIN = process.env.ADMIN_PATH || '/office-panel';
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -85,7 +106,7 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
 
   let browser;
   try {
-    browser = await playwright.chromium.launch();
+    browser = await playwright.chromium.launch({ executablePath: findPrebuiltChromium() });
   } catch (e) {
     console.log('\x1b[31mFAILED TO LAUNCH CHROMIUM\x1b[0m — ' + e.message);
     stop();
@@ -95,12 +116,23 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
   try {
     // -------------------------------------------------- shared login helper
     async function loginPage(width, height = 900) {
-      const ctx = await browser.newContext({ viewport: { width, height } });
+      // The login form captures a location before submitting (geolocation
+      // API, then form.submit()) — grant it and stub a fast answer so that
+      // step resolves immediately instead of racing whatever headless
+      // Chromium does with an unhandled permission prompt.
+      const ctx = await browser.newContext({
+        viewport: { width, height },
+        geolocation: { latitude: 30.0444, longitude: 31.2357 },
+        permissions: ['geolocation'],
+      });
       const page = await ctx.newPage();
       await page.goto(`${BASE}${ADMIN}/login`);
       await page.fill('input[name="username"]', 'adam');
       await page.fill('input[name="password"]', '1234');
-      await page.click('button[type="submit"]');
+      await Promise.all([
+        page.waitForURL((url) => !url.pathname.endsWith('/login'), { timeout: 15000 }),
+        page.click('button[type="submit"]'),
+      ]);
       await page.waitForLoadState('networkidle');
       return { ctx, page };
     }

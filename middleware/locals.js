@@ -1,6 +1,7 @@
 const { db, getSetting, getBool } = require('../db');
 const { UI, STATUS } = require('../lib/i18n');
 const social = require('../lib/social');
+const contentProtection = require('../lib/content-protection');
 
 const waLink = (num, text) => {
   const digits = String(num || '').replace(/[^\d]/g, '');
@@ -109,6 +110,28 @@ function locals(req, res, next) {
   res.locals.clientUser = req.session.client || null;
   res.locals.path = req.path;
   res.locals.query = req.query;
+
+  // views/partials/head.ejs and footer.ejs are shared by both the public
+  // marketing pages AND the client portal (views/portal/*.ejs all include
+  // the same partials — there is no separate portal head). The portal is
+  // explicitly out of scope for content protection, so the office's raw
+  // setting is never enough on its own: it's paired with the request path
+  // to decide whether protection is actually active on THIS page. The admin
+  // panel needs no such check — it uses admin_head.ejs, a wholly separate
+  // partial that never reads any of this.
+  const cp = contentProtection.config();
+  res.locals.contentProtection = cp;
+  res.locals.contentProtectionActive = cp.enabled && !req.path.startsWith('/portal');
+
+  // A ready-to-drop class string for the informational public templates
+  // that opt into protection (home/services/category/about/guides/faq/page)
+  // — empty when the office hasn't enabled it, so those templates never gain
+  // a stray class name for a feature that's off.
+  res.locals.protectedContentClass = res.locals.contentProtectionActive
+    ? ['protected-content', cp.blockSelect ? 'cp-select-off' : '', cp.blockDrag ? 'cp-drag-off' : '']
+        .filter(Boolean)
+        .join(' ')
+    : '';
 
   next();
 }

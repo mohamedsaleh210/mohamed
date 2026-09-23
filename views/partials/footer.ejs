@@ -40,6 +40,16 @@
 <% } %>
 
 <script src="/js/site.js" defer></script>
+<% if (contentProtectionActive) { %>
+<script>
+  window.__sanadContentProtection = {
+    blockSelect: <%= contentProtection.blockSelect ? 'true' : 'false' %>,
+    blockDrag: <%= contentProtection.blockDrag ? 'true' : 'false' %>,
+    blockContextMenu: <%= contentProtection.blockContextMenu ? 'true' : 'false' %>
+  };
+</script>
+<script src="/js/content-protection.js" defer></script>
+<% } %>
 <script>
   (function () {
     // Server-rendered .form-alert banners had no ARIA role, so screen

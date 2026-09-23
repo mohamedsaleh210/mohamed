@@ -20,6 +20,7 @@
   <a href="<%= adminPath %>/settings?tab=files" class="<%= tab === 'files' ? 'active' : '' %>">الملفات</a>
   <a href="<%= adminPath %>/settings?tab=backup" class="<%= tab === 'backup' ? 'active' : '' %>">النسخ والاستعادة</a>
   <a href="<%= adminPath %>/settings?tab=ai" class="<%= tab === 'ai' ? 'active' : '' %>">المساعد الذكي</a>
+  <%if(can('content_protection.manage')){%><a href="<%=adminPath%>/settings?tab=protection" class="<%=tab==='protection'?'active':''%>">حماية المحتوى</a><%}%>
   <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول Google</a>
   <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول جوجل</a>
 </nav>
@@ -91,6 +92,8 @@
       <div class="field"><label>مفتاح API</label><input type="password" name="ai_api_key" dir="ltr" placeholder="<%=aiConfig.hasApiKey?'محفوظ — سيب الحقل فاضي لو مش هتغيّره':'مفيش مفتاح محفوظ'%>" autocomplete="off"></div>
       <% if (aiConfig.hasApiKey) { %><div class="field"><label class="check"><input type="checkbox" name="ai_clear_key" value="1"> امسح المفتاح المحفوظ</label></div><% } %>
       <div class="field"><label>مدة الاحتفاظ بالمحادثات (أيام)</label><input type="number" name="ai_retention_days" min="1" max="365" value="<%=aiConfig.retentionDays%>"></div>
+      <div class="field"><label>درجة الإبداع (temperature، 0–1)</label><input type="number" name="ai_temperature" min="0" max="1" step="0.1" value="<%=aiConfig.temperature%>"><div class="help">رقم أقل = ردود أدق والتزامًا بالبيانات. رقم أعلى = صياغة أكثر تنوعًا.</div></div>
+      <div class="field"><label>أقصى طول للرد (tokens)</label><input type="number" name="ai_max_tokens" min="256" max="4096" step="256" value="<%=aiConfig.maxTokens%>"></div>
       <div class="field wide"><label>تعليمات إضافية للمساعد</label><textarea name="ai_system_instructions" placeholder="مثال: خاطب المستخدم باللهجة المصرية، ووضّح دايمًا إن أي رقم مالي تقريبي لحد ما يتأكد منه."><%=aiConfig.systemInstructions%></textarea></div>
       <div class="field wide"><label>رسالة الترحيب</label><textarea name="ai_welcome_message"><%=aiConfig.welcomeMessage%></textarea></div>
       <div class="field wide"><label>الأدوار المسموح لها تستخدم المساعد</label><div class="check-grid">
@@ -108,6 +111,43 @@
     </form>
   </div></div>
   <% if (aiAvailable) { %><div class="btn-row"><a class="btn ghost" href="<%=adminPath%>/ai">افتح المساعد الذكي</a></div><% } %>
+<% } %>
+
+<!-- ============================================================ content protection -->
+<% if (tab === 'protection' && can('content_protection.manage')) { %>
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-shield"/></svg> حماية محتوى الموقع العام</h3><span class="chip <%=contentProtectionConfig.enabled?'ok':''%> spacer"><%=contentProtectionConfig.enabled?'مفعّلة':'متوقفة'%></span></div><div class="panel-body">
+    <div class="alert warn"><span>
+      دي وسيلة ردع لتقليل النسخ العادي، مش قفل أمني حقيقي. أي حد يقدر يشوف محتوى على شاشته يقدر يصوّره — المتصفح
+      مش قادر يمنع لقطة شاشة تقنيًا، وأي كلام بيقول عكس ده غير دقيق. الحماية هنا مقصورة على صفحات الموقع العام
+      (الرئيسية، الخدمات، الأقسام، من نحن، الدليل، الأسئلة الشائعة، والصفحات الثابتة) — أبدًا على لوحة الإدارة
+      أو بوابة العملاء أو أي فورم أو طباعة/PDF.
+    </span></div>
+    <form method="post" action="<%=adminPath%>/settings/content-protection" class="two-col"><%-csrfField%>
+      <div class="field"><label class="check"><input type="checkbox" name="content_protection_enabled" <%=contentProtectionConfig.enabled?'checked':''%>> حماية المحتوى العام</label></div>
+      <div class="field"><label class="check"><input type="checkbox" name="content_protection_block_select" <%=contentProtectionConfig.blockSelect?'checked':''%>> منع تحديد النصوص المحمية</label></div>
+      <div class="field"><label class="check"><input type="checkbox" name="content_protection_block_drag" <%=contentProtectionConfig.blockDrag?'checked':''%>> منع سحب الصور</label></div>
+      <div class="field"><label class="check"><input type="checkbox" name="content_protection_block_contextmenu" <%=contentProtectionConfig.blockContextMenu?'checked':''%>> تعطيل القائمة اليمنى في المحتوى المحمي</label></div>
+      <div class="field"><label class="check"><input type="checkbox" id="cpWatermarkToggle" name="content_protection_watermark_enabled" <%=contentProtectionConfig.watermarkEnabled?'checked':''%>> إظهار العلامة المائية</label></div>
+      <div class="field cp-watermark-field <%=contentProtectionConfig.watermarkEnabled?'':'cp-field-inactive'%>"><label>نص العلامة المائية</label><input type="text" name="content_protection_watermark_text" maxlength="60" value="<%=contentProtectionConfig.watermarkText%>" placeholder="Sanad | سند"></div>
+      <div class="field cp-watermark-field <%=contentProtectionConfig.watermarkEnabled?'':'cp-field-inactive'%>"><label>شفافية العلامة المائية (1–40%)</label><input type="number" name="content_protection_watermark_opacity" min="1" max="40" value="<%=contentProtectionConfig.watermarkOpacity%>"></div>
+      <style>.cp-field-inactive{opacity:.5}</style>
+      <script>
+        (function () {
+          var toggle = document.getElementById('cpWatermarkToggle');
+          var fields = document.querySelectorAll('.cp-watermark-field');
+          if (!toggle || !fields.length) return;
+          // Visual only — the inputs stay enabled so their saved value is
+          // never silently dropped from the form submission when this box
+          // is unchecked; only their relevance is deemphasized until the
+          // watermark itself is switched on.
+          toggle.addEventListener('change', function () {
+            fields.forEach(function (f) { f.classList.toggle('cp-field-inactive', !toggle.checked); });
+          });
+        })();
+      </script>
+      <button class="btn brass">حفظ إعدادات الحماية</button>
+    </form>
+  </div></div>
 <% } %>
 
 <!-- ============================================================ site -->

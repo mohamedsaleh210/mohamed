@@ -1,0 +1,58 @@
+/*
+ * Public content-protection deterrence.
+ *
+ * Only ever loaded on the public marketing site (see views/partials/head.ejs)
+ * and only when the office has switched it on — never on the admin panel,
+ * the client portal, or a form-bearing page. The rules below only ever
+ * apply inside a .protected-content wrapper, and always leave form fields,
+ * links you're meant to copy (email/phone), and anything explicitly marked
+ * .cp-allow-copy selectable and functional, per the settings toggles.
+ */
+
+.protected-content.cp-select-off {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Never let the select-off rule reach anything a visitor legitimately needs
+   to select or interact with, even inside a protected section. */
+.protected-content.cp-select-off input,
+.protected-content.cp-select-off textarea,
+.protected-content.cp-select-off select,
+.protected-content.cp-select-off option,
+.protected-content.cp-select-off [contenteditable],
+.protected-content.cp-select-off [contenteditable] *,
+.protected-content.cp-select-off a[href^="mailto:"],
+.protected-content.cp-select-off a[href^="tel:"],
+.protected-content.cp-select-off .cp-allow-copy,
+.protected-content.cp-select-off .cp-allow-copy * {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+.protected-content.cp-drag-off img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* Watermark overlay: a decorative, tiled background image (an inline SVG
+   built server-side from the configured text) laid over an already-
+   positioned media container (.cp-watermark-on expects its element to
+   already establish a positioning context, e.g. .product-scene's own
+   position:relative — it never introduces a new wrapping element, so it
+   never disturbs an absolutely-positioned image inside it).
+   pointer-events:none keeps it from ever intercepting a click; it carries no
+   text a screen reader would announce, since a background-image is never
+   exposed to assistive tech. */
+.cp-watermark-on::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-position: center;
+  background-image: var(--cp-watermark-svg, none);
+}

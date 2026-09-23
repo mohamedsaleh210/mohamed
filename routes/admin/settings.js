@@ -13,6 +13,7 @@ const backup = require('../../lib/backup');
 const backupSchedule = require('../../lib/backup-schedule');
 const branchArchive = require('../../lib/branch-archive');
 const ai = require('../../lib/ai');
+const contentProtection = require('../../lib/content-protection');
 
 const router = express.Router();
 router.use(can('settings.manage'));
@@ -90,6 +91,7 @@ router.get('/', (req, res) => {
     aiConfig: ai.config(),
     aiRoles: ai.ALL_ROLES,
     aiModules: require('../../lib/ai-access').MODULES,
+    contentProtectionConfig: contentProtection.config(),
   });
 });
 
@@ -216,6 +218,8 @@ router.post('/ai-settings', (req, res) => {
   setSetting('ai_welcome_message', String(req.body.ai_welcome_message || '').trim());
   setSetting('ai_audit_log', req.body.ai_audit_log ? '1' : '0');
   setSetting('ai_retention_days', String(Math.min(365, Math.max(1, parseInt(req.body.ai_retention_days, 10) || 90))));
+  setSetting('ai_temperature', String(Math.min(1, Math.max(0, parseFloat(req.body.ai_temperature) || 0.3))));
+  setSetting('ai_max_tokens', String(Math.min(4096, Math.max(256, parseInt(req.body.ai_max_tokens, 10) || 1024))));
 
   const roles = [].concat(req.body.ai_allowed_roles || []).filter((r) => ai.ALL_ROLES.includes(r));
   setSetting('ai_allowed_roles', roles.join(','));
@@ -426,6 +430,35 @@ router.get('/mail/:id/view', (req, res) => {
   );
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.send(fs.readFileSync(full, 'utf8'));
+});
+
+/*
+ * Public content protection — deterrence toggles + watermark, scoped to the
+ * public marketing site only (see lib/content-protection.js). Gated by its
+ * own catalogue permission on top of this router's settings.manage: a
+ * Super Admin can hand a regular Admin every other settings tab while
+ * keeping this one — or the reverse — exactly as CP2's configurable-Admin
+ * model intends.
+ */
+router.post('/content-protection', can('content_protection.manage'), (req, res) => {
+  const back = `${req.adminPath}/settings?tab=protection`;
+
+  setSetting('content_protection_enabled', req.body.content_protection_enabled ? '1' : '0');
+  setSetting('content_protection_block_select', req.body.content_protection_block_select ? '1' : '0');
+  setSetting('content_protection_block_drag', req.body.content_protection_block_drag ? '1' : '0');
+  setSetting('content_protection_block_contextmenu', req.body.content_protection_block_contextmenu ? '1' : '0');
+  setSetting('content_protection_watermark_enabled', req.body.content_protection_watermark_enabled ? '1' : '0');
+  setSetting('content_protection_watermark_text', String(req.body.content_protection_watermark_text || '').slice(0, 60).trim());
+  setSetting(
+    'content_protection_watermark_opacity',
+    String(Math.min(40, Math.max(1, parseInt(req.body.content_protection_watermark_opacity, 10) || 8)))
+  );
+
+  audit.log(req, 'settings.update', {
+    type: 'settings',
+    details: `عدّل إعدادات حماية المحتوى العام: ${req.body.content_protection_enabled ? 'مفعّلة' : 'متوقفة'}`,
+  });
+  res.redirect(`${back}&saved=1`);
 });
 
 module.exports = router;

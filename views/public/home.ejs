@@ -14,7 +14,7 @@ const parseMetric=(v)=>{const m=String(v).match(/^(\D*)(\d+)(\D*)$/);return m?{p
 const POPULAR_ICONS=['i-file','i-list','i-receipt','i-briefcase','i-scale','i-building'];
 const AUDIENCE_ICONS=['i-user','i-building','i-briefcase'];
 %>
-<main class="home-sections">
+<main class="home-sections <%=protectedContentClass%>">
 <%if(canPublicElement('consultations')&&showHomeSection('consultations')){%><section class="section" style="order:<%=homeSectionOrder('consultations')%>"><div class="wrap"><h2><%=hc('consultations_title','الاستشارات')%></h2><p><%=hc('consultations_description','اختر الخدمة ونوع الاستشارة والمكتب والموعد المناسب.')%></p><a class="btn brass" href="/consultations">استعرض الاستشارات</a> <a class="btn" href="/appointments">احجز موعد</a></div></section><%}%>
 
 <%if(showHomeSection('hero')){%><section class="hero home-hero" style="order:<%=homeSectionOrder('hero')%>">
@@ -27,8 +27,8 @@ const AUDIENCE_ICONS=['i-user','i-building','i-briefcase'];
       <div class="hero-cta"><a class="btn brass" href="<%=hc('hero_primary_url','/request','/request')%>"><%=hc('hero_primary_label','ابدأ طلبك الآن','Start your request')%> <b><%=dir==='rtl'?'←':'→'%></b></a><a class="btn light" href="<%=hc('hero_secondary_url','/services','/services')%>"><%=hc('hero_secondary_label','استكشف الخدمات','Explore services')%></a></div>
       <div class="hero-trust"><span><i aria-hidden="true"><svg><use href="/images/icons.svg#i-shield"/></svg></i><b>مكاتب معتمدة</b><small>وشركاء موثوقون</small></span><span><i aria-hidden="true"><svg><use href="/images/icons.svg#i-headset"/></svg></i><b>دعم متخصص</b><small>من فريق محترف</small></span><span><i aria-hidden="true"><svg><use href="/images/icons.svg#i-lock"/></svg></i><b>بيانات آمنة</b><small>وسرية بالكامل</small></span></div>
     </div>
-    <div class="product-scene hero-photo-scene" aria-label="خدمات سند القانونية والإدارية">
-      <img class="hero-photo" src="<%=hc('hero_image','/images/sanad-global-hero.png','/images/sanad-global-hero.png')%>" alt="<%=hc('hero_image_alt','متخصص أعمال يستخدم منصة سند في مكتب احترافي','A business professional using Sanad')%>">
+    <div class="product-scene hero-photo-scene <%=contentProtection.watermarkEnabled?'cp-watermark-on':''%>" style="<%=contentProtection.watermarkEnabled?'--cp-watermark-svg:'+contentProtection.watermarkCss:''%>" aria-label="خدمات سند القانونية والإدارية">
+      <img class="hero-photo" <%=contentProtectionActive&&contentProtection.blockDrag?'draggable="false"':''%> src="<%=hc('hero_image','/images/sanad-global-hero.png','/images/sanad-global-hero.png')%>" alt="<%=hc('hero_image_alt','متخصص أعمال يستخدم منصة سند في مكتب احترافي','A business professional using Sanad')%>">
       <div class="scene-badge success"><svg aria-hidden="true"><use href="/images/icons.svg#i-check-circle"/></svg><span>خدمات موثوقة<br><small>مقدمون معتمدون</small></span></div>
       <div class="scene-badge notice"><svg aria-hidden="true"><use href="/images/icons.svg#i-eye"/></svg><span>متابعة الطلب<br><small>من أي مكان</small></span></div>
       <div class="scene-badge speed"><svg aria-hidden="true"><use href="/images/icons.svg#i-gauge"/></svg><span>إنجاز أسرع<br><small>متابعة دقيقة</small></span></div>

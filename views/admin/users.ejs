@@ -131,7 +131,7 @@
                 </div>
               </td>
               <td data-label="المستخدم"><span class="num"><%= u.username %></span></td>
-              <td data-label="الصلاحية"><span class="chip teal"><%= roleLabel[u.role] || u.role %></span></td>
+              <td data-label="الصلاحية"><span class="chip teal"><%= roleLabel[u.role] || u.role %></span><% if (u.is_super_admin) { %> <span class="chip brass">سوبر</span><% } %></td>
               <td data-label="الفرع"><%= u.branch_name || '—' %></td>
               <td data-label="الحالة">
                 <% if (!u.active) { %>
@@ -148,14 +148,14 @@
               </td>
               <td data-label="إجراءات" class="row-actions">
                 <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
-                <% if (u.role !== 'admin') { %>
+                <% if (!u.is_super_admin) { %>
                   <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">
                     الصلاحيات
                     <% if (u.exception_count) { %><span class="chip brass"><%= u.exception_count %></span><% } %>
                   </a>
                 <% } %>
                 <button class="btn ghost sm" type="button" data-reset="tr-<%= u.id %>" aria-expanded="false">كلمة سر جديدة</button>
-                <% if (u.id !== user.id) { %>
+                <% if (u.id !== user.id && (!u.is_super_admin || isSuperAdmin)) { %>
                   <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle" style="display:inline"
                         data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
                     <%- csrfField %>
@@ -187,6 +187,7 @@
           </div>
           <div class="emp-card-tags">
             <span class="chip teal"><%= roleLabel[u.role] || u.role %></span>
+            <% if (u.is_super_admin) { %><span class="chip brass">سوبر أدمن</span><% } %>
             <% if (!u.active) { %><span class="chip off">موقوف</span>
             <% } else if (u.must_change_password) { %><span class="chip warn">لسه مغيّرش كلمة السر</span>
             <% } else { %><span class="chip ok">شغّال</span><% } %>
@@ -194,9 +195,9 @@
           </div>
           <div class="emp-card-actions">
             <a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>">الملف</a>
-            <% if (u.role !== 'admin') { %><a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">الصلاحيات<% if (u.exception_count) { %> <span class="chip brass"><%= u.exception_count %></span><% } %></a><% } %>
+            <% if (!u.is_super_admin) { %><a class="btn ghost sm" href="<%= adminPath %>/users/<%= u.id %>/permissions">الصلاحيات<% if (u.exception_count) { %> <span class="chip brass"><%= u.exception_count %></span><% } %></a><% } %>
             <button class="btn ghost sm" type="button" data-reset="card-<%= u.id %>" aria-expanded="false">كلمة سر جديدة</button>
-            <% if (u.id !== user.id) { %>
+            <% if (u.id !== user.id && (!u.is_super_admin || isSuperAdmin)) { %>
               <form method="post" action="<%= adminPath %>/users/<%= u.id %>/toggle"
                     data-confirm="<%= u.active ? 'إيقاف حساب ' + (u.display_name || u.username) + '؟ مش هيقدر يدخل تاني بس تاريخه هيفضل محفوظ.' : 'تفعيل الحساب ده تاني؟' %>">
                 <%- csrfField %>
@@ -243,8 +244,9 @@
             <option value="lawyer">محامي — طلباته هو فقط، بدون أرقام مالية</option>
             <option value="accountant">محاسب — الإيرادات والمصاريف، قراءة فقط</option>
             <option value="supervisor">مشرف — كل حاجة عدا الموظفين والإعدادات</option>
-            <option value="admin">أدمن — بلا حدود</option>
+            <option value="admin" <%=isSuperAdmin?'':'disabled'%>>أدمن<%=isSuperAdmin?' — بلا حدود افتراضيًا، السوبر أدمن يقدر يحددها':''%></option>
           </select>
+          <% if (!isSuperAdmin) { %><div class="help">إنشاء حساب أدمن جديد محتاج سوبر أدمن.</div><% } %>
         </div>
       </div>
 
@@ -291,7 +293,8 @@
 
         <div class="perm-body-wrap">
           <p class="help" id="permAdminNote" hidden>
-            الأدمن صلاحياته مفتوحة ومش بتتحدد.
+            الأدمن يبدأ بكل الصلاحيات عدا الحذف النهائي — عدّل اللي تحبه زي أي دور تاني.
+            (سوبر أدمن حاجة تانية، بتتحدد من ملف الموظف بعد إنشاء الحساب.)
           </p>
 
           <div id="permGroups">
@@ -465,13 +468,13 @@
     var isAdmin = role === 'admin';
     var granted = DEFAULTS[role] || [];
 
-    groupsEl.hidden = isAdmin;
+    groupsEl.hidden = false;
     adminNote.hidden = !isAdmin;
 
     boxes().forEach(function (box) {
       var byRole = granted.indexOf(box.value) !== -1;
       box.checked = byRole;
-      box.disabled = isAdmin;
+      box.disabled = false;
 
       var tag = box.parentNode.querySelector('.default-tag');
       if (tag) tag.hidden = !byRole;

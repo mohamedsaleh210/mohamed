@@ -36,7 +36,7 @@ router.get('/', (req, res) => {
   const users = db
     .prepare(
       `SELECT users.id, username, display_name, legal_name, job_title, role, email, phone, users.active, profile_completed,
-              must_change_password, users.created_at, created_by, deactivated_at, ob.name AS branch_name
+              must_change_password, users.created_at, created_by, deactivated_at, ob.name AS branch_name, is_super_admin
        ,
         (SELECT COUNT(*) FROM user_permissions up WHERE up.user_id = users.id) AS exception_count
        FROM users LEFT JOIN office_branches ob ON ob.id = users.office_branch_id
@@ -74,9 +74,13 @@ router.get('/print',can('users.export'),(req,res)=>{const rows=staffReportRows()
 router.post('/new', can('users.manage'), (req, res) => {
   const username = (req.body.username || '').trim().toLowerCase();
   const password = req.body.password || '';
-  const role = ['admin', 'supervisor', 'lawyer', 'accountant'].includes(req.body.role)
+  const requestedRole = ['admin', 'supervisor', 'lawyer', 'accountant'].includes(req.body.role)
     ? req.body.role
     : 'lawyer';
+  // Creating a brand-new admin-tier peer is a Super Admin's call, same as
+  // promoting one — otherwise a regular admin could route around that limit
+  // by minting a fresh unrestricted account instead of editing an existing one.
+  const role = (requestedRole === 'admin' && !permissions.isSuperAdmin(req.user)) ? 'lawyer' : requestedRole;
 
   if (!username) return res.redirect(req.adminPath + '/users?err=missing');
   if (!/^[a-z0-9._-]+$/.test(username)) return res.redirect(req.adminPath + '/users?err=username');
@@ -115,13 +119,22 @@ router.post('/new', can('users.manage'), (req, res) => {
    */
   const newId = Number(info.lastInsertRowid);
 
-  if (role !== 'admin' && '_perms' in req.body) {
+  // Creating a fresh admin-tier account with custom permissions is a Super
+  // Admin's call, same as configuring an existing one.
+  const canSetPerms = role !== 'admin' || permissions.isSuperAdmin(req.user);
+
+  if (canSetPerms && '_perms' in req.body) {
     const defaults = new Set(permissions.ROLE_DEFAULTS[role] || []);
     const wanted = new Set(
       (Array.isArray(req.body.permission) ? req.body.permission : [req.body.permission])
         .filter(Boolean)
         .filter((k) => permissions.ALL.includes(k))
     );
+    // Delegation ceiling: granting an ability beyond the role's own default
+    // requires the acting user to already hold that ability — a Super Admin
+    // has no ceiling, everyone else can only delegate what they themselves
+    // have. Taking a default ability away is never capped this way.
+    const ceiling = permissions.isSuperAdmin(req.user) ? null : req.user.abilities;
 
     const ins = db.prepare(
       `INSERT INTO user_permissions (user_id, permission, granted, set_by)
@@ -130,7 +143,8 @@ router.post('/new', can('users.manage'), (req, res) => {
 
     permissions.ALL.forEach((key) => {
       const byRole = defaults.has(key);
-      const now = wanted.has(key);
+      let now = wanted.has(key);
+      if (now && !byRole && ceiling && !ceiling.has(key)) now = false;
       if (byRole !== now) ins.run(newId, key, now ? 1 : 0, me(req));
     });
   }
@@ -152,6 +166,12 @@ router.post('/:id/toggle', can('users.manage'), (req, res) => {
 
   if (id === req.session.user.id) return res.redirect(req.adminPath + '/users?err=self');
 
+  // Only a Super Admin may switch off another Super Admin — a regular admin
+  // cannot touch that account at all.
+  if (permissions.isSuperAdmin(user) && !permissions.isSuperAdmin(req.user)) {
+    return res.status(403).render('admin/denied');
+  }
+
   // The last active admin cannot be switched off — that would lock everyone out
   // of account management with no way back in.
   if (user.role === 'admin' && user.active) {
@@ -159,6 +179,16 @@ router.post('/:id/toggle', can('users.manage'), (req, res) => {
       .prepare("SELECT COUNT(*) c FROM users WHERE role = 'admin' AND active = 1")
       .get().c;
     if (admins <= 1) return res.redirect(req.adminPath + '/users?err=last_admin');
+  }
+
+  // Separately, the last active Super Admin cannot be switched off even while
+  // other regular admins remain — otherwise nobody could configure an admin's
+  // permissions or promote a new Super Admin ever again.
+  if (permissions.isSuperAdmin(user) && user.active) {
+    const superAdmins = db
+      .prepare('SELECT COUNT(*) c FROM users WHERE is_super_admin = 1 AND active = 1')
+      .get().c;
+    if (superAdmins <= 1) return res.redirect(req.adminPath + '/users?err=last_super_admin');
   }
 
   /*
@@ -360,6 +390,9 @@ router.get('/:id', (req, res) => {
     logins: security.recentFor(person.id, 10),
     permissionRows: permissions.describe(db, person),
     isAdminAccount: permissions.isAdmin(person),
+    isSuperAdminAccount: permissions.isSuperAdmin(person),
+    canEditPermissions: permissions.isSuperAdmin(req.user) || !permissions.isAdmin(person),
+    viewerIsSuperAdmin: permissions.isSuperAdmin(req.user),
     idRequired: require('../../lib/profile').idCardRequired(),
     msg: req.query.msg,
   });
@@ -564,16 +597,61 @@ router.post('/:id/access-card/pdf', can('users.manage'), async (req, res) => {
 router.post('/:id/update', can('users.manage'), (req, res) => {
   const person = db.prepare('SELECT * FROM users WHERE id=?').get(req.params.id);
   if (!person) return res.status(404).render('errors/404');
+
+  const actorIsSuperAdmin = permissions.isSuperAdmin(req.user);
+
+  // A regular admin cannot touch a Super Admin's record at all — only
+  // another Super Admin may edit, and Super Admin decides who may edit it.
+  if (permissions.isSuperAdmin(person) && !actorIsSuperAdmin) {
+    return res.status(403).render('admin/denied');
+  }
+
   const displayName=String(req.body.display_name||'').trim().slice(0,120);
   const legalName=String(req.body.legal_name||'').trim().slice(0,180);
   const email=String(req.body.email||'').trim().toLowerCase().slice(0,254);
   const phone=String(req.body.phone||'').trim().slice(0,50);
   const nationalId=String(req.body.national_id||'').replace(/\D/g,'').slice(0,30);
   const birthDate=/^\d{4}-\d{2}-\d{2}$/.test(req.body.birth_date||'')?req.body.birth_date:null;
-  const role=['admin','supervisor','lawyer','accountant'].includes(req.body.role)?req.body.role:person.role;
+
+  const isSelf = person.id === req.session.user.id;
+  const requestedRole = ['admin','supervisor','lawyer','accountant'].includes(req.body.role) ? req.body.role : person.role;
+
+  /*
+   * Role changes are never self-service — nobody promotes or demotes their
+   * own account through this form, whatever tier they are. And moving an
+   * account into or out of the admin role is a Super Admin's call only;
+   * reshuffling among supervisor/lawyer/accountant is unchanged from before.
+   */
+  let role = person.role;
+  if (!isSelf) {
+    const touchesAdminTier = requestedRole === 'admin' || person.role === 'admin';
+    if (requestedRole === person.role || !touchesAdminTier || actorIsSuperAdmin) {
+      role = requestedRole;
+    }
+  }
+
+  // Super Admin status is only ever set by an existing Super Admin, only on
+  // someone else, and only meaningful on an admin-role account.
+  let isSuperAdminFlag = person.is_super_admin ? 1 : 0;
+  if (!isSelf && actorIsSuperAdmin) {
+    isSuperAdminFlag = (role === 'admin' && req.body.is_super_admin === '1') ? 1 : 0;
+  } else if (role !== 'admin') {
+    isSuperAdminFlag = 0;
+  }
+
+  // The last Super Admin can never be demoted or have the role/flag that
+  // makes them one taken away — that would leave nobody able to manage
+  // admin-tier accounts.
+  if (person.is_super_admin && !isSuperAdminFlag) {
+    const otherSuperAdmins = db
+      .prepare('SELECT COUNT(*) c FROM users WHERE is_super_admin = 1 AND active = 1 AND id <> ?')
+      .get(person.id).c;
+    if (otherSuperAdmins === 0) return res.redirect(`${req.adminPath}/users/${person.id}?msg=last_super_admin`);
+  }
+
   if(!displayName) return res.redirect(`${req.adminPath}/users/${person.id}?msg=invalid`);
-  db.prepare(`UPDATE users SET display_name=?,legal_name=?,email=?,phone=?,national_id=?,birth_date=?,role=? WHERE id=?`)
-    .run(displayName,legalName||null,email||null,phone||null,nationalId||null,birthDate,role,person.id);
+  db.prepare(`UPDATE users SET display_name=?,legal_name=?,email=?,phone=?,national_id=?,birth_date=?,role=?,is_super_admin=? WHERE id=?`)
+    .run(displayName,legalName||null,email||null,phone||null,nationalId||null,birthDate,role,isSuperAdminFlag,person.id);
   audit.log(req,'user.update',{type:'user',id:person.id,label:displayName,details:`تعديل بيانات الموظف ${displayName}`});
   res.redirect(`${req.adminPath}/users/${person.id}?msg=saved`);
 });
@@ -594,7 +672,10 @@ router.get('/:id/permissions', (req, res) => {
     person: user,
     rows: permissions.describe(db, user),
     catalogue: permissions.CATALOGUE,
-    isAdmin: permissions.isAdmin(user),
+    isSuperAdminAccount: permissions.isSuperAdmin(user),
+    // A regular admin's list is real and can be trimmed, but only a Super
+    // Admin does the trimming — everyone else sees it read-only.
+    canEdit: permissions.isSuperAdmin(req.user) || !permissions.isAdmin(user),
     msg: req.query.msg,
   });
 });
@@ -605,9 +686,20 @@ router.post('/:id/permissions', can('users.manage'), (req, res) => {
 
   const back = `${req.adminPath}/users/${user.id}/permissions`;
 
-  // An admin has no permission list to edit — the role is the absence of a
-  // limit, and pretending otherwise would let someone lock the office out.
-  if (permissions.isAdmin(user)) return res.redirect(`${back}?msg=admin_unlimited`);
+  // A Super Admin has no permission list to edit — the tier is the absence
+  // of a limit, and pretending otherwise would let someone lock the office
+  // out of fixing a misconfiguration.
+  if (permissions.isSuperAdmin(user)) return res.redirect(`${back}?msg=admin_unlimited`);
+
+  // A regular admin's permissions are real and can be trimmed, but only a
+  // Super Admin may do the trimming — not another regular admin, and never
+  // on their own account.
+  if (permissions.isAdmin(user) && !permissions.isSuperAdmin(req.user)) {
+    return res.status(403).render('admin/denied');
+  }
+  if (user.id === req.session.user.id && permissions.isAdmin(user)) {
+    return res.redirect(`${back}?msg=self`);
+  }
 
   const defaults = new Set(permissions.ROLE_DEFAULTS[user.role] || []);
   const wanted = new Set(
@@ -615,6 +707,11 @@ router.post('/:id/permissions', can('users.manage'), (req, res) => {
       .filter(Boolean)
       .filter((k) => permissions.ALL.includes(k))
   );
+  // Delegation ceiling: granting an ability beyond the target's role default
+  // requires the acting user to already hold that ability themselves — a
+  // Super Admin has no ceiling, everyone else can only delegate what they
+  // have. Taking a default ability away is never capped this way.
+  const ceiling = permissions.isSuperAdmin(req.user) ? null : req.user.abilities;
 
   const changes = [];
 
@@ -630,7 +727,8 @@ router.post('/:id/permissions', can('users.manage'), (req, res) => {
     // defaults later still reaches everyone who was not explicitly overridden.
     permissions.ALL.forEach((key) => {
       const byRole = defaults.has(key);
-      const now = wanted.has(key);
+      let now = wanted.has(key);
+      if (now && !byRole && ceiling && !ceiling.has(key)) now = false;
       if (byRole === now) return;
 
       ins.run(user.id, key, now ? 1 : 0, me(req));

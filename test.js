@@ -2445,12 +2445,23 @@ const countOf = (html, re) => (html.match(re) || []).length;
     check('وفعلاً مش بيقدر يسترجع',
       !perms.resolve(db, trimmed.row).has('trash.restore'));
 
-    // An admin has no list at all.
+    // A regular admin is real and configurable now — adam (Super Admin) can
+    // narrow a brand-new admin's access down at creation, same as any role.
     const madeAdmin = await createStaff('fx_admin', 'admin', ['money.view']);
-    check('الأدمن مبيتخزنلوش صلاحيات', madeAdmin.rows.length === 0,
-      JSON.stringify(madeAdmin.rows));
-    check('وبرضه صلاحياته مفتوحة',
-      perms.resolve(db, madeAdmin.row).size === perms.ALL.length);
+    check('السوبر أدمن يقدر يخصّص صلاحيات أدمن جديد عند الإنشاء',
+      madeAdmin.rows.length > 0, JSON.stringify(madeAdmin.rows.length));
+    const madeAdminPerms = perms.resolve(db, madeAdmin.row);
+    check('وفعلاً محدودة زي ما اتحددت (money.view موجودة، حاجات تانية لأ)',
+      madeAdminPerms.has('money.view') && !madeAdminPerms.has('users.manage'),
+      JSON.stringify([...madeAdminPerms]));
+
+    // Leaving the role's defaults alone (submitting exactly what it already
+    // grants) stores nothing — same convention as every other role.
+    const plainAdmin = await createStaff('fx_admin_plain', 'admin', perms.ROLE_DEFAULTS.admin);
+    check('أدمن جديد على افتراضي دوره بالظبط مبيتخزنلوش صف',
+      plainAdmin.rows.length === 0, JSON.stringify(plainAdmin.rows));
+    check('وياخد الافتراضي بالكامل عدا الحذف',
+      perms.resolve(db, plainAdmin.row).size === perms.ROLE_DEFAULTS.admin.length);
 
     // Leaving the role's defaults alone stores nothing.
     const plain = await createStaff('fx_lawyer', 'lawyer', perms.ROLE_DEFAULTS.lawyer);
@@ -3425,8 +3436,12 @@ const countOf = (html, re) => (html.match(re) || []).length;
       permLib.ROLE_DEFAULTS.supervisor.includes('users.view'));
     check('بس مش بيدير الحسابات',
       !permLib.ROLE_DEFAULTS.supervisor.includes('users.manage'));
-    check('والأدمن عنده كل حاجة',
-      permLib.resolve(db, { id: 1, role: 'admin' }).size === permLib.ALL.length);
+    check('والسوبر أدمن عنده كل حاجة بلا شروط',
+      permLib.resolve(db, { id: 1, role: 'admin', is_super_admin: 1 }).size === permLib.ALL.length);
+    check('والأدمن العادي عنده كل حاجة عدا الحذف النهائي افتراضياً',
+      permLib.ROLE_DEFAULTS.admin.length === permLib.ALL.length - Object.keys(permLib.CATALOGUE.erase.items).length
+      && !permLib.ROLE_DEFAULTS.admin.includes('clients.erase')
+      && !permLib.ROLE_DEFAULTS.admin.includes('requests.erase'));
 
     // A supervisor cannot erase, and cannot see the button either.
     const sup = db.prepare("SELECT * FROM users WHERE username = 'tarek'").get();

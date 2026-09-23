@@ -3,10 +3,13 @@ const multer=require('multer');
 const imports=require('../../lib/data-import');
 const audit=require('../../lib/audit');
 const csrf=require('../../lib/csrf');
-const {requireAdmin}=require('../../middleware/auth');
+const {can}=require('../../middleware/auth');
 const router=express.Router();
 const upload=multer({storage:multer.memoryStorage(),limits:{fileSize:5*1024*1024,files:1},fileFilter:(req,file,cb)=>cb(null,/\.(xlsx|xlsm)$/i.test(file.originalname))});
-router.use(requireAdmin);
+// Used to be an outright admin-role gate (requireAdmin) — imports is now a
+// named permission a Super Admin can grant or withhold per admin, like any
+// other ability, instead of coming free with the role string.
+router.use(can('imports.manage'));
 
 const branches=()=>require('../../db').db.prepare('SELECT * FROM office_branches WHERE active=1 ORDER BY is_main DESC,name').all();
 router.get('/',(req,res)=>{imports.purgeOld();res.render('admin/imports',{definitions:imports.DEFINITIONS,batch:null,error:req.query.error||null,officeBranches:branches()})});

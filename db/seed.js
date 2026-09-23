@@ -41,6 +41,46 @@ function seed() {
   }
 
   /*
+   * Exactly one Super Admin, guaranteed. This runs on every boot but only
+   * writes when the database has none — a fresh install, a demo seed, and a
+   * real upgrade (where admin accounts already existed before Super Admin
+   * shipped) all land here. It cannot run inside the migration itself:
+   * migrate() runs before the admin account above is created, so there is
+   * nobody yet to promote at that point.
+   *
+   * Every OTHER admin account already in the database at this exact moment
+   * pre-dates the Super Admin split — under the old model `role === 'admin'`
+   * meant unconditional access, erase permissions included. Regular admin's
+   * defaults now deliberately exclude `erase` (same rule every other role
+   * already followed), so without this, upgrading would silently take
+   * clients.erase/requests.erase away from every admin who is not chosen as
+   * Super Admin. Grant it back explicitly, once, as the same kind of
+   * per-person override a person would get if handed it by hand — a brand
+   * new admin created after this boot gets none of this, by design.
+   */
+  if (!db.prepare('SELECT 1 FROM users WHERE is_super_admin = 1').get()) {
+    const existingAdmins = db.prepare("SELECT id FROM users WHERE role = 'admin' ORDER BY id").all();
+    const firstAdmin = db
+      .prepare("SELECT id FROM users WHERE role = 'admin' AND active = 1 ORDER BY id LIMIT 1")
+      .get();
+    if (firstAdmin) {
+      db.prepare('UPDATE users SET is_super_admin = 1 WHERE id = ?').run(firstAdmin.id);
+    }
+
+    const permissions = require('../lib/permissions');
+    const eraseKeys = Object.keys(permissions.CATALOGUE.erase.items);
+    const grantErase = db.prepare(
+      `INSERT OR IGNORE INTO user_permissions (user_id, permission, granted, set_by)
+       VALUES (?,?,1,'migration:super_admin_v1')`
+    );
+    db.transaction(() => {
+      existingAdmins
+        .filter((u) => !firstAdmin || u.id !== firstAdmin.id)
+        .forEach((u) => eraseKeys.forEach((key) => grantErase.run(u.id, key)));
+    })();
+  }
+
+  /*
    * The portable owner database has one fixed Sanad owner account. Tenant
    * databases are excluded: their administrators keep their own credentials.
    *

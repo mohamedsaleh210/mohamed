@@ -26,6 +26,7 @@
         <h1 style="margin:0"><%= person.display_name || person.username %></h1>
         <p class="sub" style="margin-top:4px">
           <span class="chip teal"><%= roleAr[person.role] || person.role %></span>
+          <% if (isSuperAdminAccount) { %><span class="chip brass">سوبر أدمن</span><% } %>
           <%if(person.job_title){%><span><%=person.job_title%></span><%}%>
           <span class="num"><%= person.username %></span>
           <% if (!person.active) { %> · <span class="chip off">موقوف</span><% } %>
@@ -45,8 +46,8 @@
         <%- csrfField %><button class="btn brass" type="submit">بطاقة دخول الموظف</button>
       </form>
     <% } %>
-    <% if (can('users.manage')) { %><a class="btn brass" href="#edit-employee" onclick="document.getElementById('edit-employee').open=true"><svg aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</a><% } %>
-    <% if (!isAdminAccount) { %>
+    <% if (can('users.manage') && (!isSuperAdminAccount || viewerIsSuperAdmin)) { %><a class="btn brass" href="#edit-employee" onclick="document.getElementById('edit-employee').open=true"><svg aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</a><% } %>
+    <% if (!isSuperAdminAccount) { %>
       <a class="btn ghost" href="<%= adminPath %>/users/<%= person.id %>/permissions">
         الصلاحيات
         <% if (added || removed) { %><span class="chip brass"><%= added + removed %></span><% } %>
@@ -56,8 +57,11 @@
   </div>
 </div>
 
-<% if (can('users.manage')) { %>
-<details class="panel" id="edit-employee"><summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary><form class="panel-body legal-form" method="post" action="<%=adminPath%>/users/<%=person.id%>/update"><%-csrfField%><div class="two-col"><div class="field req"><label>الاسم المختصر</label><input type="text" name="display_name" required value="<%=person.display_name||''%>"></div><div class="field"><label>الاسم الرسمي</label><input type="text" name="legal_name" value="<%=person.legal_name||''%>"></div></div><div class="two-col"><div class="field"><label>البريد</label><input type="email" name="email" value="<%=person.email||''%>"></div><div class="field"><label>الموبايل</label><input type="text" name="phone" value="<%=person.phone||''%>"></div></div><div class="two-col"><div class="field"><label>الرقم القومي</label><input type="text" name="national_id" value="<%=person.national_id||''%>"></div><div class="field"><label>تاريخ الميلاد</label><input type="date" name="birth_date" value="<%=person.birth_date||''%>"></div></div><div class="field"><label>الدور</label><select name="role"><%Object.entries(roleAr).forEach(([k,v])=>{%><option value="<%=k%>" <%=person.role===k?'selected':''%>><%=v%></option><%})%></select></div><button class="btn brass">حفظ التعديلات</button></form></details>
+<% const isSelfEdit = user.id === person.id; %>
+<% if (can('users.manage') && (!isSuperAdminAccount || viewerIsSuperAdmin)) { %>
+<details class="panel" id="edit-employee"><summary class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-edit"/></svg> تعديل بيانات الموظف</h3><span class="spacer"></span><span class="btn ghost sm">فتح التعديل</span></summary><form class="panel-body legal-form" method="post" action="<%=adminPath%>/users/<%=person.id%>/update"><%-csrfField%><div class="two-col"><div class="field req"><label>الاسم المختصر</label><input type="text" name="display_name" required value="<%=person.display_name||''%>"></div><div class="field"><label>الاسم الرسمي</label><input type="text" name="legal_name" value="<%=person.legal_name||''%>"></div></div><div class="two-col"><div class="field"><label>البريد</label><input type="email" name="email" value="<%=person.email||''%>"></div><div class="field"><label>الموبايل</label><input type="text" name="phone" value="<%=person.phone||''%>"></div></div><div class="two-col"><div class="field"><label>الرقم القومي</label><input type="text" name="national_id" value="<%=person.national_id||''%>"></div><div class="field"><label>تاريخ الميلاد</label><input type="date" name="birth_date" value="<%=person.birth_date||''%>"></div></div><div class="field"><label>الدور</label><select name="role" <%=isSelfEdit?'disabled':''%>><%Object.entries(roleAr).forEach(([k,v])=>{%><option value="<%=k%>" <%=(k==='admin'&&!viewerIsSuperAdmin&&person.role!=='admin')?'disabled':''%> <%=person.role===k?'selected':''%>><%=v%></option><%})%></select><% if (isSelfEdit) { %><div class="help">مينفعش تغيّر دورك بنفسك.</div><% } else if (!viewerIsSuperAdmin) { %><div class="help">النقل من/إلى دور الأدمن يحتاج سوبر أدمن.</div><% } %></div>
+<% if (viewerIsSuperAdmin && !isSelfEdit) { %><label class="check"><input type="checkbox" name="is_super_admin" value="1" <%=person.is_super_admin?'checked':''%>> <span class="txt">سوبر أدمن — بس لو الدور أدمن</span></label><% } %>
+<button class="btn brass">حفظ التعديلات</button></form></details>
 <% } %>
 
 <% if (person.assign_locked) { %>
@@ -89,14 +93,14 @@
   <input class="wtabs-input" type="radio" name="uftab" id="tab-work">
   <input class="wtabs-input" type="radio" name="uftab" id="tab-access">
   <input class="wtabs-input" type="radio" name="uftab" id="tab-custody">
-  <% if (!isAdminAccount) { %><input class="wtabs-input" type="radio" name="uftab" id="tab-perms"><% } %>
+  <% if (!isSuperAdminAccount) { %><input class="wtabs-input" type="radio" name="uftab" id="tab-perms"><% } %>
 
   <nav class="wtabs-nav panel-body" style="padding-bottom:0">
     <label for="tab-identity"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-user"/></svg> البيانات الشخصية</label>
     <label for="tab-work"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-list"/></svg> الشغل الحالي<% if(openCount){ %> <span class="chip">‎<%=openCount%></span><% } %></label>
     <label for="tab-access"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-lock"/></svg> الأجهزة والدخول</label>
     <label for="tab-custody"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-briefcase"/></svg> العهد والمصروفات</label>
-    <% if (!isAdminAccount) { %><label for="tab-perms"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</label><% } %>
+    <% if (!isSuperAdminAccount) { %><label for="tab-perms"><svg aria-hidden="true" style="width:14px;height:14px"><use href="/images/icons.svg#i-shield"/></svg> الصلاحيات</label><% } %>
   </nav>
 
   <div class="wtabs-panels panel-body">
@@ -227,9 +231,9 @@
     </section>
 
     <!-- ---- permissions ---- -->
-    <% if (!isAdminAccount) { %>
+    <% if (!isSuperAdminAccount) { %>
       <section class="wtabs-panel">
-        <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">الصلاحيات</h3><span class="chip spacer"><%= permissionRows.filter(r => r.effective).length %> من <%= permissionRows.length %></span><a class="btn ghost sm" href="<%= adminPath %>/users/<%= person.id %>/permissions">تعديل</a></div>
+        <div class="panel-head" style="padding-inline:0"><h3 style="margin:0">الصلاحيات</h3><span class="chip spacer"><%= permissionRows.filter(r => r.effective).length %> من <%= permissionRows.length %></span><% if (canEditPermissions) { %><a class="btn ghost sm" href="<%= adminPath %>/users/<%= person.id %>/permissions">تعديل</a><% } %></div>
         <% if (added || removed) { %><p class="help" style="margin:0 0 12px"><%= added %> مضافة · <%= removed %> مشيلة عن افتراضي الدور</p><% } else { %><p class="help" style="margin:0 0 12px">على افتراضي الدور بالكامل.</p><% } %>
         <ul class="svc-tags"><% permissionRows.filter(r => r.effective).forEach(r => { %><li class="<%= r.override === true ? '' : 'gone' %>"><%= r.label %></li><% }) %></ul>
       </section>

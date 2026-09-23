@@ -13,7 +13,7 @@ function requireAuth(req, res, next) {
     .prepare(
       `SELECT id, role, active, must_change_password, profile_completed, email, phone,
               national_id, birth_date, photo, display_name, legal_name,
-              id_front, id_back, username,
+              id_front, id_back, username, is_super_admin,
               assign_locked, assign_lock_reason, assign_lock_until
        FROM users WHERE id = ?`
     )
@@ -35,9 +35,10 @@ function requireAuth(req, res, next) {
    * of a job they no longer held. Reading it here means a permission change
    * takes effect on their very next click.
    */
-  const granted = permissions.resolve(db, { id: fresh.id, role: fresh.role });
+  const granted = permissions.resolve(db, { id: fresh.id, role: fresh.role, is_super_admin: fresh.is_super_admin });
 
   req.session.user.role = fresh.role;
+  req.session.user.is_super_admin = !!fresh.is_super_admin;
   req.permissions = granted;
   req.userCan = (key) => granted.has(key);
 
@@ -53,6 +54,7 @@ function requireAuth(req, res, next) {
 
   // Templates ask the same question the routes do.
   res.locals.can = req.userCan;
+  res.locals.isSuperAdmin = permissions.isSuperAdmin(req.user);
   res.locals.permissions = granted;
 
   // Accounts created by an admin start with a temporary password. Until it is

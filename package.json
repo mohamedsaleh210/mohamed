@@ -9,7 +9,7 @@
     "test": "node test.js",
     "test:imports": "node import-test.js",
     "security": "node security.js",
-    "test:all": "node test.js && node integration.js && node edge.js && node security.js && node super-admin-test.js && node responsive-visibility-test.js",
+    "test:all": "node test.js && node integration.js && node edge.js && node security.js && node super-admin-test.js && node print-test.js && node responsive-visibility-test.js",
     "edge": "node edge.js",
     "demo": "node demo.js",
     "demo:clear": "node demo-clear.js",
@@ -17,6 +17,7 @@
     "test:payroll": "node payroll-excel-test.js",
     "test:responsive": "node responsive-visibility-test.js",
     "test:superadmin": "node super-admin-test.js",
+    "test:print": "node print-test.js",
     "dev": "node server.js"
   },
   "engines": {

@@ -53,6 +53,7 @@
         <% if (added || removed) { %><span class="chip brass"><%= added + removed %></span><% } %>
       </a>
     <% } %>
+    <a class="btn ghost" href="<%= adminPath %>/users/<%= person.id %>/print" target="_blank">طباعة / PDF</a>
     <a class="btn ghost" href="<%= adminPath %>/users">كل الموظفين</a>
   </div>
 </div>

@@ -29,6 +29,7 @@
     <a class="btn brass" href="<%= adminPath %>/requests/new<%= account ? '?client=' + account.id : '?phone=' + encodeURIComponent(phone) %>">
       + طلب جديد له
     </a>
+    <a class="btn ghost" href="<%= adminPath %>/clients/<%= account ? account.id : encodeURIComponent(phone) %>/print" target="_blank">طباعة / PDF</a>
   </div>
 </div>
 

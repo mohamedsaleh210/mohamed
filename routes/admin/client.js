@@ -106,6 +106,85 @@ router.get('/companies/:id', can('clients.directory'), (req, res) => {
   res.render('admin/company', { company, branches, requests, services, contacts, STATUS, msg:req.query.msg });
 });
 
+/**
+ * A company's file as a printable document, with its branches listed —
+ * covers both "company" and "company with branches" as one document, since
+ * a company without any branches on file just prints an empty branch table
+ * rather than needing a second route. No requests, money or contacts on the
+ * page — this is an identity document, not a case file.
+ */
+router.get('/companies/:id/print', can('clients.directory'), (req, res) => {
+  const company = db.prepare('SELECT * FROM companies WHERE id=? AND active=1').get(req.params.id);
+  if (!company) return res.status(404).render('errors/404');
+  const branches = db.prepare(
+    `SELECT * FROM company_branches WHERE company_id=? AND active=1 ORDER BY name`
+  ).all(company.id);
+
+  require('../../lib/reporting').profileDoc(
+    res,
+    `ملف الشركة — ${company.name}`,
+    company.legal_name && company.legal_name !== company.name ? company.legal_name : null,
+    [
+      {
+        heading: 'البيانات الأساسية',
+        fields: [
+          ['اسم الشركة', company.name],
+          ['الاسم القانوني', company.legal_name],
+          ['السجل التجاري', company.registration_no],
+          ['الرقم الضريبي', company.tax_no],
+          ['رقم الموبايل', company.phone],
+          ['البريد', company.email],
+          ['العنوان', company.address],
+          ['مسؤول التواصل', company.contact_name],
+          ['تاريخ الإضافة', company.created_at],
+        ],
+      },
+      {
+        heading: `الفروع (${branches.length})`,
+        table: {
+          columns: ['اسم الفرع', 'الكود', 'المدير', 'الموبايل', 'البريد', 'العنوان'],
+          rows: branches.map((b) => [b.name, b.code, b.manager, b.phone, b.email, b.address]),
+        },
+      },
+    ]
+  );
+});
+
+/**
+ * One branch of a company, printed on its own — for handing a single
+ * branch's identity to that branch's own manager without the rest of the
+ * company's branch list.
+ */
+router.get('/companies/:id/branches/:branchId/print', can('clients.directory'), (req, res) => {
+  const company = db.prepare('SELECT * FROM companies WHERE id=? AND active=1').get(req.params.id);
+  if (!company) return res.status(404).render('errors/404');
+  const branch = db
+    .prepare('SELECT * FROM company_branches WHERE id=? AND company_id=? AND active=1')
+    .get(req.params.branchId, company.id);
+  if (!branch) return res.status(404).render('errors/404');
+
+  require('../../lib/reporting').profileDoc(
+    res,
+    `ملف الفرع — ${branch.name}`,
+    company.name,
+    [
+      {
+        heading: 'بيانات الفرع',
+        fields: [
+          ['اسم الفرع', branch.name],
+          ['الشركة', company.name],
+          ['الكود', branch.code],
+          ['المدير', branch.manager],
+          ['رقم الموبايل', branch.phone],
+          ['البريد', branch.email],
+          ['العنوان', branch.address],
+          ['تاريخ الإضافة', branch.created_at],
+        ],
+      },
+    ]
+  );
+});
+
 router.post('/companies/:id/services', can('clients.edit'), (req,res)=>{
   const company=db.prepare('SELECT * FROM companies WHERE id=? AND active=1').get(req.params.id);
   if(!company)return res.status(404).render('errors/404');
@@ -311,6 +390,43 @@ router.get('/:key', (req, res) => {
     showMoney,
     STATUS,
   });
+});
+
+/**
+ * A client's file as a clean, printable document — no request rows or money
+ * figures, just who they are. Gated the same as viewing the file itself
+ * (requireStaff, router-wide); a registered account or a guest known only by
+ * phone both resolve here exactly as they do on the file page.
+ */
+router.get('/:key/print', (req, res) => {
+  const found = resolveClient(req.params.key);
+  if (!found) return res.status(404).render('errors/404');
+  const { account, guest, phoneKey } = found;
+  const requestCount = db
+    .prepare(
+      `SELECT COUNT(*) c FROM requests r WHERE (? IS NOT NULL AND r.client_id=?) OR r.phone_key=?`
+    )
+    .get(account ? account.id : null, account ? account.id : null, phoneKey).c;
+
+  require('../../lib/reporting').profileDoc(
+    res,
+    `ملف العميل — ${account ? account.full_name : guest.name}`,
+    account ? (account.email_verified ? 'حساب مسجّل' : 'حساب لم يُفعّل بعد') : 'عميل بدون حساب — معروف برقم الموبايل',
+    [
+      {
+        heading: 'البيانات الأساسية',
+        fields: [
+          ['الاسم', account ? account.full_name : guest.name],
+          ['رقم الموبايل', account ? account.phone : guest.phone],
+          ['البريد', account ? account.email : guest.email],
+          ['صفته في الطلب', account && account.relation !== 'self' ? account.relation : null],
+          ['اسم صاحب الطلب الأصلي', account ? account.beneficiary_name : null],
+          ['تاريخ التسجيل', account ? account.created_at : null],
+          ['عدد الطلبات', requestCount],
+        ],
+      },
+    ]
+  );
 });
 
 router.post('/:key/update', can('clients.edit'), (req, res) => {

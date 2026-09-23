@@ -399,6 +399,49 @@ router.get('/:id', (req, res) => {
 });
 
 /**
+ * One employee's profile as a clean, printable document — real DB data,
+ * checked by the same router-level users.view/users.manage gate every other
+ * route here uses, no permission fields or password material on the page.
+ */
+router.get('/:id/print', (req, res) => {
+  const person = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+  if (!person) return res.status(404).render('errors/404');
+  const branch = person.office_branch_id
+    ? db.prepare('SELECT name FROM office_branches WHERE id=?').get(person.office_branch_id)
+    : null;
+  require('../../lib/reporting').profileDoc(
+    res,
+    `ملف الموظف — ${person.display_name || person.username}`,
+    `${ROLE_AR[person.role] || person.role} · ${person.active ? 'شغّال' : 'موقوف'}`,
+    [
+      {
+        heading: 'البيانات الأساسية',
+        fields: [
+          ['الاسم المختصر', person.display_name],
+          ['الاسم الرسمي', person.legal_name],
+          ['اسم المستخدم', person.username],
+          ['الدور', ROLE_AR[person.role] || person.role],
+          ['المسمى الوظيفي', person.job_title],
+          ['الفرع', branch ? branch.name : null],
+          ['الحالة', person.active ? 'شغّال' : 'موقوف'],
+          ['تاريخ الإضافة', person.created_at],
+        ],
+      },
+      {
+        heading: 'بيانات التواصل',
+        fields: [
+          ['البريد', person.email],
+          ['رقم الموبايل', person.phone],
+          ['الرقم القومي', person.national_id],
+          ['تاريخ الميلاد', person.birth_date],
+        ],
+      },
+    ],
+    person.office_branch_id
+  );
+});
+
+/**
  * Employee access card helpers.
  *
  * The password shown on the card is deliberately temporary.  Follow-up

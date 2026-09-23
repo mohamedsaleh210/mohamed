@@ -1245,7 +1245,7 @@ const countOf = (html, re) => (html.match(re) || []).length;
 
     // Standalone pages ship their own inline <style> and never participate in
     // admin.css/style.css by design — printed or emailed outside the panel.
-    const STANDALONE_PRINT_TEMPLATES = new Set(['request_print.ejs', 'access_card_print.ejs']);
+    const STANDALONE_PRINT_TEMPLATES = new Set(['request_print.ejs', 'access_card_print.ejs', 'report_profile_print.ejs']);
     fsx.readdirSync(pathx.join(__dirname, 'views/admin'))
       .filter((f) => f.endsWith('.ejs') && !STANDALONE_PRINT_TEMPLATES.has(f))
       .forEach((f) => {

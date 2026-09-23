@@ -9,7 +9,7 @@
     "test": "node test.js",
     "test:imports": "node import-test.js",
     "security": "node security.js",
-    "test:all": "node test.js && node integration.js && node edge.js && node security.js && node super-admin-test.js && node print-test.js && node backup-test.js && node responsive-visibility-test.js",
+    "test:all": "node test.js && node integration.js && node edge.js && node security.js && node super-admin-test.js && node print-test.js && node backup-test.js && node ai-test.js && node responsive-visibility-test.js",
     "edge": "node edge.js",
     "demo": "node demo.js",
     "demo:clear": "node demo-clear.js",
@@ -19,6 +19,7 @@
     "test:superadmin": "node super-admin-test.js",
     "test:print": "node print-test.js",
     "test:backup": "node backup-test.js",
+    "test:ai": "node ai-test.js",
     "dev": "node server.js"
   },
   "engines": {

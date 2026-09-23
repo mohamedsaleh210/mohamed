@@ -12,6 +12,7 @@ const multer = require('multer');
 const backup = require('../../lib/backup');
 const backupSchedule = require('../../lib/backup-schedule');
 const branchArchive = require('../../lib/branch-archive');
+const ai = require('../../lib/ai');
 
 const router = express.Router();
 router.use(can('settings.manage'));
@@ -86,6 +87,9 @@ router.get('/', (req, res) => {
     officeBranches: db.prepare('SELECT * FROM office_branches ORDER BY is_main DESC,name').all(),
     backupSchedule: backupSchedule.status(),
     backupRun: req.query.backup_run || null,
+    aiConfig: ai.config(),
+    aiRoles: ai.ALL_ROLES,
+    aiModules: require('../../lib/ai-access').MODULES,
   });
 });
 
@@ -199,6 +203,37 @@ router.get('/backup/branch/:id', async (req, res, next) => {
     if (error.message === 'branch_not_found') return res.status(404).render('errors/404');
     next(error);
   }
+});
+
+router.post('/ai-settings', (req, res) => {
+  const back = `${req.adminPath}/settings?tab=ai`;
+  const aiAccess = require('../../lib/ai-access');
+
+  setSetting('ai_enabled', req.body.ai_enabled ? '1' : '0');
+  setSetting('ai_provider', req.body.ai_provider === 'openai' ? 'openai' : 'anthropic');
+  setSetting('ai_model', String(req.body.ai_model || '').trim());
+  setSetting('ai_system_instructions', String(req.body.ai_system_instructions || '').trim());
+  setSetting('ai_welcome_message', String(req.body.ai_welcome_message || '').trim());
+  setSetting('ai_audit_log', req.body.ai_audit_log ? '1' : '0');
+  setSetting('ai_retention_days', String(Math.min(365, Math.max(1, parseInt(req.body.ai_retention_days, 10) || 90))));
+
+  const roles = [].concat(req.body.ai_allowed_roles || []).filter((r) => ai.ALL_ROLES.includes(r));
+  setSetting('ai_allowed_roles', roles.join(','));
+
+  const sources = [].concat(req.body.ai_data_sources || []).filter((s) => aiAccess.MODULE_KEYS.includes(s));
+  setSetting('ai_data_sources', sources.join(','));
+
+  // Same write-only convention as every other secret on this page: an empty
+  // box means "leave it alone", and clearing it is its own explicit action.
+  const apiKey = String(req.body.ai_api_key || '').trim();
+  if (apiKey) setSetting('ai_api_key', apiKey);
+  if (req.body.ai_clear_key === '1') setSetting('ai_api_key', '');
+
+  audit.log(req, 'settings.update', {
+    type: 'settings',
+    details: `عدّل إعدادات المساعد الذكي: ${req.body.ai_enabled ? 'مفعّل' : 'متوقف'}, مصادر البيانات: ${sources.join('، ') || 'لا شيء'}`,
+  });
+  res.redirect(`${back}&saved=1`);
 });
 
 router.post('/', (req, res) => {

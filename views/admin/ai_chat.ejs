@@ -1,0 +1,101 @@
+<% pageTitle = 'المساعد الذكي' %>
+<%- include('../partials/admin_head') %>
+<%- include('../partials/admin_nav') %>
+
+<%- include('../partials/crumbs', { crumbs: [{ label: 'المساعد الذكي' }] }) %>
+
+<div class="page-head-row">
+  <div class="page-head">
+    <h1>المساعد الذكي</h1>
+    <p class="sub">بيشوف بس البيانات اللي إنت مسموح لك تشوفها بصلاحياتك، ومقصورة على المصادر اللي فعّلها المكتب.</p>
+  </div>
+  <div class="btn-row">
+    <form method="post" action="<%=adminPath%>/ai/clear" data-confirm="مسح كل المحادثة؟"><%-csrfField%><button class="btn ghost sm">مسح المحادثة</button></form>
+  </div>
+</div>
+
+<% if (!cfg.hasApiKey) { %>
+  <div class="alert warn"><span>المساعد الذكي مش متصل بمزوّد ذكاء اصطناعي حقيقي حاليًا — المكتب لسه محتاج يضيف مفتاح API من الإعدادات. تقدر تجرب الشاشة، لكن هتوصلك رسالة إنه غير متصل.</span></div>
+<% } %>
+
+<div class="panel">
+  <div class="panel-body">
+    <div id="aiThread">
+      <% if (!history.length) { %>
+        <div class="comment"><span class="av">س</span><div class="cbody"><div class="bubble"><div class="nm">سند</div><div class="tx"><%= cfg.welcomeMessage %></div></div></div></div>
+      <% } %>
+      <% history.forEach(m => { %>
+        <div class="comment"><span class="av <%= m.role==='user'?'lawyer':'' %>"><%= m.role==='user' ? (user.display_name||user.username||'؟').charAt(0) : 'س' %></span><div class="cbody"><div class="bubble"><div class="nm"><%= m.role==='user' ? (user.display_name||user.username) : 'سند' %></div><div class="tx"><%= m.content %></div></div></div></div>
+      <% }) %>
+    </div>
+
+    <form id="aiForm" class="two-col" style="margin-top:16px">
+      <div class="field wide"><label>سؤالك</label><textarea id="aiInput" placeholder="اسأل عن الطلبات أو القضايا أو العملاء المسموح لك تشوفهم..." maxlength="2000" required></textarea></div>
+      <button class="btn brass" type="submit" id="aiSend">إرسال</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  const thread = document.getElementById('aiThread');
+  const form = document.getElementById('aiForm');
+  const input = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('aiSend');
+  const csrfToken = <%- JSON.stringify(csrfToken) %>;
+  const userName = <%- JSON.stringify(user.display_name || user.username) %>;
+  const userInitial = <%- JSON.stringify((user.display_name||user.username||'؟').charAt(0)) %>;
+
+  function addBubble(role, text) {
+    const isUser = role === 'user';
+    const row = document.createElement('div');
+    row.className = 'comment';
+
+    const av = document.createElement('span');
+    av.className = isUser ? 'av lawyer' : 'av';
+    av.textContent = isUser ? userInitial : 'س';
+
+    const cbody = document.createElement('div');
+    cbody.className = 'cbody';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    const nm = document.createElement('div');
+    nm.className = 'nm';
+    nm.textContent = isUser ? userName : 'سند';
+    const tx = document.createElement('div');
+    tx.className = 'tx';
+    tx.textContent = text;
+
+    bubble.append(nm, tx);
+    cbody.appendChild(bubble);
+    row.append(av, cbody);
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
+    addBubble('user', message);
+    input.value = '';
+    sendBtn.disabled = true;
+    try {
+      const res = await fetch(<%- JSON.stringify(adminPath + '/ai/chat') %>, {
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded', 'x-csrf-token': csrfToken },
+        body: 'message=' + encodeURIComponent(message),
+      });
+      const data = await res.json();
+      addBubble('assistant', data.reply || 'حصل خطأ غير متوقع.');
+    } catch (err) {
+      addBubble('assistant', 'تعذّر الاتصال بالمساعد الذكي. حاول تاني.');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  });
+})();
+</script>
+
+<%- include('../partials/admin_foot') %>

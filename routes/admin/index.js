@@ -6,6 +6,7 @@ const notify = require('../../lib/notify');
 const { visibleRequestFilter } = require('../../lib/access');
 const { requireAuth, requireAdmin, requireStaff, can } = require('../../middleware/auth');
 const { requireModule } = require('../../lib/entitlements');
+const ai = require('../../lib/ai');
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.use((req, res, next) => {
   res.locals.platformOwnerAccess = !!req.session.platformOwnerAccess;
   res.locals.pendingSubscriptions = 0;
   res.locals.undoWindowDays = require('../../lib/trash').UNDO_WINDOW_DAYS;
+  res.locals.aiAvailable = ai.canUse(req.user);
   const today=new Date().toISOString().slice(0,10),soon=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
   res.locals.renewalCount=db.prepare(`SELECT COUNT(*) c FROM requests WHERE archived_at IS NULL AND COALESCE(renewal_on,expires_on) BETWEEN ? AND ?`).get(today,soon).c;
   next();
@@ -216,6 +218,7 @@ router.use('/settings', requireModule('settings'), require('./settings'));
 router.use('/report-profiles', requireModule('reports'), require('./report_profiles'));
 router.use('/users', requireModule('employees'), require('./users'));
 router.use('/imports', requireModule('imports'), require('./imports'));
+router.use('/ai', requireModule('ai'), require('./ai'));
 router.use('/account', require('./account'));
 
 module.exports = router;

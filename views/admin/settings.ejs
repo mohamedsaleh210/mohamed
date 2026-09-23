@@ -19,6 +19,7 @@
   <a href="<%= adminPath %>/settings?tab=mail" class="<%= tab === 'mail' ? 'active' : '' %>">الإيميل</a>
   <a href="<%= adminPath %>/settings?tab=files" class="<%= tab === 'files' ? 'active' : '' %>">الملفات</a>
   <a href="<%= adminPath %>/settings?tab=backup" class="<%= tab === 'backup' ? 'active' : '' %>">النسخ والاستعادة</a>
+  <a href="<%= adminPath %>/settings?tab=ai" class="<%= tab === 'ai' ? 'active' : '' %>">المساعد الذكي</a>
   <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول Google</a>
   <a href="<%= adminPath %>/settings?tab=google" class="<%= tab === 'google' ? 'active' : '' %>">دخول جوجل</a>
 </nav>
@@ -77,6 +78,36 @@
       <button class="btn brass">فحص النسخة وجدولة الاستعادة</button>
     </form>
   </div></div>
+<% } %>
+
+<!-- ============================================================ ai -->
+<% if (tab === 'ai') { %>
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-message"/></svg> المساعد الذكي</h3><span class="chip <%=aiConfig.enabled?'ok':''%> spacer"><%=aiConfig.enabled?'مفعّل':'متوقف'%></span></div><div class="panel-body">
+    <div class="alert warn"><span>قاعدة ثابتة: المساعد الذكي لا يتجاوز صلاحيات سند أبدًا. البيانات اللي بيشوفها = بيانات الموظف اللي بيسأل (حسب صلاحياته الفعلية) مقصورة كمان على المصادر المفعّلة هنا — أيهما أضيق هو اللي بيسري.</span></div>
+    <form method="post" action="<%=adminPath%>/settings/ai-settings" class="two-col"><%-csrfField%>
+      <div class="field"><label class="check"><input type="checkbox" name="ai_enabled" <%=aiConfig.enabled?'checked':''%>> تفعيل المساعد الذكي</label></div>
+      <div class="field"><label>المزوّد</label><select name="ai_provider"><option value="anthropic" <%=aiConfig.provider==='anthropic'?'selected':''%>>Anthropic (Claude)</option><option value="openai" <%=aiConfig.provider==='openai'?'selected':''%>>OpenAI</option></select></div>
+      <div class="field"><label>اسم الموديل</label><input type="text" name="ai_model" dir="ltr" value="<%=aiConfig.model%>" placeholder="claude-sonnet-4-5 أو gpt-4o-mini"></div>
+      <div class="field"><label>مفتاح API</label><input type="password" name="ai_api_key" dir="ltr" placeholder="<%=aiConfig.hasApiKey?'محفوظ — سيب الحقل فاضي لو مش هتغيّره':'مفيش مفتاح محفوظ'%>" autocomplete="off"></div>
+      <% if (aiConfig.hasApiKey) { %><div class="field"><label class="check"><input type="checkbox" name="ai_clear_key" value="1"> امسح المفتاح المحفوظ</label></div><% } %>
+      <div class="field"><label>مدة الاحتفاظ بالمحادثات (أيام)</label><input type="number" name="ai_retention_days" min="1" max="365" value="<%=aiConfig.retentionDays%>"></div>
+      <div class="field wide"><label>تعليمات إضافية للمساعد</label><textarea name="ai_system_instructions" placeholder="مثال: خاطب المستخدم باللهجة المصرية، ووضّح دايمًا إن أي رقم مالي تقريبي لحد ما يتأكد منه."><%=aiConfig.systemInstructions%></textarea></div>
+      <div class="field wide"><label>رسالة الترحيب</label><textarea name="ai_welcome_message"><%=aiConfig.welcomeMessage%></textarea></div>
+      <div class="field wide"><label>الأدوار المسموح لها تستخدم المساعد</label><div class="check-grid">
+        <% [['admin','أدمن'],['supervisor','مشرف'],['lawyer','محامي'],['accountant','محاسب']].forEach(([k,label])=>{ %>
+          <label class="check"><input type="checkbox" name="ai_allowed_roles" value="<%=k%>" <%=aiConfig.allowedRoles.includes(k)?'checked':''%>> <%=label%></label>
+        <% }) %>
+      </div></div>
+      <div class="field wide"><label>مصادر البيانات المسموح للمساعد يقرأها</label><div class="check-grid">
+        <% Object.entries(aiModules).forEach(([k,m])=>{ %>
+          <label class="check"><input type="checkbox" name="ai_data_sources" value="<%=k%>" <%=aiConfig.dataSources.includes(k)?'checked':''%>> <%=m.label%></label>
+        <% }) %>
+      </div></div>
+      <div class="field"><label class="check"><input type="checkbox" name="ai_audit_log" <%=aiConfig.auditLog?'checked':''%>> تسجيل كل سؤال وجواب في سجل النشاط</label></div>
+      <button class="btn brass">حفظ إعدادات المساعد الذكي</button>
+    </form>
+  </div></div>
+  <% if (aiAvailable) { %><div class="btn-row"><a class="btn ghost" href="<%=adminPath%>/ai">افتح المساعد الذكي</a></div><% } %>
 <% } %>
 
 <!-- ============================================================ site -->

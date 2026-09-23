@@ -652,6 +652,24 @@ router.post('/:id/update', can('users.manage'), (req, res) => {
   if(!displayName) return res.redirect(`${req.adminPath}/users/${person.id}?msg=invalid`);
   db.prepare(`UPDATE users SET display_name=?,legal_name=?,email=?,phone=?,national_id=?,birth_date=?,role=?,is_super_admin=? WHERE id=?`)
     .run(displayName,legalName||null,email||null,phone||null,nationalId||null,birthDate,role,isSuperAdminFlag,person.id);
+
+  // Role and Super Admin tier are sensitive enough to record on their own,
+  // with the before/after values spelled out — the generic "edited" entry
+  // that covers a changed phone number is not enough of a trail for these.
+  if (role !== person.role) {
+    audit.log(req, 'user.role_change', {
+      type: 'user', id: person.id, label: displayName,
+      details: `غيّر دور ${displayName} من ${ROLE_AR[person.role] || person.role} إلى ${ROLE_AR[role] || role}`,
+    });
+  }
+  if (isSuperAdminFlag !== (person.is_super_admin ? 1 : 0)) {
+    audit.log(req, isSuperAdminFlag ? 'user.super_admin_promote' : 'user.super_admin_demote', {
+      type: 'user', id: person.id, label: displayName,
+      details: isSuperAdminFlag
+        ? `رقّى ${displayName} لسوبر أدمن`
+        : `نزّل ${displayName} من سوبر أدمن لأدمن عادي`,
+    });
+  }
   audit.log(req,'user.update',{type:'user',id:person.id,label:displayName,details:`تعديل بيانات الموظف ${displayName}`});
   res.redirect(`${req.adminPath}/users/${person.id}?msg=saved`);
 });

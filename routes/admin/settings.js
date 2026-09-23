@@ -10,6 +10,8 @@ const emails = require('../../lib/emails');
 const { can } = require('../../middleware/auth');
 const multer = require('multer');
 const backup = require('../../lib/backup');
+const backupSchedule = require('../../lib/backup-schedule');
+const branchArchive = require('../../lib/branch-archive');
 
 const router = express.Router();
 router.use(can('settings.manage'));
@@ -82,6 +84,8 @@ router.get('/', (req, res) => {
     testError: req.query.terr ? decodeURIComponent(req.query.terr) : null,
     restorePending: fs.existsSync(backup.PENDING_FILE),
     officeBranches: db.prepare('SELECT * FROM office_branches ORDER BY is_main DESC,name').all(),
+    backupSchedule: backupSchedule.status(),
+    backupRun: req.query.backup_run || null,
   });
 });
 
@@ -105,7 +109,10 @@ router.post('/office-branches/:id/toggle',(req,res)=>{
 
 router.get('/backup/:scope', async (req, res, next) => {
   const scope = req.params.scope === 'full' ? 'full' : 'office';
-  if (scope === 'full') return res.sendStatus(403);
+  // Full scope pulls in PLATFORM_ROOT — every tenant's data, not just this
+  // office's — so it stays behind the same one-use platform-owner session
+  // flag the settings page already uses to decide whether to show the button.
+  if (scope === 'full' && !req.session.platformOwnerAccess) return res.sendStatus(403);
   let result;
   try {
     result = await backup.createBackup(scope);
@@ -133,6 +140,64 @@ router.post('/restore', restoreUpload.single('backup_file'), async (req, res) =>
     return res.redirect(`${back}&backup_error=invalid`);
   } finally {
     if (uploaded) try { fs.unlinkSync(uploaded); } catch (_) { /* already absent */ }
+  }
+});
+
+const WEEKDAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+router.post('/backup-schedule', (req, res) => {
+  const back = `${req.adminPath}/settings?tab=backup`;
+  const enabled = req.body.backup_schedule_enabled ? '1' : '0';
+  const frequency = req.body.backup_schedule_frequency === 'weekly' ? 'weekly' : 'daily';
+  const weekday = String(Math.min(6, Math.max(0, parseInt(req.body.backup_schedule_weekday, 10) || 0)));
+  const time = /^([01]\d|2[0-3]):[0-5]\d$/.test(req.body.backup_schedule_time || '') ? req.body.backup_schedule_time : '02:00';
+  const retention = String(Math.min(60, Math.max(1, parseInt(req.body.backup_schedule_retention, 10) || 7)));
+
+  setSetting('backup_schedule_enabled', enabled);
+  setSetting('backup_schedule_frequency', frequency);
+  setSetting('backup_schedule_weekday', weekday);
+  setSetting('backup_schedule_time', time);
+  setSetting('backup_schedule_retention', retention);
+  backupSchedule.reschedule();
+
+  audit.log(req, 'settings.update', {
+    type: 'settings',
+    details:
+      enabled === '1'
+        ? `فعّل جدولة النسخ الاحتياطي: ${frequency === 'weekly' ? 'أسبوعيًا يوم ' + WEEKDAYS[Number(weekday)] : 'يوميًا'} الساعة ${time}، الاحتفاظ بآخر ${retention} نسخة`
+        : 'أوقف جدولة النسخ الاحتياطي التلقائية',
+  });
+  res.redirect(`${back}&saved=1`);
+});
+
+router.post('/backup-schedule/run', async (req, res) => {
+  const back = `${req.adminPath}/settings?tab=backup`;
+  const result = await backupSchedule.runScheduledBackup();
+  audit.log(req, 'backup.manual_run', {
+    type: 'settings',
+    details: result.ok ? 'شغّل النسخة الاحتياطية المجدولة يدويًا' : `فشلت النسخة الاحتياطية اليدوية: ${result.error}`,
+  });
+  res.redirect(`${back}&backup_run=${result.ok ? 'ok' : 'error'}`);
+});
+
+router.get('/backup/branch/:id', async (req, res, next) => {
+  let result;
+  try {
+    result = await branchArchive.createBranchArchive(Number(req.params.id));
+    audit.log(req, 'backup.branch_export', {
+      type: 'office_branch',
+      id: result.manifest.branch.id,
+      label: result.manifest.branch.name,
+      details: `صدّر أرشيف بيانات فرع: ${result.manifest.branch.name}`,
+    });
+    res.download(result.path, path.basename(result.path), (error) => {
+      result.cleanup();
+      if (error && !res.headersSent) next(error);
+    });
+  } catch (error) {
+    if (result) result.cleanup();
+    if (error.message === 'branch_not_found') return res.status(404).render('errors/404');
+    next(error);
   }
 });
 

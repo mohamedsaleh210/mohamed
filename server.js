@@ -226,6 +226,7 @@ app.use((err, req, res, next) => {
 require('./lib/notify').startHousekeeping();
 require('./lib/deadlines').start();
 require('./lib/reset').purge();
+require('./lib/backup-schedule').start();
 
 app.listen(PORT, () => {
   console.log(`Sanad running on http://localhost:${PORT}`);

@@ -25,8 +25,8 @@ router.use(requireAuth);
 // The unread badge appears in the sidebar on every admin page.
 router.use((req, res, next) => {
   res.locals.unseenCount = notify.unseenCount(req.session.user.id);
-  res.locals.isPlatformOwner = false;
-  res.locals.platformOwnerAccess = false;
+  res.locals.isPlatformOwner = !!req.session.platformOwnerAccess;
+  res.locals.platformOwnerAccess = !!req.session.platformOwnerAccess;
   res.locals.pendingSubscriptions = 0;
   res.locals.undoWindowDays = require('../../lib/trash').UNDO_WINDOW_DAYS;
   const today=new Date().toISOString().slice(0,10),soon=new Date(Date.now()+30*86400000).toISOString().slice(0,10);

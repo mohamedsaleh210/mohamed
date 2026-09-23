@@ -38,6 +38,36 @@
     <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-download"/></svg> نسخة المكتب وملفات الشركات</h3></div><div class="panel-body"><p>تشمل قاعدة المكتب والعملاء والشركات والفروع والطلبات والإعدادات ومحتوى الموقع وجميع المستندات والمرفقات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/office">تنزيل نسخة المكتب كاملة</a></div></div>
     <%if(isPlatformOwner){%><div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-download"/></svg> نسخة منصة سند كاملة</h3></div><div class="panel-body"><p>تشمل قاعدة مالك سند وطلبات الاشتراك والباقات، وقاعدة المكتب الرئيسية، وجميع قواعد وملفات المكاتب والشركات.</p><a class="btn brass block" href="<%=adminPath%>/settings/backup/full">تنزيل النسخة الكاملة للمنصة</a></div></div><%}%>
   </div>
+
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-calendar"/></svg> جدولة النسخ الاحتياطي التلقائي</h3><span class="chip <%=backupSchedule.enabled?'ok':''%> spacer"><%=backupSchedule.enabled?'مفعّلة':'متوقفة'%></span></div><div class="panel-body">
+    <% if (backupRun) { %><div class="alert <%=backupRun==='ok'?'ok':'err'%>"><span><%=backupRun==='ok'?'اتشغّلت النسخة الاحتياطية بنجاح.':'فشلت النسخة الاحتياطية. راجع سجل الأخطاء أسفل الصفحة.'%></span></div><% } %>
+    <p>نسخة المكتب فقط (بدون منصة سند) تُحفظ تلقائيًا في مجلد <span class="num">backups/scheduled</span> على السيرفر — لا تنزيل من هنا، فقط جدولة والاحتفاظ بعدد محدود من آخر النسخ.</p>
+    <form method="post" action="<%=adminPath%>/settings/backup-schedule" class="two-col"><%-csrfField%>
+      <div class="field"><label class="check"><input type="checkbox" name="backup_schedule_enabled" <%=backupSchedule.enabled?'checked':''%>> تفعيل الجدولة التلقائية</label></div>
+      <div class="field"><label>التكرار</label><select name="backup_schedule_frequency"><option value="daily" <%=backupSchedule.frequency==='daily'?'selected':''%>>يوميًا</option><option value="weekly" <%=backupSchedule.frequency==='weekly'?'selected':''%>>أسبوعيًا</option></select></div>
+      <div class="field"><label>يوم الأسبوع (للتكرار الأسبوعي)</label><select name="backup_schedule_weekday"><%['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'].forEach((d,i)=>{%><option value="<%=i%>" <%=String(i)===String(backupSchedule.weekday)?'selected':''%>><%=d%></option><%})%></select></div>
+      <div class="field"><label>الساعة</label><input type="time" name="backup_schedule_time" value="<%=backupSchedule.time%>"></div>
+      <div class="field"><label>الاحتفاظ بعدد نسخ</label><input type="number" name="backup_schedule_retention" min="1" max="60" value="<%=backupSchedule.retention%>"></div>
+      <button class="btn brass">حفظ الجدولة</button>
+    </form>
+    <div class="report-profile-card" style="margin-top:14px">
+      <div>
+        <b>آخر تشغيل</b>
+        <% if (backupSchedule.lastRunAt) { %>
+          <br><small><%=backupSchedule.lastRunAt%> — <%=backupSchedule.lastRunStatus==='ok'?'نجحت':'فشلت'%><% if(backupSchedule.lastRunStatus!=='ok' && backupSchedule.lastRunError){ %> (<%=backupSchedule.lastRunError%>)<% } %></small>
+        <% } else { %><br><small>لسه ما اتشغلتش</small><% } %>
+        <% if (backupSchedule.enabled && backupSchedule.nextRunAt) { %><br><small>التشغيل القادم: <%=backupSchedule.nextRunAt%></small><% } %>
+        <br><small>عدد النسخ المحفوظة حاليًا: <%=backupSchedule.files.length%></small>
+      </div>
+      <div class="spacer"><form method="post" action="<%=adminPath%>/settings/backup-schedule/run"><%-csrfField%><button class="btn ghost sm">تشغيل الآن</button></form></div>
+    </div>
+  </div></div>
+
+  <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-building"/></svg> أرشيف بيانات فرع</h3></div><div class="panel-body">
+    <div class="alert warn"><span>أرشيف الفرع تصدير للاطلاع والتوثيق فقط — ليس نسخة احتياطية يمكن استعادتها بمفردها، لأن بيانات الفرع مرتبطة بجداول مشتركة مع باقي فروع المكتب (المدفوعات، سجل النشاط). لاستعادة كاملة استخدم نسخة المكتب.<% if (officeBranches.length <= 1) { %> ملاحظة: المكتب عنده فرع واحد فقط حاليًا، وربط الطلبات والموظفين بفرع معيّن غير مُفعّل بعد في نماذج الإدخال — الأرشيف هيكون فاضيًا لحد ما يُضاف هذا الربط.<% } %></span></div>
+    <% officeBranches.forEach(b => { %><div class="report-profile-card"><div><b><%=b.name%></b><br><small><%=b.code||'بدون كود'%></small></div><div class="spacer"><a class="btn ghost sm" href="<%=adminPath%>/settings/backup/branch/<%=b.id%>">تنزيل أرشيف الفرع</a></div></div><% }) %>
+  </div></div>
+
   <div class="panel"><div class="panel-head"><h3><svg class="h3-ico" aria-hidden="true"><use href="/images/icons.svg#i-upload"/></svg> استيراد واستعادة نسخة احتياطية</h3></div><div class="panel-body">
     <div class="alert warn"><span>الاستعادة تستبدل البيانات عند التشغيل التالي. قبل الاستبدال يحتفظ النظام بالبيانات الحالية داخل مجلد <span class="num">backups/pre-restore-...</span>.</span></div>
     <form method="post" action="<%=adminPath%>/settings/restore" enctype="multipart/form-data"><%-csrfField%>

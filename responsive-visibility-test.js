@@ -72,9 +72,16 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
   try {
     playwright = require('playwright');
   } catch (e) {
-    console.log('\x1b[33mSKIPPED\x1b[0m — the `playwright` package is not installed.');
-    console.log('Install it (npm i -D playwright && npx playwright install chromium) to run this suite.');
-    process.exit(0);
+    // `playwright` is a required devDependency (package.json), not optional —
+    // a plain `npm install` always installs it. If it's missing here, the
+    // install step was skipped or broken, which means every check below would
+    // silently never run. That must fail loudly, not exit 0 as if this suite
+    // had passed with zero checks — see the incident this guards against in
+    // the file header.
+    console.log('\x1b[31mFAILED\x1b[0m — the `playwright` package is not installed.');
+    console.log('It is a required devDependency (package.json); run `npm install` first.');
+    console.log('0 of this suite\'s Playwright checks ran.');
+    process.exit(1);
   }
 
   console.log('\x1b[1mSanad — responsive-visibility regression suite\x1b[0m');
@@ -407,6 +414,7 @@ const section = (t) => console.log(`\n\x1b[1m\x1b[36m${t}\x1b[0m`);
   }
 
   console.log(`\n${'═'.repeat(56)}`);
+  console.log(`  Playwright checks actually executed: ${pass + fail}`);
   console.log(`  \x1b[32mPASS: ${pass}\x1b[0m    ${fail ? `\x1b[31mFAIL: ${fail}\x1b[0m` : 'FAIL: 0'}`);
   console.log('═'.repeat(56));
   if (failures.length) {

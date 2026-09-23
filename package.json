@@ -40,8 +40,10 @@
   },
   "optionalDependencies": {
     "heic-convert": "^2.1.0",
-    "playwright": "^1.48.0",
     "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
   },
   "overrides": {
     "brace-expansion": "^2.1.4",

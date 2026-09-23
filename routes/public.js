@@ -412,9 +412,13 @@ router.post('/request', (req, res) => {
   // A long random token, not the reference number, is what unlocks the upload
   // page. It goes in the confirmation email so the client can come back later.
   const uploadToken = crypto.randomBytes(24).toString('hex');
-  db.prepare('UPDATE requests SET ref = ?, upload_token = ? WHERE id = ?').run(
+  // No staff member is acting here — a client submitting from the public
+  // site has no branch of their own to inherit, so this lands on the
+  // office's main branch until someone triages it internally.
+  db.prepare('UPDATE requests SET ref = ?, upload_token = ?, office_branch_id = ? WHERE id = ?').run(
     ref,
     uploadToken,
+    require('../lib/office-branches').mainBranchId(),
     info.lastInsertRowid
   );
 

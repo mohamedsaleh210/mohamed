@@ -46,6 +46,7 @@ router.get('/', (req, res) => {
 
   res.render('admin/users', {
     users,
+    officeBranches: db.prepare('SELECT id,name FROM office_branches WHERE active=1 ORDER BY is_main DESC,name').all(),
     catalogue: permissions.CATALOGUE,
     roleDefaults: permissions.ROLE_DEFAULTS,
     allPermissions: permissions.ALL,
@@ -99,13 +100,21 @@ router.post('/new', can('users.manage'), (req, res) => {
     license: tenantPolicy.license(), status: 'limit', expired: false, layout: false,
   });
 
+  // Which office branch this employee works out of — a genuine choice, not
+  // an inheritance, so it defaults to the creating admin's own branch
+  // rather than being forced. Left as-is (nullable) for a single-branch
+  // office where the field is invisible in practice.
+  const officeBranchId = req.body.office_branch_id
+    ? require('../../lib/office-branches').resolveBranchId(req.body.office_branch_id, req.user)
+    : (req.user.office_branch_id || null);
+
   const info = db
     .prepare(
       `INSERT INTO users (username, password_hash, role, display_name, active,
-                          must_change_password, profile_completed, created_by)
-       VALUES (?,?,?,?,1,1,0,?)`
+                          must_change_password, profile_completed, created_by, office_branch_id)
+       VALUES (?,?,?,?,1,1,0,?,?)`
     )
-    .run(username, bcrypt.hashSync(password, 10), role, username, me(req));
+    .run(username, bcrypt.hashSync(password, 10), role, username, me(req), officeBranchId);
 
   /*
    * Permissions chosen while creating the account.
@@ -382,6 +391,7 @@ router.get('/:id', (req, res) => {
 
   res.render('admin/user_file', {
     person,
+    officeBranches: db.prepare('SELECT id,name FROM office_branches WHERE active=1 ORDER BY is_main DESC,name').all(),
     assigned,
     openCount: assigned.filter((r) => !['completed', 'cancelled'].includes(r.status)).length,
     owed: expensesLib.owedTo(person.id),
@@ -693,8 +703,11 @@ router.post('/:id/update', can('users.manage'), (req, res) => {
   }
 
   if(!displayName) return res.redirect(`${req.adminPath}/users/${person.id}?msg=invalid`);
-  db.prepare(`UPDATE users SET display_name=?,legal_name=?,email=?,phone=?,national_id=?,birth_date=?,role=?,is_super_admin=? WHERE id=?`)
-    .run(displayName,legalName||null,email||null,phone||null,nationalId||null,birthDate,role,isSuperAdminFlag,person.id);
+  const officeBranchId = req.body.office_branch_id
+    ? require('../../lib/office-branches').resolveBranchId(req.body.office_branch_id, req.user)
+    : person.office_branch_id;
+  db.prepare(`UPDATE users SET display_name=?,legal_name=?,email=?,phone=?,national_id=?,birth_date=?,role=?,is_super_admin=?,office_branch_id=? WHERE id=?`)
+    .run(displayName,legalName||null,email||null,phone||null,nationalId||null,birthDate,role,isSuperAdminFlag,officeBranchId,person.id);
 
   // Role and Super Admin tier are sensitive enough to record on their own,
   // with the before/after values spelled out — the generic "edited" entry

@@ -250,6 +250,16 @@
         </div>
       </div>
 
+      <% if (officeBranches.length > 1) { %>
+      <div class="field">
+        <label>فرع المكتب (اختياري)</label>
+        <select name="office_branch_id" data-searchable data-placeholder="اختر الفرع">
+          <option value="">بدون فرع محدد</option>
+          <% officeBranches.forEach(b=>{ %><option value="<%=b.id%>"><%=b.name%></option><% }) %>
+        </select>
+      </div>
+      <% } %>
+
       <div class="field req">
         <label>كلمة سر مؤقتة</label>
         <input type="text" name="password" required data-pw="new" dir="ltr"

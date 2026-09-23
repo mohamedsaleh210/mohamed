@@ -9,6 +9,7 @@ const emails = require('../../lib/emails');
 const commentsLib = require('../../lib/comments');
 const trash = require('../../lib/trash');
 const refLib = require('../../lib/ref');
+const officeBranchesLib = require('../../lib/office-branches');
 const devlinks = require('../../lib/devlinks');
 const crypto = require('crypto');
 const multer = require('multer');
@@ -326,8 +327,10 @@ router.get('/new', can('requests.create'), (req, res) => {
       .all(),
     companies: db.prepare('SELECT id,name,phone,email,contact_name FROM companies WHERE active=1 ORDER BY name').all(),
     branches: db.prepare('SELECT id,company_id,name,phone,email,manager FROM company_branches WHERE active=1 ORDER BY name').all(),
+    officeBranches: db.prepare('SELECT id,name FROM office_branches WHERE active=1 ORDER BY is_main DESC,name').all(),
     selectedCompany: parseInt(req.query.company,10)||null,
     selectedBranch: parseInt(req.query.branch,10)||null,
+    selectedOfficeBranch: officeBranchesLib.resolveBranchId(req.query.office_branch, req.user),
     err: req.query.err,
     form: {},
   });
@@ -375,15 +378,22 @@ router.post('/new', can('requests.create'), (req, res) => {
     (candidate) => !!db.prepare('SELECT 1 FROM requests WHERE ref = ?').get(candidate)
   );
 
+  // The firm's own branch handling this request — distinct from branchId
+  // above (the client company's own branch). Always resolved to a real,
+  // active office branch: a blank or stale selection falls back to the
+  // acting staff member's branch, then the office's main branch, so a
+  // request is never left without one.
+  const officeBranchId = officeBranchesLib.resolveBranchId(b.office_branch_id, req.user);
+
   const info = db
     .prepare(
-      `INSERT INTO requests (ref, name, phone, email, client_id, company_id, branch_id, service_id, service_label,
+      `INSERT INTO requests (ref, name, phone, email, client_id, company_id, branch_id, office_branch_id, service_id, service_label,
                              title, message, status, relation, beneficiary_name,
                              upload_token, opened_by, source,issued_on,expires_on,renewal_on)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,'new',?,?,?,?,'office',?,?,?)`
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'new',?,?,?,?,'office',?,?,?)`
     )
     .run(
-      ref, name, phone, email || null, clientId, companyId, branchId,
+      ref, name, phone, email || null, clientId, companyId, branchId, officeBranchId,
       service ? service.id : null,
       service ? `${service.title_ar} / ${service.title_en}` : null,
       (b.title || '').trim() || null,

@@ -108,6 +108,13 @@
     <div class="panel-head"><h3>الطلب</h3></div>
     <div class="panel-body">
 
+      <div class="field req">
+        <label>فرع المكتب المسؤول عن الطلب</label>
+        <select name="office_branch_id" data-searchable data-placeholder="اختر فرع المكتب">
+          <% officeBranches.forEach(b=>{ %><option value="<%=b.id%>" <%=selectedOfficeBranch===b.id?'selected':''%>><%=b.name%></option><% }) %>
+        </select>
+      </div>
+
       <div class="field">
         <label>الخدمات — يمكن اختيار أكثر من خدمة</label>
         <details class="picker-box"><summary>اختر الخدمات المطلوبة</summary><%groups.forEach(g=>{%><h4><%=g.category.name_ar%></h4><div class="check-grid"><%g.items.forEach(s=>{%><label class="check"><input type="checkbox" name="service_ids" value="<%=s.id%>"> <%=s.title_ar%></label><%})%></div><%})%><button type="button" class="btn brass" onclick="this.closest('details').removeAttribute('open')">موافق وإغلاق الاختيار</button></details>

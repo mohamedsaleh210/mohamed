@@ -33,8 +33,11 @@ router.post('/new',can('agenda.manage'),(req,res)=>{
  const users=selected.length?db.prepare(`SELECT id FROM users WHERE active=1 AND id IN (${selected.map(()=>'?').join(',')})`).all(...selected).map(x=>x.id):[];
  const requestId=Number(req.body.request_id)||null;let clientId=Number(req.body.client_id)||null,companyId=Number(req.body.company_id)||null;
  try{for(const uid of users)require('../../lib/bookings').available(uid,{starts_at:start,ends_at:end||start.slice(0,10)+' 23:59'});}catch(e){return res.status(409).render('public/booking_error',{message:e.message});}
- if(requestId){const link=db.prepare('SELECT client_id,company_id FROM requests WHERE id=?').get(requestId);if(link){clientId=clientId||link.client_id;companyId=companyId||link.company_id}}
- const info=db.prepare(`INSERT INTO agenda_events(title,event_type,starts_at,ends_at,priority,assigned_user_id,request_id,client_id,company_id,client_visible,location,notes,reminder_minutes,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(title.slice(0,180),req.body.event_type||'task',start,end,req.body.priority||'normal',users[0]||null,requestId,clientId,companyId,req.body.client_visible?1:0,String(req.body.location||'').trim()||null,String(req.body.notes||'').trim()||null,Number(req.body.reminder_minutes)||1440,req.user.id);
+ let officeBranchId=null;
+ if(requestId){const link=db.prepare('SELECT client_id,company_id,office_branch_id FROM requests WHERE id=?').get(requestId);if(link){clientId=clientId||link.client_id;companyId=companyId||link.company_id;officeBranchId=link.office_branch_id}}
+ if(!officeBranchId&&users[0]) officeBranchId=(db.prepare('SELECT office_branch_id FROM users WHERE id=?').get(users[0])||{}).office_branch_id;
+ officeBranchId=require('../../lib/office-branches').resolveBranchId(officeBranchId,req.user);
+ const info=db.prepare(`INSERT INTO agenda_events(title,event_type,starts_at,ends_at,priority,assigned_user_id,request_id,client_id,company_id,client_visible,location,notes,reminder_minutes,created_by,office_branch_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(title.slice(0,180),req.body.event_type||'task',start,end,req.body.priority||'normal',users[0]||null,requestId,clientId,companyId,req.body.client_visible?1:0,String(req.body.location||'').trim()||null,String(req.body.notes||'').trim()||null,Number(req.body.reminder_minutes)||1440,req.user.id,officeBranchId);
  const add=db.prepare('INSERT OR IGNORE INTO agenda_assignees(agenda_event_id,user_id) VALUES(?,?)');db.transaction(()=>users.forEach(id=>add.run(info.lastInsertRowid,id)))();
  audit.log(req,'agenda.create',{type:'agenda',id:Number(info.lastInsertRowid),label:title,details:`إضافة موعد لعدد ${users.length} مسؤول`});res.redirect(`${req.adminPath}/agenda?msg=created`);
 });

@@ -63,11 +63,11 @@ router.post('/from-request/:requestId', can('cases.create'), (req, res) => {
   const existing = db.prepare('SELECT id FROM legal_cases WHERE request_id=?').get(request.id);
   if (existing) return res.redirect(req.adminPath + '/cases/' + existing.id);
   const info = db.prepare(`INSERT INTO legal_cases
-    (request_id,client_id,category_id,file_no,title,summary,created_by)
-    VALUES (?,?,?,?,?,?,?)`).run(request.id, request.client_id || null,
+    (request_id,client_id,category_id,file_no,title,summary,created_by,office_branch_id)
+    VALUES (?,?,?,?,?,?,?,?)`).run(request.id, request.client_id || null,
       Number(req.body.category_id) || null, casesLib.nextFileNo(),
       text(req.body.title, 180) || request.title || request.service_label || request.ref,
-      request.message || null, req.user.id);
+      request.message || null, req.user.id, request.office_branch_id || null);
   const caseId = Number(info.lastInsertRowid);
   const requestAssignees = db.prepare('SELECT user_id FROM request_assignees WHERE request_id=?').all(request.id);
   const add = db.prepare('INSERT OR IGNORE INTO case_assignees(case_id,user_id,assigned_by) VALUES (?,?,?)');

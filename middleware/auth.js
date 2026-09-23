@@ -13,7 +13,7 @@ function requireAuth(req, res, next) {
     .prepare(
       `SELECT id, role, active, must_change_password, profile_completed, email, phone,
               national_id, birth_date, photo, display_name, legal_name,
-              id_front, id_back, username, is_super_admin,
+              id_front, id_back, username, is_super_admin, office_branch_id,
               assign_locked, assign_lock_reason, assign_lock_until
        FROM users WHERE id = ?`
     )
@@ -39,6 +39,7 @@ function requireAuth(req, res, next) {
 
   req.session.user.role = fresh.role;
   req.session.user.is_super_admin = !!fresh.is_super_admin;
+  req.session.user.office_branch_id = fresh.office_branch_id || null;
   req.permissions = granted;
   req.userCan = (key) => granted.has(key);
 

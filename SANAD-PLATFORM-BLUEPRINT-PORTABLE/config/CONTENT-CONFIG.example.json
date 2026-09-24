@@ -1,0 +1,76 @@
+{
+  "_comment": "Machine-readable public-site content structure. Mirrors the existing, working homepage_content/homepage_sections/homepage_metrics/testimonials/homepage_faqs mechanism in blueprint/02-public-website-blueprint.md, PLUS the sections that are currently hardcoded in Sanad's own template (marked hardcoded_needs_template_rewrite below) and would need to be written directly into the new company's templates rather than configured through this file alone.",
+  "homepage": {
+    "hero": {
+      "eyebrow": "{{HERO_EYEBROW}}",
+      "title": "{{HERO_TITLE}}",
+      "description": "{{HERO_DESCRIPTION}}",
+      "primary_cta_label": "{{HERO_PRIMARY_CTA_LABEL}}",
+      "primary_cta_url": "{{HERO_PRIMARY_CTA_URL}}",
+      "secondary_cta_label": "{{HERO_SECONDARY_CTA_LABEL}}",
+      "secondary_cta_url": "{{HERO_SECONDARY_CTA_URL}}",
+      "image": "{{HERO_IMAGE_URL}}",
+      "image_alt": "{{HERO_IMAGE_ALT}}"
+    },
+    "metrics": [
+      { "icon": "{{ICON_KEY}}", "label": "{{METRIC_LABEL}}", "value": "{{METRIC_VALUE}}" }
+    ],
+    "audiences_intro": { "title": "{{AUDIENCES_TITLE}}", "description": "{{AUDIENCES_DESCRIPTION}}" },
+    "popular_services_intro": { "title": "{{POPULAR_TITLE}}", "description": "{{POPULAR_DESCRIPTION}}" },
+    "testimonials": [
+      { "customer_name": "{{NAME}}", "quote": "{{QUOTE}}", "rating": 5 }
+    ],
+    "faq": [
+      { "question": "{{QUESTION}}", "answer": "{{ANSWER}}" }
+    ],
+    "section_order_and_visibility": {
+      "_comment": "Mirrors homepage_sections — set order/visible per section.",
+      "hero": { "visible": true, "sort": 10 },
+      "search": { "visible": true, "sort": 20 },
+      "metrics": { "visible": true, "sort": 30 },
+      "audiences": { "visible": true, "sort": 40 },
+      "popular": { "visible": true, "sort": 50 },
+      "steps": { "visible": true, "sort": 60 },
+      "why": { "visible": true, "sort": 70 },
+      "testimonials": { "visible": true, "sort": 80 },
+      "faq": { "visible": true, "sort": 90 },
+      "cta": { "visible": true, "sort": 100 }
+    }
+  },
+  "homepage_hardcoded_sections_needing_template_rewrite": {
+    "_comment": "These are NOT configurable through the existing CMS mechanism in the current codebase — they are hardcoded in home.ejs and require a direct template rewrite per company, not just data entry here.",
+    "search_copy": { "label": "{{SEARCH_LABEL}}", "placeholder": "{{SEARCH_PLACEHOLDER}}", "hint": "{{SEARCH_HINT}}" },
+    "steps": {
+      "heading": "{{STEPS_HEADING}}",
+      "description": "{{STEPS_DESCRIPTION}}",
+      "steps": [ { "title": "{{STEP_TITLE}}", "description": "{{STEP_DESCRIPTION}}" } ]
+    },
+    "why": {
+      "heading": "{{WHY_HEADING}}",
+      "description": "{{WHY_DESCRIPTION}}",
+      "benefits": [ { "icon": "{{ICON}}", "title": "{{BENEFIT_TITLE}}", "description": "{{BENEFIT_DESCRIPTION}}" } ],
+      "closing_quote": "{{CLOSING_QUOTE}}"
+    },
+    "trust_badges": [ { "icon": "{{ICON}}", "caption": "{{CAPTION}}" } ]
+  },
+  "static_pages_needing_template_rewrite": {
+    "_comment": "No admin-editable static-page CMS exists today — about/faq/guides are hand-coded templates. Building a general static-page CMS is new engineering (see GAP-REGISTER.md); until then, populate this as content the developer writes directly into new templates.",
+    "about": { "vision": "{{VISION}}", "mission": "{{MISSION}}", "sections": [] },
+    "faq_standalone": [ { "question": "{{QUESTION}}", "answer": "{{ANSWER}}" } ],
+    "guides": [ { "role": "{{ROLE}}", "title": "{{GUIDE_TITLE}}", "steps": [] } ]
+  },
+  "contact_and_footer": {
+    "office_hours": "{{OFFICE_HOURS}}",
+    "address": "{{ADDRESS}}",
+    "map_url": "{{MAP_URL}}",
+    "emails": ["{{OFFICE_EMAIL}}"],
+    "whatsapp": "{{WHATSAPP_NUMBER}}",
+    "social_links": [ { "platform": "{{PLATFORM}}", "url": "{{URL}}", "label": "{{LABEL}}" } ],
+    "footer_legal_links": [ { "label": "{{LABEL}}", "url": "{{URL}}" } ],
+    "footer_copyright_text": "{{COPYRIGHT_TEXT}}"
+  },
+  "seo": {
+    "_comment": "No SEO infrastructure exists in the current codebase — no sitemap, robots.txt, per-page meta description, OG tags, or structured data. This is greenfield new engineering, not configuration. See GAP-REGISTER.md.",
+    "infrastructure_available": false
+  }
+}

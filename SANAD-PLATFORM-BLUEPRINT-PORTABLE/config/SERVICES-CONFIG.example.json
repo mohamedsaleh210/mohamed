@@ -1,0 +1,62 @@
+{
+  "_comment": "Machine-readable service catalogue structure. Mirrors the reusable pages -> categories -> services shape documented in blueprint/03-services-and-request-engine.md. Replace all placeholder values; do not carry over Sanad's own catalogue content.",
+  "architecture_choice": "{{SAME_STRUCTURE | SELECTED_FAMILIES | CUSTOM | HYBRID}}",
+  "pages": [
+    {
+      "slug": "{{PAGE_SLUG}}",
+      "name_ar": "{{PAGE_NAME_AR}}",
+      "name_en": "{{PAGE_NAME_EN}}",
+      "tagline_ar": "{{PAGE_TAGLINE_AR}}",
+      "tagline_en": "{{PAGE_TAGLINE_EN}}",
+      "intro_ar": "{{PAGE_INTRO_AR}}",
+      "intro_en": "{{PAGE_INTRO_EN}}",
+      "colour": "{{PAGE_COLOUR_HEX}}",
+      "icon": "{{PAGE_ICON}}",
+      "is_default": false,
+      "show_in_menu": true,
+      "categories": [
+        {
+          "name_ar": "{{CATEGORY_NAME_AR}}",
+          "name_en": "{{CATEGORY_NAME_EN}}",
+          "desc_ar": "{{CATEGORY_DESC_AR}}",
+          "desc_en": "{{CATEGORY_DESC_EN}}",
+          "services": [
+            {
+              "title_ar": "{{SERVICE_TITLE_AR}}",
+              "title_en": "{{SERVICE_TITLE_EN}}",
+              "body_ar": "{{SERVICE_BODY_AR}}",
+              "body_en": "{{SERVICE_BODY_EN}}",
+              "is_consultation": false,
+              "active": true,
+              "pricing_model": "{{FIXED | QUOTE_AFTER_REVIEW}}",
+              "fixed_price": null,
+              "required_documents": ["{{DOCUMENT_1}}", "{{DOCUMENT_2}}"],
+              "custom_form_fields": [
+                {
+                  "field_key": "{{FIELD_KEY}}",
+                  "label_ar": "{{FIELD_LABEL_AR}}",
+                  "label_en": "{{FIELD_LABEL_EN}}",
+                  "type": "{{text | number | date | select | file}}",
+                  "required": true
+                }
+              ],
+              "renewal_tracking": false,
+              "country_applicability": ["{{COUNTRY_CODE}}"]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "quote_model": {
+    "_comment": "The current Sanad implementation has NO formal quote/approval workflow — pricing is flat fee-line-items summed into a total. See GAP-REGISTER.md before assuming a richer quote state machine (draft->sent->accepted->rejected) exists to configure. If required, this is new engineering.",
+    "existing_mechanism": "fee_items (flat line items) + payments ledger + discount/write-off fields on the request",
+    "formal_quote_workflow_available": false
+  },
+  "tax": {
+    "_comment": "No functioning tax/VAT calculation engine exists in the current codebase — only identity-labeling fields (vat_registered, vat_rate, prices_include_tax) that print on documents but are never used in a computation. See GAP-REGISTER.md.",
+    "engine_available": false,
+    "identity_fields_only": true
+  },
+  "scope_services_by_page": true
+}

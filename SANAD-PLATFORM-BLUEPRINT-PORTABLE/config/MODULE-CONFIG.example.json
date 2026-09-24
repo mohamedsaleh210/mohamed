@@ -1,0 +1,43 @@
+{
+  "_comment": "Enable/disable/customize map for every reusable platform module. Values shown are illustrative placeholders, not recommendations — set per COMPANY-ONBOARDING-TEMPLATE.md answers. status: enabled | disabled | customized",
+  "modules": {
+    "requests_workflow_engine": { "status": "enabled", "note": "core module, cannot be disabled" },
+    "cases_legal_operations": { "status": "{{STATUS}}", "note": "only relevant for law-firm-type companies; see blueprint/08" },
+    "appointments_consultations": { "status": "{{STATUS}}", "note": "gated by a single enable flag; see blueprint/07" },
+    "client_portal": { "status": "enabled", "note": "core module" },
+    "company_branch_multi_location": { "status": "{{STATUS}}" },
+    "treasury": { "status": "{{STATUS}}" },
+    "revenue": { "status": "{{STATUS}}" },
+    "expenses": { "status": "{{STATUS}}" },
+    "custody_cash_advances": { "status": "{{STATUS}}" },
+    "payroll": { "status": "{{STATUS}}" },
+    "performance_reviews": { "status": "{{STATUS}}" },
+    "report_profiles_branded_documents": { "status": "{{STATUS}}" },
+    "agenda_calendar": { "status": "{{STATUS}}" },
+    "errands_field_trips": { "status": "{{STATUS}}" },
+    "renewals_tracking": { "status": "{{STATUS}}" },
+    "support_tickets": { "status": "{{STATUS}}" },
+    "content_cms_homepage_editor": { "status": "{{STATUS}}" },
+    "data_import_export": { "status": "{{STATUS}}" },
+    "ai_assistant": { "status": "{{STATUS}}", "config_ref": "see AI section of COMPANY-ONBOARDING-TEMPLATE.md" },
+    "backup_restore": { "status": "enabled", "note": "core module, cannot be disabled" },
+    "content_protection_watermark": { "status": "{{STATUS}}", "note": "deterrence only, never claim screenshot prevention" },
+    "notifications_email": { "status": "{{STATUS}}" },
+    "notifications_sms": { "status": "{{STATUS}}" }
+  },
+  "public_elements": {
+    "home": { "status": "enabled" },
+    "services": { "status": "{{STATUS}}" },
+    "consultations": { "status": "{{STATUS}}" },
+    "appointments": { "status": "{{STATUS}}" },
+    "tracking": { "status": "{{STATUS}}" },
+    "client_portal": { "status": "{{STATUS}}" },
+    "support": { "status": "{{STATUS}}" },
+    "contact": { "status": "enabled" },
+    "guides": { "status": "{{STATUS}}" }
+  },
+  "deployment_mode": {
+    "mode": "{{MODE_A_OR_B}}",
+    "note": "MODE A = independent instance (one company, one deployment). MODE B = true multi-tenant SaaS. See BUILD-MODES.md — do not assume Mode B works without the architectural changes it documents."
+  }
+}

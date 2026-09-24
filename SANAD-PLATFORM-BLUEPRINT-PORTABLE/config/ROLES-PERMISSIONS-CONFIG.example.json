@@ -1,0 +1,54 @@
+{
+  "_comment": "Machine-readable role/permission template, mirroring the role-default + per-user-exception model in blueprint/05-roles-permissions-security.md. Role KEYS below are Sanad's originals for reference; rename per COMPANY-ONBOARDING-TEMPLATE.md answers. The permission catalogue keys (group.action shape) are the reusable mechanism (tag A) — keep this shape even when relabeling roles.",
+  "template_choice": "{{STANDARD_TEMPLATE | CUSTOM_ROLE_NAMES | CUSTOM_PERMISSIONS}}",
+  "super_tier": {
+    "_comment": "Not a role — a boolean flag on the top administrative role, with no permission ceiling and a protected last-one-standing guarantee. Keep this mechanism (tag A/H) regardless of role renaming.",
+    "flag_name": "is_super_admin",
+    "applies_to_role": "{{ADMIN_ROLE_KEY}}"
+  },
+  "permission_catalogue_groups": [
+    "requests", "cases", "money", "expenses", "performance", "payroll",
+    "clients", "errands", "agenda", "support", "content", "admin", "erase"
+  ],
+  "roles": {
+    "admin": {
+      "renamed_to": "{{NEW_ROLE_NAME_OR_KEEP}}",
+      "default_permissions": "ALL except the 'erase' group",
+      "notes": "The top operational role below Super Admin."
+    },
+    "supervisor": {
+      "renamed_to": "{{NEW_ROLE_NAME_OR_KEEP}}",
+      "default_permissions": "Broad operational access; NOT users.manage, NOT settings.manage, NOT erase",
+      "notes": "Management-tier role."
+    },
+    "lawyer": {
+      "renamed_to": "{{NEW_ROLE_NAME_OR_KEEP}}",
+      "default_permissions": "Own-file access only (no requests.view_all by default)",
+      "notes": "Front-line service-delivery role — rename to match the company's actual staff title (e.g. 'accountant_staff', 'consultant')."
+    },
+    "accountant": {
+      "renamed_to": "{{NEW_ROLE_NAME_OR_KEEP}}",
+      "default_permissions": "money/treasury/expenses/custody/performance/payroll; no request/case editing",
+      "notes": "Finance-tier role."
+    }
+  },
+  "custom_roles": [
+    {
+      "key": "{{NEW_ROLE_KEY}}",
+      "label_ar": "{{ROLE_LABEL_AR}}",
+      "label_en": "{{ROLE_LABEL_EN}}",
+      "based_on": "{{NEAREST_STANDARD_ROLE_OR_NONE}}",
+      "permission_overrides": {
+        "granted": ["{{PERMISSION_KEY}}"],
+        "revoked": ["{{PERMISSION_KEY}}"]
+      }
+    }
+  ],
+  "enforcement_notes": {
+    "_comment": "Copy these mechanisms verbatim into any rebuild — they are Core Platform DNA (tag A/H), not brand or company choices.",
+    "resolve_on_every_request": true,
+    "per_user_exceptions_as_deltas_from_role_default": true,
+    "delegation_ceiling_for_non_super_admin_grants": true,
+    "last_admin_and_last_super_admin_protected_from_deactivation_or_demotion": true
+  }
+}

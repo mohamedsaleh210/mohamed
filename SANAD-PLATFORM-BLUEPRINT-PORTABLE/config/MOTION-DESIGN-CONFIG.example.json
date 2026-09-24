@@ -1,0 +1,67 @@
+{
+  "_comment": "Machine-readable motion configuration. Pattern CATEGORIES below are the reusable mechanism (tag A, see blueprint/15-responsive-ux-motion-system.md); specific timing/easing VALUES are brand-specific (tag E) and must be chosen fresh per company, never copied from Sanad's own 'calm/understated' values in SANAD-BRAND-REFERENCE.md.",
+  "personality": "{{CALM | ENERGETIC | MINIMAL | PLAYFUL}}",
+  "timing_scale": {
+    "fast_ms": "{{FAST_MS}}",
+    "normal_ms": "{{NORMAL_MS}}",
+    "slow_ms": "{{SLOW_MS}}"
+  },
+  "easing": {
+    "standard": "{{EASING_CUBIC_BEZIER_STANDARD}}",
+    "decelerate": "{{EASING_CUBIC_BEZIER_DECELERATE}}"
+  },
+  "page_transitions": {
+    "enabled": "{{TRUE_FALSE}}",
+    "style": "{{FADE | SLIDE | NONE}}"
+  },
+  "scroll_reveals": {
+    "enabled": "{{TRUE_FALSE}}",
+    "trigger": "{{ON_LOAD_FOR_ABOVE_FOLD | INTERSECTION_OBSERVER_FOR_BELOW_FOLD}}",
+    "stagger_delay_ms": "{{STAGGER_DELAY_MS}}"
+  },
+  "micro_interactions": {
+    "hover": { "style": "{{LIFT | SCALE | GLOW | NONE}}", "duration_ms": "{{DURATION_MS}}" },
+    "tab_switch": { "style": "{{FADE_SHIFT | INSTANT}}" },
+    "drawer_dialog_open": { "style": "{{TRANSFORM_SLIDE | FADE}}", "backdrop": "{{SCRIM_FADE | NONE}}" },
+    "toast_success_banner": {
+      "auto_dismiss": true,
+      "auto_dismiss_ms": "{{AUTO_DISMISS_MS}}",
+      "errors_never_auto_dismiss": true
+    }
+  },
+  "loading_states": {
+    "skeleton_shimmer": {
+      "enabled": "{{TRUE_FALSE}}",
+      "scope": "genuinely-async re-renders only, not general page loads",
+      "duration_s": "{{DURATION_S}}"
+    },
+    "chart_draw_in": {
+      "enabled": "{{TRUE_FALSE}}",
+      "duration_ms": "{{DURATION_MS}}",
+      "delay_ms": "{{DELAY_MS}}"
+    }
+  },
+  "hero_animation": {
+    "style": "{{PHOTO_ENTRANCE | VIDEO | THREE_D | ILLUSTRATION_ANIMATE | NONE}}",
+    "notes": "{{FREE_TEXT}}"
+  },
+  "three_d": {
+    "usage": "{{NONE | HERO | PRODUCT_VISUALIZATION | OTHER}}",
+    "notes": "Not implemented in the current Sanad codebase — new engineering if selected."
+  },
+  "illustrations": {
+    "style": "{{FLAT | ISOMETRIC | LINE_ART | NONE}}",
+    "animated": "{{TRUE_FALSE}}"
+  },
+  "assistant_avatar_motion": {
+    "has_visual_character": "{{TRUE_FALSE}}",
+    "idle_animation": "{{FREE_TEXT}}",
+    "notes": "The current AI assistant is text-only with no avatar — this is new engineering if a visual character is wanted."
+  },
+  "reduced_motion": {
+    "_comment": "Keep this mechanism verbatim — it is Core Platform DNA (tag A), not a brand choice.",
+    "css_blanket_rule_required": true,
+    "js_level_timer_skip_required": true,
+    "note": "prefers-reduced-motion must be handled at BOTH the CSS animation/transition level AND the JS timer level (e.g. skip an auto-dismiss timer entirely, not just shorten it) — see blueprint/15 for the WCAG 2.2.1 rationale."
+  }
+}

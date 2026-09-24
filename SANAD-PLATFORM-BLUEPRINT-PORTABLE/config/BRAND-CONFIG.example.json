@@ -1,0 +1,79 @@
+{
+  "_comment": "Machine-readable brand token config. Every value is a placeholder — populate from a completed COMPANY-ONBOARDING-TEMPLATE.md. Never default any of these to Sanad's own values.",
+  "identity": {
+    "company_name_ar": "{{COMPANY_NAME_AR}}",
+    "company_name_en": "{{COMPANY_NAME_EN}}",
+    "legal_name": "{{LEGAL_NAME}}",
+    "short_name": "{{SHORT_NAME}}",
+    "domain": "{{PRIMARY_DOMAIN}}"
+  },
+  "logo": {
+    "primary": "{{LOGO_PRIMARY_URL}}",
+    "mark": "{{LOGO_MARK_URL}}",
+    "favicon": "{{FAVICON_URL}}"
+  },
+  "colors": {
+    "primary": "{{PRIMARY_COLOR}}",
+    "secondary": "{{SECONDARY_COLOR}}",
+    "accent": "{{ACCENT_COLOR}}",
+    "surface": {
+      "background": "{{SURFACE_BACKGROUND}}",
+      "card": "{{SURFACE_CARD}}",
+      "line": "{{SURFACE_LINE}}",
+      "muted_text": "{{SURFACE_MUTED_TEXT}}"
+    },
+    "semantic": {
+      "success": "{{COLOR_SUCCESS}}",
+      "warning": "{{COLOR_WARNING}}",
+      "danger": "{{COLOR_DANGER}}",
+      "info": "{{COLOR_INFO}}"
+    }
+  },
+  "typography": {
+    "heading_font": "{{TYPOGRAPHY_HEADING}}",
+    "body_font": "{{TYPOGRAPHY_BODY}}",
+    "font_weights": ["{{WEIGHT_1}}", "{{WEIGHT_2}}", "{{WEIGHT_3}}", "{{WEIGHT_4}}"]
+  },
+  "visual_style": {
+    "direction": "{{VISUAL_STYLE_DIRECTION}}",
+    "photography_style": "{{PHOTOGRAPHY_STYLE}}",
+    "illustration_style": "{{ILLUSTRATION_STYLE}}",
+    "icon_style": "{{ICON_STYLE}}",
+    "icon_stroke_weight_px": "{{ICON_STROKE_WEIGHT}}",
+    "card_radius_style": "{{CARD_RADIUS_STYLE}}",
+    "shadow_style": "{{SHADOW_STYLE}}"
+  },
+  "motion": {
+    "personality": "{{MOTION_PERSONALITY}}",
+    "config_ref": "see MOTION-DESIGN-CONFIG.example.json for full motion configuration"
+  },
+  "three_d_and_video": {
+    "three_d_usage": "{{THREE_D_USAGE}}",
+    "video_motion_graphics": "{{VIDEO_MOTION_GRAPHICS}}"
+  },
+  "ai_assistant_identity": {
+    "name": "{{ASSISTANT_NAME}}",
+    "persona": "{{ASSISTANT_PERSONA}}",
+    "avatar_character": "{{ASSISTANT_AVATAR}}"
+  },
+  "watermark": {
+    "enabled": false,
+    "text": "{{WATERMARK_TEXT}}",
+    "opacity_percent": 8
+  },
+  "email_branding": {
+    "from_name": "{{EMAIL_FROM_NAME}}",
+    "from_email": "{{EMAIL_FROM_ADDRESS}}",
+    "footer_html": "{{EMAIL_FOOTER_HTML}}"
+  },
+  "pdf_branding": {
+    "logo_file": "{{PDF_LOGO_FILE}}",
+    "signature_file": "{{PDF_SIGNATURE_FILE}}",
+    "stamp_file": "{{PDF_STAMP_FILE}}",
+    "header_text": "{{PDF_HEADER_TEXT}}",
+    "footer_text": "{{PDF_FOOTER_TEXT}}",
+    "signatory_name": "{{PDF_SIGNATORY_NAME}}",
+    "signatory_title": "{{PDF_SIGNATORY_TITLE}}",
+    "invoice_prefix": "{{INVOICE_PREFIX}}"
+  }
+}

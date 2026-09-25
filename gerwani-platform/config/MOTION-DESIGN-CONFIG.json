@@ -1,0 +1,76 @@
+{
+  "_comment": "Option A motion (PROPOSED). Motion shows progress and state; nothing decorative.",
+  "personality": "CRISP",
+  "timing_scale": {
+    "fast_ms": 140,
+    "normal_ms": 220,
+    "slow_ms": 360
+  },
+  "easing": {
+    "standard": "cubic-bezier(.3,0,0,1)",
+    "decelerate": "cubic-bezier(0,0,0,1)"
+  },
+  "page_transitions": {
+    "enabled": true,
+    "style": "FADE",
+    "note": "cross-document View Transitions where supported; instant fallback"
+  },
+  "scroll_reveals": {
+    "enabled": false,
+    "note": "no generic fade-up on sections; content is visible immediately"
+  },
+  "micro_interactions": {
+    "hover": {
+      "style": "NONE",
+      "note": "border-color + underline shifts only (flat brand)",
+      "duration_ms": 140
+    },
+    "tab_switch": {
+      "style": "FADE_SHIFT"
+    },
+    "drawer_dialog_open": {
+      "style": "TRANSFORM_SLIDE",
+      "backdrop": "SCRIM_FADE"
+    },
+    "toast_success_banner": {
+      "auto_dismiss": true,
+      "auto_dismiss_ms": 5000,
+      "errors_never_auto_dismiss": true
+    }
+  },
+  "loading_states": {
+    "skeleton_shimmer": {
+      "enabled": true,
+      "scope": "genuinely-async re-renders only, not general page loads",
+      "duration_s": 1.4
+    },
+    "chart_draw_in": {
+      "enabled": true,
+      "duration_ms": 600,
+      "delay_ms": 0
+    }
+  },
+  "hero_animation": {
+    "style": "ILLUSTRATION_ANIMATE",
+    "notes": "Signature: the service 'path' line draws once on load (≤ 900ms) and the client-portal path fills to the current step. SVG stroke animation, CSS only — no animation library needed."
+  },
+  "three_d": {
+    "usage": "NONE",
+    "notes": "fails value gate"
+  },
+  "illustrations": {
+    "style": "LINE_ART",
+    "animated": false
+  },
+  "assistant_avatar_motion": {
+    "has_visual_character": false,
+    "idle_animation": "",
+    "notes": "text-only unless decided"
+  },
+  "reduced_motion": {
+    "_comment": "Core Platform DNA — keep verbatim.",
+    "css_blanket_rule_required": true,
+    "js_level_timer_skip_required": true,
+    "note": "Path renders fully drawn and static; toasts do not auto-dismiss."
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "_comment": "PROPOSED module selection for El Gerwany (law firm + corporate licensing services). 'confirm' notes need Mohamed's answer.",
+  "modules": {
+    "requests_workflow_engine": {
+      "status": "enabled",
+      "note": "core"
+    },
+    "cases_legal_operations": {
+      "status": "enabled",
+      "note": "law firm — confirm litigation tracking is wanted"
+    },
+    "appointments_consultations": {
+      "status": "enabled",
+      "note": "already used in Sanad"
+    },
+    "client_portal": {
+      "status": "enabled",
+      "note": "core: track requests, upload documents, see renewal dates"
+    },
+    "company_branch_multi_location": {
+      "status": "disabled",
+      "note": "enable if more than one office"
+    },
+    "treasury": {
+      "status": "enabled"
+    },
+    "revenue": {
+      "status": "enabled"
+    },
+    "expenses": {
+      "status": "enabled",
+      "note": "includes government fees paid on behalf of clients"
+    },
+    "custody_cash_advances": {
+      "status": "enabled",
+      "note": "field staff pay fees in cash — confirm"
+    },
+    "payroll": {
+      "status": "TO_CONFIRM"
+    },
+    "performance_reviews": {
+      "status": "TO_CONFIRM"
+    },
+    "report_profiles_branded_documents": {
+      "status": "enabled"
+    },
+    "agenda_calendar": {
+      "status": "enabled"
+    },
+    "errands_field_trips": {
+      "status": "enabled",
+      "note": "core to licensing work"
+    },
+    "renewals_tracking": {
+      "status": "customized",
+      "note": "first-class: renewal dashboard + client reminders ahead of expiry (Sanad added issued_on/expires_on/renewal_on for Gerwani)"
+    },
+    "support_tickets": {
+      "status": "disabled",
+      "note": "not at launch"
+    },
+    "content_cms_homepage_editor": {
+      "status": "enabled"
+    },
+    "data_import_export": {
+      "status": "enabled",
+      "note": "possible migration of Gerwani's Sanad tenant data — confirm"
+    },
+    "ai_assistant": {
+      "status": "TO_CONFIRM"
+    },
+    "backup_restore": {
+      "status": "enabled",
+      "note": "core"
+    },
+    "content_protection_watermark": {
+      "status": "disabled"
+    },
+    "notifications_email": {
+      "status": "enabled",
+      "note": "renewal reminders"
+    },
+    "notifications_sms": {
+      "status": "TO_CONFIRM",
+      "note": "SMS/WhatsApp renewal reminders need a paid provider"
+    }
+  },
+  "public_elements": {
+    "home": {
+      "status": "enabled"
+    },
+    "services": {
+      "status": "enabled"
+    },
+    "consultations": {
+      "status": "enabled"
+    },
+    "appointments": {
+      "status": "enabled"
+    },
+    "tracking": {
+      "status": "enabled",
+      "note": "request tracking by number"
+    },
+    "client_portal": {
+      "status": "enabled"
+    },
+    "support": {
+      "status": "disabled"
+    },
+    "contact": {
+      "status": "enabled"
+    },
+    "guides": {
+      "status": "enabled",
+      "note": "'which documents do I need' guides per service — strong SEO value"
+    }
+  },
+  "deployment_mode": {
+    "mode": "A",
+    "note": "Independent instance: one company, one deployment and database."
+  }
+}

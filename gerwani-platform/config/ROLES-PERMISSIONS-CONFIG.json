@@ -1,0 +1,65 @@
+{
+  "_comment": "PROPOSED: standard template relabeled + one custom role. Confirm titles and whether field agents need their own role.",
+  "template_choice": "CUSTOM_ROLE_NAMES",
+  "super_tier": {
+    "flag_name": "is_super_admin",
+    "applies_to_role": "admin"
+  },
+  "permission_catalogue_groups": [
+    "requests",
+    "cases",
+    "money",
+    "expenses",
+    "performance",
+    "payroll",
+    "clients",
+    "errands",
+    "agenda",
+    "support",
+    "content",
+    "admin",
+    "erase"
+  ],
+  "roles": {
+    "admin": {
+      "renamed_to": "مدير الشركة / Managing partner",
+      "default_permissions": "ALL except the 'erase' group"
+    },
+    "supervisor": {
+      "renamed_to": "مدير قسم / Department head",
+      "default_permissions": "Broad operational access; NOT users.manage, NOT settings.manage, NOT erase"
+    },
+    "lawyer": {
+      "renamed_to": "محامٍ / Lawyer",
+      "default_permissions": "Own-file access only"
+    },
+    "accountant": {
+      "renamed_to": "محاسب / Accountant",
+      "default_permissions": "money/treasury/expenses/custody/performance/payroll; no request/case editing"
+    }
+  },
+  "custom_roles": [
+    {
+      "key": "licensing_specialist",
+      "label_ar": "أخصائي تراخيص",
+      "label_en": "Licensing specialist",
+      "based_on": "lawyer",
+      "permission_overrides": {
+        "granted": [
+          "errands.manage_own",
+          "renewals.view"
+        ],
+        "revoked": [
+          "cases.edit"
+        ]
+      },
+      "_status": "PROPOSED — permission keys to be mapped to the real catalogue at build time"
+    }
+  ],
+  "enforcement_notes": {
+    "resolve_on_every_request": true,
+    "per_user_exceptions_as_deltas_from_role_default": true,
+    "delegation_ceiling_for_non_super_admin_grants": true,
+    "last_admin_and_last_super_admin_protected_from_deactivation_or_demotion": true
+  }
+}
